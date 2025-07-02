@@ -15,7 +15,7 @@ const ParallaxSection = () => {
     transform: `translateY(${scrollY * 0.5}px)`
   }}>
       <div className="text-center text-white z-10">
-        <blockquote className="text-2xl md:text-4xl font-playfair italic max-w-4xl mx-auto px-6">"La comida es nuestra pasión común, un lenguaje universal q</blockquote>
+        
         <p className="text-accent text-lg mt-4">
       </p>
       </div>
