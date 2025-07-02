@@ -1,6 +1,7 @@
 import Navigation from '@/components/Navigation';
 import HeroSection from '@/components/HeroSection';
 import MenuSection from '@/components/MenuSection';
+import TakeawaySection from '@/components/TakeawaySection';
 import ParallaxSection from '@/components/ParallaxSection';
 import GallerySection from '@/components/GallerySection';
 import AboutSection from '@/components/AboutSection';
@@ -13,6 +14,7 @@ const Index = () => {
       <Navigation />
       <HeroSection />
       <MenuSection />
+      <TakeawaySection />
       <ParallaxSection />
       <GallerySection />
       <AboutSection />
