@@ -2,41 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Tulsi Restaurant Design System - Inspired by Indian warmth and elegance */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Main brand colors inspired by Indian spices and warmth */
+    --background: 41 31% 16%; /* Rich brown-olive #4A442A */
+    --foreground: 52 23% 85%; /* Warm light #F3F4F6 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 41 31% 16%; 
+    --card-foreground: 52 23% 85%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 41 31% 16%;
+    --popover-foreground: 52 23% 85%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary brand colors */
+    --primary: 41 39% 22%; /* Deeper brown for emphasis */
+    --primary-foreground: 52 23% 85%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Accent - The golden spice color */
+    --accent: 52 43% 73%; /* Golden caqui #D9C99A */
+    --accent-foreground: 41 31% 16%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Secondary warm tones */
+    --secondary: 41 31% 12%; /* Darker background variant */
+    --secondary-foreground: 52 23% 85%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Muted tones for text hierarchy */
+    --muted: 41 31% 12%;
+    --muted-foreground: 52 15% 65%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Interactive elements */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 52 23% 85%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 52 43% 73% / 0.3; /* Translucent accent for borders */
+    --input: 41 31% 12%;
+    --ring: 52 43% 73%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Custom design tokens for Tulsi */
+    --tulsi-gold: 52 43% 73%; /* Main accent gold */
+    --tulsi-gold-light: 52 43% 83%; /* Lighter gold for highlights */
+    --tulsi-brown: 41 31% 16%; /* Main background brown */
+    --tulsi-brown-dark: 41 31% 12%; /* Darker brown for depth */
+    --tulsi-brown-darker: 41 31% 8%; /* Darkest brown for contrast */
+    
+    /* Gradients for visual impact */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--tulsi-brown)) 0%, hsl(var(--tulsi-brown-dark)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--tulsi-gold)) 0%, hsl(var(--tulsi-gold-light)) 100%);
+    --gradient-overlay: linear-gradient(rgba(74, 68, 42, 0.8), rgba(74, 68, 42, 0.9));
+    
+    /* Shadows with brand colors */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--tulsi-brown-darker) / 0.5);
+    --shadow-glow: 0 0 40px hsl(var(--tulsi-gold) / 0.2);
+    --shadow-card: 0 8px 25px -5px hsl(var(--tulsi-brown-darker) / 0.3);
+    
+    /* Animation values */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +129,116 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  /* Button variants for Tulsi */
+  .btn-tulsi {
+    @apply inline-flex items-center justify-center px-8 py-3 text-base font-semibold tracking-wider uppercase;
+    @apply bg-accent text-accent-foreground rounded-lg transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent;
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .btn-tulsi-outline {
+    @apply inline-flex items-center justify-center px-8 py-3 text-base font-semibold tracking-wider uppercase;
+    @apply bg-transparent text-accent border-2 border-accent rounded-lg transition-all duration-300;
+    @apply hover:bg-accent hover:text-accent-foreground hover:scale-105;
+  }
+  
+  /* Navigation link styles */
+  .nav-link {
+    @apply relative text-lg font-medium text-foreground transition-colors duration-300;
+    @apply after:content-[''] after:absolute after:left-0 after:bottom-[-5px] after:w-0 after:h-[2px];
+    @apply after:bg-accent after:transition-all after:duration-300 hover:after:w-full hover:text-accent;
+  }
+  
+  /* Card styles for menu items */
+  .menu-card {
+    @apply bg-card border border-border rounded-xl p-6 transition-all duration-300;
+    @apply hover:shadow-lg hover:scale-105 hover:border-accent/50;
+    box-shadow: var(--shadow-card);
+  }
+  
+  /* Parallax and hero effects */
+  .parallax-bg {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  /* Animation utilities */
+  .reveal {
+    @apply opacity-0 translate-y-8 transition-all duration-700 ease-out;
+  }
+  
+  .reveal.visible {
+    @apply opacity-100 translate-y-0;
+  }
+  
+  /* Tab styles for menu sections */
+  .tab-button {
+    @apply py-3 px-6 text-base font-semibold text-muted-foreground border-b-2 border-transparent;
+    @apply transition-all duration-300 hover:text-accent hover:border-accent/50;
+  }
+  
+  .tab-button.active {
+    @apply text-accent border-accent;
+  }
+  
+  /* Gallery image effects */
+  .gallery-image {
+    @apply rounded-xl transition-all duration-500 hover:scale-110 hover:rotate-1 cursor-pointer;
+    @apply shadow-lg hover:shadow-2xl;
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-secondary;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-accent rounded-full;
+  }
+}
+
+@layer utilities {
+  /* Text gradient utility */
+  .text-gradient {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Shadow utilities using design tokens */
+  .shadow-tulsi {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-tulsi-glow {
+    box-shadow: var(--shadow-glow);
   }
 }
