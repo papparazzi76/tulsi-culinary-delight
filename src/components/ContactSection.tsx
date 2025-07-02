@@ -158,7 +158,7 @@ const ContactSection = () => {
           >
             <div className="h-96 lg:h-full min-h-[500px] rounded-2xl overflow-hidden shadow-tulsi border-2 border-accent/20">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2980.133284175338!2d-4.723611!3d41.652779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDM5JzEwLjAiTiA0wrA0MycyNS4wIlc!5e0!3m2!1ses!2ses!4v1678886501234!5m2!1ses!2ses" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2980.7635842983545!2d-4.724609523456655!3d41.64902717924125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd47119bcce1a38d%3A0xf56ba1b5f8e0b0d1!2sC.%20Marina%20de%20Escobar%2C%201%2C%2047001%20Valladolid%2C%20Spain!5e0!3m2!1sen!2ses!4v1678886501234!5m2!1sen!2ses"
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
