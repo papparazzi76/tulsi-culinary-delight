@@ -27,32 +27,32 @@ const GallerySection = () => {
   const galleryImages = [
     {
       src: appetizersImg,
-      alt: "Deliciosos entrantes indios - samosas y pakoras",
+      alt: "Deliciosos entrantes indios en restaurante Tulsi Valladolid - samosas y pakoras tradicionales con especias auténticas",
       title: "Entrantes Tradicionales"
     },
     {
       src: butterChickenImg,
-      alt: "Butter chicken cremoso con arroz basmati",
+      alt: "Butter chicken cremoso del mejor restaurante indio de Valladolid - curry suave con arroz basmati en Tulsi",
       title: "Butter Chicken"
     },
     {
       src: biryaniImg,
-      alt: "Aromático biryani de cordero con especias",
+      alt: "Aromático biryani de cordero en Tulsi Valladolid - cocina india auténtica con especias tradicionales",
       title: "Biryani Especial"
     },
     {
       src: naanImg,
-      alt: "Variedad de panes naan recién horneados",
+      alt: "Panes naan recién horneados en tandoor tradicional - restaurante indio Tulsi Valladolid",
       title: "Panes del Tandoor"
     },
     {
       src: interiorImg,
-      alt: "Interior elegante del restaurante Tulsi",
+      alt: "Interior elegante del restaurante indio Tulsi en Valladolid - ambiente acogedor para cenas románticas",
       title: "Nuestro Ambiente"
     },
     {
       src: appetizersImg,
-      alt: "Platos vegetarianos con especias frescas",
+      alt: "Opciones vegetarianas del restaurante indio Tulsi Valladolid - platos veganos con especias frescas de la India",
       title: "Opciones Vegetarianas"
     }
   ];

@@ -38,7 +38,7 @@ const AboutSection = () => {
           {/* Image */}
           <div className={`lg:w-1/2 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
             <div className="relative">
-              <img src={interiorImg} alt="Interior elegante del restaurante Tulsi" className="rounded-2xl shadow-tulsi w-full h-auto" />
+              <img src={interiorImg} alt="Interior elegante del restaurante indio Tulsi en Valladolid - ambiente tradicional para experiencias culinarias auténticas" className="rounded-2xl shadow-tulsi w-full h-auto" />
               <div className="absolute inset-0 bg-gradient-to-t from-accent/20 to-transparent rounded-2xl"></div>
               
               {/* Floating element */}
@@ -57,20 +57,21 @@ const AboutSection = () => {
             
             <div className="space-y-6 mb-10">
               <p className="text-lg text-foreground leading-relaxed">
-                En <span className="text-accent font-semibold">Tulsi</span>, cada plato cuenta una historia. 
+                En <span className="text-accent font-semibold">Tulsi</span>, el mejor restaurante indio de Valladolid, cada plato cuenta una historia. 
                 Nacimos de la pasión por la auténtica cocina india, combinando recetas tradicionales 
-                con un toque de innovación.
+                con un toque de innovación para crear una experiencia única en Valladolid.
               </p>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Nuestro compromiso es ofrecer una experiencia culinaria inolvidable, utilizando solo 
-                los ingredientes más frescos y las especias más aromáticas, todo en un ambiente que 
-                te transportará al corazón de la India.
+                Nuestro compromiso es ofrecer la mejor cocina india en Valladolid, utilizando solo 
+                los ingredientes más frescos y las especias más aromáticas importadas directamente de la India, 
+                todo en un ambiente que te transportará al corazón del subcontinente.
               </p>
 
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Desde nuestros tandoors tradicionales hasta nuestras salsas preparadas con amor, 
-                cada elemento de Tulsi está diseñado para despertar tus sentidos y crear memorias duraderas.
+                cada elemento de nuestro restaurante indio en Valladolid está diseñado para despertar 
+                tus sentidos y crear memorias duraderas con la auténtica cocina india.
               </p>
             </div>
 

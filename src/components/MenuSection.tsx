@@ -106,8 +106,9 @@ const MenuSection = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            Un viaje de sabores auténticos, preparados con pasión y las mejores especias 
-            traídas directamente desde la India.
+            La mejor carta de cocina india en Valladolid. Un viaje de sabores auténticos, 
+            preparados con pasión y las mejores especias traídas directamente desde la India 
+            para ofrecerte la experiencia gastronómica más auténtica.
           </p>
         </div>
 
