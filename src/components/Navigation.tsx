@@ -30,7 +30,19 @@ const Navigation = () => {
         }`}
       >
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex-1"></div>
+          {/* Left side navigation */}
+          <div className="flex-1 flex justify-start">
+            <nav className="hidden md:flex items-center space-x-8">
+              <button onClick={() => scrollToSection('menu')} className="nav-link">
+                Carta
+              </button>
+              <button onClick={() => scrollToSection('gallery')} className="nav-link">
+                Galería
+              </button>
+            </nav>
+          </div>
+          
+          {/* Center logo */}
           <button 
             onClick={() => scrollToSection('hero')}
             className="hover:scale-105 transition-transform duration-300"
@@ -41,32 +53,27 @@ const Navigation = () => {
               className="h-20 w-auto"
             />
           </button>
-          <div className="flex-1 flex justify-end">
           
-          <nav className="hidden md:flex items-center space-x-8">
-            <button onClick={() => scrollToSection('menu')} className="nav-link">
-              Carta
-            </button>
-            <button onClick={() => scrollToSection('gallery')} className="nav-link">
-              Galería
-            </button>
-            <button onClick={() => scrollToSection('about')} className="nav-link">
-              Nosotros
-            </button>
-            <button onClick={() => scrollToSection('contact')} className="nav-link">
-              Contacto
-            </button>
-          </nav>
-          
-          <a 
-            href="https://www.thefork.es/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-2 btn-tulsi"
-          >
-            Reservar
-            <ExternalLink className="w-4 h-4" />
-          </a>
+          {/* Right side navigation */}
+          <div className="flex-1 flex justify-end items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-8">
+              <button onClick={() => scrollToSection('about')} className="nav-link">
+                Nosotros
+              </button>
+              <button onClick={() => scrollToSection('contact')} className="nav-link">
+                Contacto
+              </button>
+            </nav>
+            
+            <a 
+              href="https://www.thefork.es/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center gap-2 btn-tulsi"
+            >
+              Reservar
+              <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
           
           <button 
