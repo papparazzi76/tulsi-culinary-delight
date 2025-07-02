@@ -32,9 +32,13 @@ const Navigation = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <button 
             onClick={() => scrollToSection('hero')}
-            className="text-3xl font-playfair font-bold text-accent tracking-wider hover:scale-105 transition-transform duration-300"
+            className="hover:scale-105 transition-transform duration-300"
           >
-            TULSI
+            <img 
+              src="/lovable-uploads/5aa953a7-6eb1-4763-9cbb-6075a6ebac8e.png" 
+              alt="Tulsi Logo" 
+              className="h-12 w-auto"
+            />
           </button>
           
           <nav className="hidden md:flex items-center space-x-8">
