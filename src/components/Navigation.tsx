@@ -30,6 +30,7 @@ const Navigation = () => {
         }`}
       >
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex-1"></div>
           <button 
             onClick={() => scrollToSection('hero')}
             className="hover:scale-105 transition-transform duration-300"
@@ -37,9 +38,10 @@ const Navigation = () => {
             <img 
               src="/lovable-uploads/5aa953a7-6eb1-4763-9cbb-6075a6ebac8e.png" 
               alt="Tulsi Logo" 
-              className="h-12 w-auto"
+              className="h-20 w-auto"
             />
           </button>
+          <div className="flex-1 flex justify-end">
           
           <nav className="hidden md:flex items-center space-x-8">
             <button onClick={() => scrollToSection('menu')} className="nav-link">
@@ -65,6 +67,7 @@ const Navigation = () => {
             Reservar
             <ExternalLink className="w-4 h-4" />
           </a>
+          </div>
           
           <button 
             onClick={() => setIsMobileMenuOpen(true)}
