@@ -24,20 +24,26 @@ const ContactSection = () => {
     {
       icon: <MapPin className="w-6 h-6" />,
       title: "Dirección",
-      content: "Calle Ficticia 123, 47001 Valladolid, España",
-      link: "https://maps.google.com/?q=Plaza+Mayor+Valladolid"
+      content: "Calle Marina Escobar 1, Valladolid",
+      link: "https://maps.google.com/?q=Calle+Marina+Escobar+1+Valladolid"
     },
     {
       icon: <Phone className="w-6 h-6" />,
-      title: "Teléfono",
-      content: "+34 983 000 000",
-      link: "tel:+34983000000"
+      title: "Teléfono Móvil",
+      content: "+34 645 94 62 02",
+      link: "tel:+34645946202"
+    },
+    {
+      icon: <Phone className="w-6 h-6" />,
+      title: "Teléfono Fijo",
+      content: "+34 983 84 46 07",
+      link: "tel:+34983844607"
     },
     {
       icon: <Mail className="w-6 h-6" />,
       title: "Email",
-      content: "reservas@tulsindia.com",
-      link: "mailto:reservas@tulsindia.com"
+      content: "reservas@tulsiindianvalladolid.com",
+      link: "mailto:reservas@tulsiindianvalladolid.com"
     }
   ];
 
@@ -152,7 +158,7 @@ const ContactSection = () => {
           >
             <div className="h-96 lg:h-full min-h-[500px] rounded-2xl overflow-hidden shadow-tulsi border-2 border-accent/20">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2980.133284175338!2d-4.72854268456565!3d41.65203397924018!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd4711e6335918a1%3A0x113ca2d66c06584!2sPlaza%20Mayor%2C%2047001%20Valladolid!5e0!3m2!1ses!2ses!4v1678886501234!5m2!1ses!2ses" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2980.133284175338!2d-4.723611!3d41.652779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDM5JzEwLjAiTiA0wrA0MycyNS4wIlc!5e0!3m2!1ses!2ses!4v1678886501234!5m2!1ses!2ses" 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 

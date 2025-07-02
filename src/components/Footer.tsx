@@ -31,15 +31,19 @@ const Footer = () => {
   const contactInfo = [
     {
       icon: <MapPin className="w-4 h-4" />,
-      text: "Calle Ficticia 123, Valladolid"
+      text: "Calle Marina Escobar 1, Valladolid"
     },
     {
       icon: <Phone className="w-4 h-4" />,
-      text: "+34 983 000 000"
+      text: "+34 645 94 62 02"
+    },
+    {
+      icon: <Phone className="w-4 h-4" />,
+      text: "+34 983 84 46 07"
     },
     {
       icon: <Mail className="w-4 h-4" />,
-      text: "reservas@tulsindia.com"
+      text: "reservas@tulsiindianvalladolid.com"
     }
   ];
 
