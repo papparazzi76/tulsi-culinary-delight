@@ -56,9 +56,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <h3 className="text-3xl font-playfair font-bold text-accent mb-6">
-              TULSI
-            </h3>
+            <img 
+              src="/lovable-uploads/f11a30f4-37e5-4015-a295-9c56784ceea3.png" 
+              alt="Tulsi Indian Restaurant Logo" 
+              className="h-12 w-auto mb-6"
+            />
             <p className="text-muted-foreground leading-relaxed mb-6">
               El alma de la cocina india en el corazón de Valladolid. 
               Sabores auténticos que despiertan todos tus sentidos.
