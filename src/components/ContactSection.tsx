@@ -49,8 +49,7 @@ const ContactSection = () => {
   ];
 
   const schedule = [
-    { days: "Lunes a Jueves", hours: "13:00 - 16:00 y 20:00 - 23:30" },
-    { days: "Viernes a Domingo", hours: "13:00 - 16:30 y 20:00 - 00:00" }
+    { days: "Lunes a Domingo", hours: "13:00-16:00 y 20:00-23:30" }
   ];
 
   return (

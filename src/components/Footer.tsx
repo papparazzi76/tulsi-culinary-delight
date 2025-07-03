@@ -142,14 +142,9 @@ const Footer = () => {
             </h4>
             <div className="space-y-3">
               <div>
-                <p className="text-foreground font-medium">Lunes - Jueves</p>
+                <p className="text-foreground font-medium">Lunes a Domingo</p>
                 <p className="text-muted-foreground text-sm">13:00 - 16:00</p>
                 <p className="text-muted-foreground text-sm">20:00 - 23:30</p>
-              </div>
-              <div>
-                <p className="text-foreground font-medium">Viernes - Domingo</p>
-                <p className="text-muted-foreground text-sm">13:00 - 16:30</p>
-                <p className="text-muted-foreground text-sm">20:00 - 00:00</p>
               </div>
             </div>
           </div>

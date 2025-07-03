@@ -30,7 +30,7 @@ const TakeawaySection = () => {
     {
       icon: Clock,
       title: 'Horario de Recogida',
-      description: 'Lunes a Jueves: 13:00-16:00 y 20:00-23:30\nViernes a Domingo: 13:00-16:30 y 20:00-00:00'
+      description: 'Lunes a Domingo: 13:00-16:00 y 20:00-23:30'
     },
     {
       icon: Phone,
