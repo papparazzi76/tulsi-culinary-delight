@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
+import ReservationWidget from './ReservationWidget';
 
 const ContactSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -136,17 +137,9 @@ const ContactSection = () => {
               </div>
             </div>
 
-            {/* Reservation Button */}
+            {/* Reservation Widget */}
             <div className="pt-6">
-              <a 
-                href="https://www.thefork.es/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="btn-tulsi w-full flex items-center justify-center gap-3 text-lg py-4"
-              >
-                <ExternalLink className="w-5 h-5" />
-                Reservar Online
-              </a>
+              <ReservationWidget />
             </div>
           </div>
 
