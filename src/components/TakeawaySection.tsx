@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Phone, Clock, MapPin } from 'lucide-react';
+import { ShoppingBag, Phone, Clock, MapPin, Store } from 'lucide-react';
+import TakeawayMenu from './TakeawayMenu';
+import CartModal from './CartModal';
+import ContestModal from './ContestModal';
 
 const TakeawaySection = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const [showContest, setShowContest] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -101,9 +107,16 @@ const TakeawaySection = () => {
               auténticas de la India. Tiempo de preparación: 15-25 minutos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => setShowMenu(true)}
+                className="btn-tulsi inline-flex items-center justify-center gap-3"
+              >
+                <Store className="w-5 h-5" />
+                Pedir Online
+              </button>
               <a 
                 href="tel:+34645946202" 
-                className="btn-tulsi inline-flex items-center justify-center gap-3"
+                className="btn-tulsi-outline inline-flex items-center justify-center gap-3"
               >
                 <Phone className="w-5 h-5" />
                 645 946 202
@@ -118,6 +131,44 @@ const TakeawaySection = () => {
             </div>
           </div>
         </div>
+
+        {/* Menu Modal */}
+        {showMenu && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto">
+            <div className="min-h-screen py-8">
+              <div className="container mx-auto px-6">
+                <div className="bg-background rounded-xl p-8 max-w-6xl mx-auto relative">
+                  <button
+                    onClick={() => setShowMenu(false)}
+                    className="absolute top-4 right-4 text-muted-foreground hover:text-accent transition-colors z-10"
+                    aria-label="Cerrar menú"
+                  >
+                    <span className="text-2xl">×</span>
+                  </button>
+                  
+                  <TakeawayMenu onOpenCart={() => setShowCart(true)} />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cart Modal */}
+        <CartModal
+          isOpen={showCart}
+          onClose={() => setShowCart(false)}
+          onShowContest={() => setShowContest(true)}
+        />
+
+        {/* Contest Modal */}
+        <ContestModal
+          isOpen={showContest}
+          onClose={() => setShowContest(false)}
+          onProceedToPayment={() => {
+            setShowContest(false);
+            setShowCart(true);
+          }}
+        />
       </div>
     </section>
   );

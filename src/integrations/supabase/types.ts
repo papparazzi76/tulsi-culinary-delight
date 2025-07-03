@@ -9,13 +9,262 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          menu_item_id: string
+          quantity: number
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          menu_item_id: string
+          quantity?: number
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          menu_item_id?: string
+          quantity?: number
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contest_entries: {
+        Row: {
+          created_at: string
+          entry_date: string
+          id: string
+          is_winner: boolean
+          subscriber_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          is_winner?: boolean
+          subscriber_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          is_winner?: boolean
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contest_entries_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_items: {
+        Row: {
+          available: boolean
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          available?: boolean
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          available?: boolean
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          contest_entry_date: string | null
+          created_at: string
+          eligible_for_contest: boolean
+          email: string
+          follows_instagram: boolean
+          id: string
+          name: string
+          subscribed_to_newsletter: boolean
+          updated_at: string
+        }
+        Insert: {
+          contest_entry_date?: string | null
+          created_at?: string
+          eligible_for_contest?: boolean
+          email: string
+          follows_instagram?: boolean
+          id?: string
+          name: string
+          subscribed_to_newsletter?: boolean
+          updated_at?: string
+        }
+        Update: {
+          contest_entry_date?: string | null
+          created_at?: string
+          eligible_for_contest?: boolean
+          email?: string
+          follows_instagram?: boolean
+          id?: string
+          name?: string
+          subscribed_to_newsletter?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          menu_item_id: string
+          order_id: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          menu_item_id: string
+          order_id: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          menu_item_id?: string
+          order_id?: string
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          delivery_address: string | null
+          delivery_type: string
+          discount_amount: number
+          id: string
+          order_number: string
+          payment_status: string
+          session_id: string | null
+          status: string
+          stripe_session_id: string | null
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          delivery_address?: string | null
+          delivery_type: string
+          discount_amount?: number
+          id?: string
+          order_number: string
+          payment_status?: string
+          session_id?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          subtotal: number
+          tax_amount?: number
+          total_amount: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          delivery_address?: string | null
+          delivery_type?: string
+          discount_amount?: number
+          id?: string
+          order_number?: string
+          payment_status?: string
+          session_id?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_order_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
