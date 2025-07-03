@@ -168,6 +168,13 @@
     box-shadow: var(--shadow-card);
   }
   
+  /* Interactive menu card with hover effects */
+  .menu-card-interactive {
+    @apply relative bg-card border border-border rounded-xl p-6 transition-all duration-300;
+    @apply hover:shadow-lg hover:scale-105 hover:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent;
+    box-shadow: var(--shadow-card);
+  }
+  
   /* Parallax and hero effects */
   .parallax-bg {
     background-attachment: fixed;
