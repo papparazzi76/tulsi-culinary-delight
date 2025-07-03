@@ -65,15 +65,12 @@ const Navigation = () => {
               </button>
             </nav>
             
-            <a 
-              href="https://www.thefork.es/" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               className="hidden md:flex items-center gap-2 btn-tulsi"
             >
               Reservar
-              <ExternalLink className="w-4 h-4" />
-            </a>
+            </button>
           </div>
           
           <button 
@@ -120,16 +117,15 @@ const Navigation = () => {
             Contacto
           </button>
           
-          <a 
-            href="https://www.thefork.es/" 
-            target="_blank" 
-            rel="noopener noreferrer"
+          <button 
+            onClick={() => {
+              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              setIsMobileMenuOpen(false);
+            }}
             className="btn-tulsi mt-4 flex items-center gap-2"
-            onClick={() => setIsMobileMenuOpen(false)}
           >
             Reservar Mesa
-            <ExternalLink className="w-4 h-4" />
-          </a>
+          </button>
         </div>
       )}
     </>

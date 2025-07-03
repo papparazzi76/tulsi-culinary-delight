@@ -52,15 +52,12 @@ const HeroSection = () => {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <a 
-              href="https://www.thefork.es/" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               className="btn-tulsi flex items-center gap-2 text-lg px-10 py-4"
             >
               Reservar Mesa
-              <ExternalLink className="w-5 h-5" />
-            </a>
+            </button>
             
             <button 
               onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
