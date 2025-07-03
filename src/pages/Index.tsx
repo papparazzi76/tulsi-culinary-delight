@@ -7,6 +7,7 @@ import GallerySection from '@/components/GallerySection';
 import AboutSection from '@/components/AboutSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
+import AnnouncementPopup from '@/components/AnnouncementPopup';
 
 const Index = () => {
   return (
@@ -20,6 +21,7 @@ const Index = () => {
       <AboutSection />
       <ContactSection />
       <Footer />
+      <AnnouncementPopup />
     </div>
   );
 };
