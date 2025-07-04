@@ -153,31 +153,42 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
           {cartItems.length > 0 && (
             <>
               {/* Delivery type */}
-              <div className="space-y-3">
-                <Label className="text-accent font-semibold">Tipo de entrega</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="deliveryType"
-                      value="pickup"
-                      checked={deliveryType === 'pickup'}
-                      onChange={(e) => setDeliveryType(e.target.value as 'pickup')}
-                      className="accent-accent"
-                    />
-                    <span>Recogida en restaurante (20% descuento)</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="deliveryType"
-                      value="delivery"
-                      checked={deliveryType === 'delivery'}
-                      onChange={(e) => setDeliveryType(e.target.value as 'delivery')}
-                      className="accent-accent"
-                    />
-                    <span>Entrega a domicilio (gratuita)</span>
-                  </label>
+              <div className="space-y-4">
+                <Label className="text-accent font-semibold text-lg">Selecciona el tipo de entrega</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button
+                    variant={deliveryType === 'pickup' ? 'default' : 'outline'}
+                    onClick={() => setDeliveryType('pickup')}
+                    className={`h-auto p-6 flex-col gap-2 ${
+                      deliveryType === 'pickup' 
+                        ? 'bg-accent text-accent-foreground' 
+                        : 'hover:bg-accent/10'
+                    }`}
+                  >
+                    <div className="text-lg font-bold">Recoger en Local</div>
+                    <div className="text-sm opacity-80">20% de Descuento</div>
+                    <div className="text-xs text-center">
+                      Calle Marina Escobar, 1<br />
+                      47001 Valladolid
+                    </div>
+                  </Button>
+                  
+                  <Button
+                    variant={deliveryType === 'delivery' ? 'default' : 'outline'}
+                    onClick={() => setDeliveryType('delivery')}
+                    className={`h-auto p-6 flex-col gap-2 ${
+                      deliveryType === 'delivery' 
+                        ? 'bg-accent text-accent-foreground' 
+                        : 'hover:bg-accent/10'
+                    }`}
+                  >
+                    <div className="text-lg font-bold">Enviar a Domicilio</div>
+                    <div className="text-sm opacity-80">Envío Gratuito</div>
+                    <div className="text-xs text-center">
+                      Entrega en tu casa<br />
+                      sin coste adicional
+                    </div>
+                  </Button>
                 </div>
               </div>
 
