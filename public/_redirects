@@ -1,0 +1,9 @@
+# public/_redirects
+
+# This rule tells hosting services (like Netlify, Vercel, etc.)
+# how to handle Single-Page Application (SPA) routing.
+# It redirects all paths to the root index.html file,
+# allowing React Router to take over and handle the routing on the client side.
+# The "200" status code means it's a rewrite, not a permanent redirect.
+
+/* /index.html    200
