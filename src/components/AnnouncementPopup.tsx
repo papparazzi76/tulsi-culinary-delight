@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
 const AnnouncementPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -14,53 +13,45 @@ const AnnouncementPopup = () => {
     name: '',
     email: '',
     subscribedToNewsletter: false,
-    followsInstagram: false,
+    followsInstagram: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   useEffect(() => {
     // Show popup after a short delay when component mounts
     const timer = setTimeout(() => {
       setIsOpen(true);
     }, 1000);
-
     return () => clearTimeout(timer);
   }, []);
-
   const closePopup = () => {
     setIsOpen(false);
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!formData.name || !formData.email) {
       toast.error('Por favor, completa todos los campos obligatorios');
       return;
     }
-
     if (!formData.subscribedToNewsletter || !formData.followsInstagram) {
       toast.error('Debes aceptar ambas condiciones para participar en el sorteo');
       return;
     }
-
     setIsSubmitting(true);
-    
     try {
-      const { data, error } = await supabase.functions.invoke('register-contest', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('register-contest', {
         body: {
           name: formData.name,
           email: formData.email,
           subscribedToNewsletter: formData.subscribedToNewsletter,
-          followsInstagram: formData.followsInstagram,
-        },
+          followsInstagram: formData.followsInstagram
+        }
       });
-
       if (error) throw error;
-
       toast.success(data.message);
       setIsOpen(false);
-      
     } catch (error) {
       console.error('Error registering for contest:', error);
       toast.error('Error al registrarse en el sorteo');
@@ -68,46 +59,23 @@ const AnnouncementPopup = () => {
       setIsSubmitting(false);
     }
   };
-
   if (!isOpen) return null;
-
-  return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-      onClick={closePopup}
-    >
-      <div 
-        className="bg-card border border-accent/30 rounded-xl p-8 mx-4 max-w-md w-full text-center shadow-tulsi"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-labelledby="announcement-title"
-        aria-describedby="announcement-description"
-      >
-        <button
-          onClick={closePopup}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-accent transition-colors"
-          aria-label="Cerrar anuncio"
-        >
+  return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={closePopup}>
+      <div className="bg-card border border-accent/30 rounded-xl p-8 mx-4 max-w-md w-full text-center shadow-tulsi" onClick={e => e.stopPropagation()} role="dialog" aria-labelledby="announcement-title" aria-describedby="announcement-description">
+        <button onClick={closePopup} className="absolute top-4 right-4 text-muted-foreground hover:text-accent transition-colors" aria-label="Cerrar anuncio">
           <X className="w-5 h-5" />
         </button>
         
-        {!showForm ? (
-          <div className="mb-4">
+        {!showForm ? <div className="mb-4">
             <div className="w-16 h-16 bg-gradient-accent rounded-full mx-auto mb-4 flex items-center justify-center">
-              <span className="text-2xl font-bold text-accent-foreground">🍛</span>
+              <span className="text-2xl font-bold text-accent-foreground">Tulsi</span>
             </div>
             
-            <h2 
-              id="announcement-title"
-              className="text-2xl font-playfair font-bold text-accent mb-2"
-            >
+            <h2 id="announcement-title" className="text-2xl font-playfair font-bold text-accent mb-2">
               Próxima Apertura
             </h2>
             
-            <p 
-              id="announcement-description"
-              className="text-xl text-foreground font-semibold mb-4"
-            >
+            <p id="announcement-description" className="text-xl text-foreground font-semibold mb-4">
               Agosto 2025
             </p>
             
@@ -116,23 +84,14 @@ const AnnouncementPopup = () => {
             </p>
 
             <div className="space-y-3">
-              <Button
-                onClick={() => setShowForm(true)}
-                className="btn-tulsi w-full"
-              >
+              <Button onClick={() => setShowForm(true)} className="btn-tulsi w-full">
                 🎁 Participar en el Sorteo
               </Button>
-              <Button
-                onClick={closePopup}
-                variant="outline"
-                className="w-full"
-              >
+              <Button onClick={closePopup} variant="outline" className="w-full">
                 Cerrar
               </Button>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
+          </div> : <div className="space-y-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-accent rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🎁</span>
@@ -150,67 +109,41 @@ const AnnouncementPopup = () => {
                 <Label htmlFor="contest-name" className="text-accent">
                   Nombre completo *
                 </Label>
-                <Input
-                  id="contest-name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Tu nombre completo"
-                  required
-                />
+                <Input id="contest-name" value={formData.name} onChange={e => setFormData({
+              ...formData,
+              name: e.target.value
+            })} placeholder="Tu nombre completo" required />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="contest-email" className="text-accent">
                   Email *
                 </Label>
-                <Input
-                  id="contest-email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="tu@email.com"
-                  required
-                />
+                <Input id="contest-email" type="email" value={formData.email} onChange={e => setFormData({
+              ...formData,
+              email: e.target.value
+            })} placeholder="tu@email.com" required />
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="newsletter"
-                    checked={formData.subscribedToNewsletter}
-                    onCheckedChange={(checked) => 
-                      setFormData({ ...formData, subscribedToNewsletter: !!checked })
-                    }
-                    required
-                  />
-                  <Label 
-                    htmlFor="newsletter" 
-                    className="text-sm leading-5 cursor-pointer"
-                  >
+                  <Checkbox id="newsletter" checked={formData.subscribedToNewsletter} onCheckedChange={checked => setFormData({
+                ...formData,
+                subscribedToNewsletter: !!checked
+              })} required />
+                  <Label htmlFor="newsletter" className="text-sm leading-5 cursor-pointer">
                     Quiero suscribirme a la newsletter para recibir noticias y promociones *
                   </Label>
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="instagram"
-                    checked={formData.followsInstagram}
-                    onCheckedChange={(checked) => 
-                      setFormData({ ...formData, followsInstagram: !!checked })
-                    }
-                    required
-                  />
-                  <Label 
-                    htmlFor="instagram" 
-                    className="text-sm leading-5 cursor-pointer"
-                  >
+                  <Checkbox id="instagram" checked={formData.followsInstagram} onCheckedChange={checked => setFormData({
+                ...formData,
+                followsInstagram: !!checked
+              })} required />
+                  <Label htmlFor="instagram" className="text-sm leading-5 cursor-pointer">
                     Ya sigo{' '}
-                    <a 
-                      href="https://instagram.com/tulsirestaurante" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-accent hover:underline"
-                    >
+                    <a href="https://instagram.com/tulsirestaurante" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
                       @TulsiRestaurante
                     </a>
                     {' '}en Instagram *
@@ -219,19 +152,10 @@ const AnnouncementPopup = () => {
               </div>
 
               <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowForm(false)}
-                  className="flex-1"
-                >
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)} className="flex-1">
                   Volver
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !formData.subscribedToNewsletter || !formData.followsInstagram}
-                  className="flex-1 btn-tulsi"
-                >
+                <Button type="submit" disabled={isSubmitting || !formData.subscribedToNewsletter || !formData.followsInstagram} className="flex-1 btn-tulsi">
                   {isSubmitting ? 'Registrando...' : 'Participar'}
                 </Button>
               </div>
@@ -240,11 +164,8 @@ const AnnouncementPopup = () => {
             <p className="text-xs text-muted-foreground text-center">
               * Campos obligatorios para participar en el sorteo
             </p>
-          </div>
-        )}
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AnnouncementPopup;
