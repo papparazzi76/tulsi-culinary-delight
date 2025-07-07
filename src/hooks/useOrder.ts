@@ -70,7 +70,10 @@ export const useOrder = (tableId: string | null) => {
             status: 'pending',
             subtotal: 0,
             total_amount: 0,
-            order_number: `TUL-${Date.now()}`
+            order_number: `TUL-${Date.now()}`,
+            customer_name: 'Mesa',
+            customer_email: 'mesa@tulsi.es',
+            delivery_type: 'dine_in'
           })
           .select('id') // Select only the ID to start
           .single();
@@ -141,7 +144,17 @@ export const useOrder = (tableId: string | null) => {
       }
       setLoading(true);
       try {
-          const { error } = await supabase.from('order_items').update({ quantity: newQuantity }).eq('id', itemId);
+          const orderItem = order.order_items.find(item => item.id === itemId);
+          if (!orderItem) return;
+          
+          const newTotalPrice = orderItem.menu_items.price * newQuantity;
+          const { error } = await supabase
+            .from('order_items')
+            .update({ 
+              quantity: newQuantity,
+              total_price: newTotalPrice 
+            })
+            .eq('id', itemId);
           if (error) throw error;
           await fetchOrder();
       } catch(error: any) {

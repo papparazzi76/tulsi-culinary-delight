@@ -209,10 +209,12 @@ export type Database = {
           status: string
           stripe_session_id: string | null
           subtotal: number
+          table_id: string | null
           tax_amount: number
           total_amount: number
           updated_at: string
           user_id: string | null
+          waiter_id: string | null
         }
         Insert: {
           created_at?: string
@@ -229,10 +231,12 @@ export type Database = {
           status?: string
           stripe_session_id?: string | null
           subtotal: number
+          table_id?: string | null
           tax_amount?: number
           total_amount: number
           updated_at?: string
           user_id?: string | null
+          waiter_id?: string | null
         }
         Update: {
           created_at?: string
@@ -249,12 +253,22 @@ export type Database = {
           status?: string
           stripe_session_id?: string | null
           subtotal?: number
+          table_id?: string | null
           tax_amount?: number
           total_amount?: number
           updated_at?: string
           user_id?: string | null
+          waiter_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "tables"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -318,6 +332,36 @@ export type Database = {
           reservation_time?: string
           status?: string
           table_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tables: {
+        Row: {
+          capacity: number
+          created_at: string
+          current_order_id: string | null
+          id: string
+          status: string
+          table_number: number
+          updated_at: string
+        }
+        Insert: {
+          capacity: number
+          created_at?: string
+          current_order_id?: string | null
+          id?: string
+          status?: string
+          table_number: number
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          current_order_id?: string | null
+          id?: string
+          status?: string
+          table_number?: number
           updated_at?: string
         }
         Relationships: []

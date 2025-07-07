@@ -41,7 +41,7 @@ export default function TableMapView() {
       toast.error('Error al cargar las mesas.');
       console.error(error);
     } else {
-      setTables(data);
+      setTables(data as Table[]);
     }
     setLoading(false);
   };

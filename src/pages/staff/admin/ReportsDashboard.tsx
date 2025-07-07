@@ -10,14 +10,14 @@ import { es } from 'date-fns/locale';
 import { Calendar as CalendarIcon, TrendingUp, ShoppingCart, Euro } from 'lucide-react';
 
 export interface ReportData {
-  totalSales: number;
-  totalOrders: number;
-  topItems: { name: string; total_sold: number }[];
+  total_revenue: number;
+  total_orders: number;
+  average_order_value: number;
 }
 
 export default function ReportsDashboard() {
   const { reportData, loading, fetchSalesReport } = useAdmin();
-  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: new Date(new Date().setDate(new Date().getDate() - 30)),
     to: new Date(),
   });
@@ -48,7 +48,11 @@ export default function ReportsDashboard() {
               mode="range"
               defaultMonth={dateRange.from}
               selected={dateRange}
-              onSelect={setDateRange}
+              onSelect={(range) => {
+                if (range?.from && range?.to) {
+                  setDateRange({ from: range.from, to: range.to });
+                }
+              }}
               numberOfMonths={2}
             />
           </PopoverContent>
@@ -66,7 +70,7 @@ export default function ReportsDashboard() {
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">€{reportData.totalSales.toFixed(2)}</div>
+                <div className="text-2xl font-bold">€{reportData.total_revenue?.toFixed(2) || '0.00'}</div>
               </CardContent>
             </Card>
             <Card>
@@ -75,7 +79,7 @@ export default function ReportsDashboard() {
                 <ShoppingCart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+{reportData.totalOrders}</div>
+                <div className="text-2xl font-bold">{reportData.total_orders || 0}</div>
               </CardContent>
             </Card>
              <Card>
@@ -84,9 +88,7 @@ export default function ReportsDashboard() {
                 <Euro className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                    €{reportData.totalOrders > 0 ? (reportData.totalSales / reportData.totalOrders).toFixed(2) : '0.00'}
-                </div>
+                 <div className="text-2xl font-bold">€{reportData.average_order_value?.toFixed(2) || '0.00'}</div>
               </CardContent>
             </Card>
           </div>
@@ -95,14 +97,12 @@ export default function ReportsDashboard() {
               <CardTitle>Platos Más Populares</CardTitle>
             </CardHeader>
             <CardContent>
-                {reportData.topItems.length > 0 ? (
+                {reportData.total_orders > 0 ? (
                     <ul className="space-y-2">
-                        {reportData.topItems.map(item => (
-                            <li key={item.name} className="flex justify-between">
-                                <span>{item.name}</span>
-                                <span className="font-bold">{item.total_sold} vendidos</span>
-                            </li>
-                        ))}
+                        <li className="flex justify-between">
+                            <span>Datos de platos populares</span>
+                            <span className="font-bold">Próximamente disponible</span>
+                        </li>
                     </ul>
                 ) : (
                     <p className="text-muted-foreground">No hay datos de ventas para este período.</p>

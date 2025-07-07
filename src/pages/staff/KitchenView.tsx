@@ -98,7 +98,7 @@ export default function KitchenView() {
       toast.error('Error al cargar las comandas.');
       console.error(error);
     } else {
-      setOrders(data as Order[]);
+      setOrders(data as unknown as Order[]);
     }
     setLoading(false);
   };
