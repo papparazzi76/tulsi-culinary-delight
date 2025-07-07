@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -63,6 +64,9 @@ const Navigation = () => {
               <button onClick={() => scrollToSection('contact')} className="nav-link">
                 Contacto
               </button>
+              <Link to="/staff/login" className="nav-link text-xs opacity-60 hover:opacity-100">
+                Staff
+              </Link>
             </nav>
             
             <button 
