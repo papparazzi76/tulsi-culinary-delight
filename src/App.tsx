@@ -14,7 +14,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import StaffLogin from "./pages/staff/StaffLogin";
 import StaffLayout from "./pages/staff/StaffLayout";
-import TableMapView from "./pages/staff/TableMapView";
+import TableMapView from "./pages/staff/TabMapView";
 import KitchenView from "./pages/staff/KitchenView";
 import ReservationManagement from "./pages/staff/admin/ReservationManagement";
 import AdminDashboard from "./pages/staff/admin/AdminDashboard";

@@ -33,6 +33,12 @@ export interface Reservation {
     table_id: string | null;
 }
 
+export interface ReportData {
+  total_orders: number;
+  total_revenue: number;
+  average_order_value: number;
+}
+
 export const useAdmin = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -43,12 +49,14 @@ export const useAdmin = () => {
   const fetchProfiles = useCallback(async () => {
     setLoading(true);
     try {
-      // Supabase returns the 'users' table data as an object, not an array if it's a one-to-one relationship
       const { data, error } = await supabase
         .from('profiles')
-        .select(`id, full_name, role, users ( email )`);
+        .select('id, full_name, role');
       if (error) throw error;
-      setProfiles(data as Profile[]);
+      setProfiles(data.map(profile => ({
+        ...profile,
+        users: null // Since we don't have email access from auth.users
+      })) as Profile[]);
     } catch (error: any) {
       toast.error('Error al cargar los perfiles: ' + error.message);
     } finally {
@@ -78,7 +86,7 @@ export const useAdmin = () => {
             .in('status', ['pending', 'confirmed'])
             .order('reservation_time', { ascending: true });
         if (error) throw error;
-        setReservations(data);
+        setReservations(data as Reservation[]);
     } catch (error: any) {
         toast.error('Error al cargar las reservas: ' + error.message);
     } finally {
@@ -94,7 +102,7 @@ export const useAdmin = () => {
             end_date: endDate.toISOString().split('T')[0],
         });
         if (error) throw error;
-        setReportData(data);
+        setReportData(data?.[0] || null);
     } catch (error: any) {
         toast.error('Error al generar el reporte: ' + error.message);
     } finally {
