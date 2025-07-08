@@ -43,7 +43,7 @@ const Footer = () => {
     },
     {
       icon: <Mail className="w-4 h-4" />,
-      text: "reservas@tulsiindianvalladolid.com"
+      text: "tulsindian@gmail.com"
     }
   ];
 
