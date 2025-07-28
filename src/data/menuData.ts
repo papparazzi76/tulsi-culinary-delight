@@ -1,5 +1,4 @@
 import { MenuCategory } from './types';
-import { especiales } from './especiales';
 import { entrantes } from './entrantes';
 import { principales } from './principales';
 import { postres } from './postres';
@@ -173,7 +172,6 @@ const panes: MenuCategory = {
 };
 
 export const menuData: Record<string, MenuCategory> = {
-  especiales,
   entrantes,
   principales,
   biryani,
