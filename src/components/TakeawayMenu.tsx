@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Plus, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart, MenuItemType } from '@/hooks/useCart';
 import { toast } from 'sonner';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface TakeawayMenuProps {
   onOpenCart: () => void;
@@ -11,10 +12,9 @@ interface TakeawayMenuProps {
 const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
   const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const { addToCart, getCartCount } = useCart();
+  const { addToCart, updateQuantity, cartItems, getCartCount } = useCart();
 
-  const categories = ['all', 'Entrantes', 'Principales', 'Biryani', 'Vegetales', 'Acompañamientos', 'Postres', 'Bebidas'];
+  const categories = ['Entrantes', 'Principales', 'Biryani', 'Vegetales', 'Acompañamientos', 'Postres', 'Bebidas'];
 
   useEffect(() => {
     loadMenuItems();
@@ -38,12 +38,13 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
     }
   };
 
-  const filteredItems = selectedCategory === 'all' 
-    ? menuItems 
-    : menuItems.filter(item => item.category === selectedCategory);
+  const getItemsForCategory = (category: string) => {
+    return menuItems.filter(item => item.category === category);
+  };
 
-  const handleAddToCart = (item: MenuItemType) => {
-    addToCart(item, 1);
+  const getItemQuantity = (itemId: string) => {
+    const item = cartItems.find(cartItem => cartItem.id === itemId);
+    return item ? item.quantity : 0;
   };
 
   if (isLoading) {
@@ -75,77 +76,47 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
         </button>
       </div>
 
-      {/* Category filters */}
-      <div className="flex flex-wrap gap-3">
+      {/* Category Cards */}
+      <Accordion type="single" collapsible className="w-full">
         {categories.map((category) => (
-          <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-              selectedCategory === category
-                ? 'bg-accent text-accent-foreground'
-                : 'bg-secondary text-foreground hover:bg-accent/20'
-            }`}
-          >
-            {category === 'all' ? 'Todos' : category}
-          </button>
-        ))}
-      </div>
-
-      {/* Menu items grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((item) => (
-          <div
-            key={item.id}
-            className="menu-card group"
-          >
-            {/* Image placeholder */}
-            <div className="w-full h-48 bg-secondary rounded-lg mb-4 flex items-center justify-center">
-              {item.image_url ? (
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              ) : (
-                <span className="text-4xl opacity-50">🍛</span>
-              )}
-            </div>
-
-            {/* Item details */}
-            <div className="space-y-3">
-              <div className="flex justify-between items-start">
-                <h4 className="text-xl font-playfair font-bold text-accent">
-                  {item.name}
-                </h4>
-                <span className="text-lg font-bold text-accent">
-                  €{item.price.toFixed(2)}
-                </span>
+          <AccordionItem value={category} key={category}>
+            <AccordionTrigger className="w-full">
+              <div className="flex items-center gap-4">
+                <div className="w-24 h-24 bg-secondary rounded-lg flex items-center justify-center">
+                  <span className="text-4xl opacity-50">🍛</span>
+                </div>
+                <h4 className="text-2xl font-playfair font-bold text-accent">{category}</h4>
               </div>
-
-              <p className="text-muted-foreground text-sm line-clamp-2">
-                {item.description}
-              </p>
-
-              <button
-                onClick={() => handleAddToCart(item)}
-                className="btn-tulsi w-full flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Añadir al carrito
-              </button>
-            </div>
-          </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-4">
+                {getItemsForCategory(category).map((item) => (
+                  <div key={item.id} className="flex items-center gap-4 p-4 bg-secondary rounded-lg">
+                    <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                      <span className="text-2xl opacity-50">🍽️</span>
+                    </div>
+                    <div className="flex-1">
+                      <h5 className="font-semibold">{item.name}</h5>
+                      <p className="text-sm text-muted-foreground">€{item.price.toFixed(2)}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button size="icon" variant="ghost" onClick={() => updateQuantity(item.id, getItemQuantity(item.id) - 1)}>
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="font-bold text-lg">{getItemQuantity(item.id)}</span>
+                      <Button size="icon" variant="ghost" onClick={() => addToCart(item, 1)}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Button onClick={() => addToCart(item, 1)}>Añadir al pedido</Button>
+                    <Button onClick={onOpenCart}>Finalizar Pedido</Button>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
-
-      {filteredItems.length === 0 && (
-        <div className="text-center py-20">
-          <p className="text-muted-foreground text-lg">
-            No hay platos disponibles en esta categoría
-          </p>
-        </div>
-      )}
+      </Accordion>
     </div>
   );
 };
