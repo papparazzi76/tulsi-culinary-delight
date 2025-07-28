@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { menuData } from '@/data/menuData';
+import { degustacion } from '@/data/degustacion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
 
@@ -39,7 +40,9 @@ const MenuSection = () => {
     const element = document.getElementById('menu');
     if (element) observer.observe(element);
 
-    return () => observer.disconnect();
+    return () => {
+      if (element) observer.unobserve(element);
+    };
   }, []);
 
   const tabs = [
@@ -76,26 +79,16 @@ const MenuSection = () => {
           }}
           aria-label={`Ver detalles de ${item.name}`}
         >
-          {/* Hover overlay with image placeholder */}
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
             <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
-              {item.image ? (
-                <img 
-                  src={item.image} 
-                  alt={`Imagen de ${item.name}`}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              ) : (
-                <div className="text-accent text-sm font-medium text-center px-4">
-                  Imagen del plato
-                  <br />
-                  <span className="text-xs text-muted-foreground">Próximamente</span>
-                </div>
-              )}
+              <div className="text-accent text-sm font-medium text-center px-4">
+                Imagen del plato
+                <br />
+                <span className="text-xs text-muted-foreground">Próximamente</span>
+              </div>
             </div>
           </div>
           
-          {/* Card content with hover fade */}
           <div className="relative z-0 group-hover:opacity-60 transition-opacity duration-300">
             <div className="flex justify-between items-start mb-3">
               <h4 className="text-xl font-semibold text-foreground font-playfair">
@@ -113,8 +106,33 @@ const MenuSection = () => {
       ))}
     </div>
   );
+  
+  const renderTastingMenus = () => (
+    <div className="space-y-12">
+      <p className="text-center text-lg text-muted-foreground">{degustacion.note}</p>
+      {degustacion.menus.map((menu, index) => (
+        <div key={index} className="bg-card border border-border rounded-xl p-6 transition-all duration-300">
+          <h3 className="text-2xl md:text-3xl font-bold text-accent mb-2 font-playfair">{menu.name}</h3>
+          <p className="text-sm md:text-md text-muted-foreground mb-6">{menu.price}</p>
+          <div className="grid md:grid-cols-2 gap-8">
+            {Object.entries(menu.sections).map(([sectionTitle, items]) => (
+              <div key={sectionTitle} className="bg-secondary p-4 rounded-lg">
+                <h4 className="text-xl font-semibold text-foreground font-playfair mb-4 border-b pb-2">{sectionTitle}</h4>
+                <ul className="space-y-2">
+                  {items.map((item, itemIndex) => (
+                    <li key={itemIndex} className="text-muted-foreground">{item.name}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   const renderMenuCategory = (category: MenuCategory) => {
+    if (!category) return null;
     if (category.subcategories) {
       return (
         <div className="space-y-12">
@@ -135,30 +153,28 @@ const MenuSection = () => {
 
   return (
     <>
-      <section id="menu" className="py-20 bg-secondary">
-        <div className="container mx-auto px-6">
+      <section id="menu" className="py-20 bg-background">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <h2 
-              className={`text-5xl md:text-6xl font-bold text-accent mb-6 font-playfair transition-all duration-1000 ${
+              className={`text-4xl md:text-6xl font-bold text-accent mb-6 font-playfair transition-all duration-1000 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
             >
               Nuestra Carta
             </h2>
             <p 
-              className={`text-xl mt-4 max-w-3xl mx-auto text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
+              className={`text-lg md:text-xl mt-4 max-w-3xl mx-auto text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
             >
               La mejor carta de cocina india en Valladolid. Un viaje de sabores auténticos, 
-              preparados con pasión y las mejores especias traídas directamente desde la India 
-              para ofrecerte la experiencia gastronómica más auténtica.
+              preparados con pasión y las mejores especias traídas directamente desde la India.
             </p>
           </div>
 
-          {/* Tabs Navigation */}
           <div 
-            className={`mb-16 flex flex-wrap justify-center gap-x-2 gap-y-4 border-b border-accent/30 pb-6 transition-all duration-1000 delay-300 ${
+            className={`mb-12 flex flex-wrap justify-center gap-x-2 gap-y-4 border-b border-accent/30 pb-6 transition-all duration-1000 delay-300 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -173,24 +189,21 @@ const MenuSection = () => {
             ))}
           </div>
 
-          {/* Menu Content */}
           <div 
             className={`transition-all duration-500 ${
               isVisible ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            {renderMenuCategory(menuData[activeTab as keyof typeof menuData])}
+            {activeTab === 'degustacion' 
+              ? renderTastingMenus()
+              : renderMenuCategory(menuData[activeTab as keyof typeof menuData])}
           </div>
         </div>
       </section>
 
-      {/* Lightbox Modal */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent 
-          className="max-w-2xl max-h-[90vh] overflow-y-auto"
-          role="dialog"
-          aria-labelledby="menu-item-title"
-          aria-describedby="menu-item-description"
+          className="max-w-md max-h-[90vh] overflow-y-auto"
         >
           <DialogHeader>
             <DialogTitle id="menu-item-title" className="text-2xl font-playfair text-accent">
@@ -205,53 +218,24 @@ const MenuSection = () => {
           </DialogHeader>
           
           {selectedItem && (
-            <div className="space-y-6">
-              {/* Image placeholder */}
-              {selectedItem.image ? (
-                <div className="aspect-video w-full overflow-hidden rounded-lg">
-                  <img 
-                    src={selectedItem.image} 
-                    alt={`Imagen de ${selectedItem.name}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center">
+            <div className="space-y-6 pt-4">
+              <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
                     <div className="text-lg font-medium">Imagen próximamente</div>
-                    <div className="text-sm">Estamos preparando fotos de todos nuestros platos</div>
                   </div>
                 </div>
-              )}
 
-              {/* Price */}
               <div className="flex justify-between items-center border-b border-accent/20 pb-4">
                 <span className="text-sm text-muted-foreground">Precio</span>
                 <span className="text-2xl font-bold text-accent">{selectedItem.price}</span>
               </div>
 
-              {/* Description */}
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-3 font-playfair">Descripción</h3>
-                <DialogDescription id="menu-item-description" className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg font-semibold text-foreground mb-2 font-playfair">Descripción</h3>
+                <DialogDescription className="text-muted-foreground leading-relaxed">
                   {selectedItem.description}
                 </DialogDescription>
               </div>
-
-              {/* Ingredients */}
-              {selectedItem.ingredients && selectedItem.ingredients.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-3 font-playfair">Ingredientes</h3>
-                  <ul className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-                    {selectedItem.ingredients.map((ingredient, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="w-2 h-2 bg-accent rounded-full mr-2 flex-shrink-0"></span>
-                        {ingredient}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
           )}
         </DialogContent>
