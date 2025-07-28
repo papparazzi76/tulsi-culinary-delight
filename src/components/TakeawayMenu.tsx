@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Minus, ShoppingCart, X } from 'lucide-react';
+import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart, MenuItemType } from '@/hooks/useCart';
 import { toast } from 'sonner';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 
 interface TakeawayMenuProps {
   onOpenCart: () => void;
@@ -12,6 +13,7 @@ interface TakeawayMenuProps {
 const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
   const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [openCategory, setOpenCategory] = useState<string | undefined>();
   const { addToCart, updateQuantity, cartItems, getCartCount } = useCart();
 
   const categories = ['Entrantes', 'Principales', 'Biryani', 'Vegetales', 'Acompañamientos', 'Postres', 'Bebidas'];
@@ -76,42 +78,60 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
         </button>
       </div>
 
-      {/* Category Cards */}
-      <Accordion type="single" collapsible className="w-full">
+      {/* Category Cards with Accordion */}
+      <Accordion 
+        type="single" 
+        collapsible 
+        className="w-full space-y-4"
+        value={openCategory}
+        onValueChange={setOpenCategory}
+      >
         {categories.map((category) => (
-          <AccordionItem value={category} key={category}>
-            <AccordionTrigger className="w-full">
-              <div className="flex items-center gap-4">
-                <div className="w-24 h-24 bg-secondary rounded-lg flex items-center justify-center">
-                  <span className="text-4xl opacity-50">🍛</span>
+          <AccordionItem value={category} key={category} className="border-none">
+            <AccordionTrigger className="hover:no-underline p-0">
+                <div className="flex w-full items-center gap-4 p-4 border rounded-lg hover:bg-accent/10 transition-colors data-[state=open]:bg-accent/10">
+                    <div className="w-24 h-24 bg-secondary rounded-lg flex items-center justify-center flex-shrink-0">
+                        {/* Placeholder for category image */}
+                        <span className="text-4xl opacity-50">🍛</span>
+                    </div>
+                    <h4 className="text-2xl font-playfair font-bold text-accent text-left">{category}</h4>
                 </div>
-                <h4 className="text-2xl font-playfair font-bold text-accent">{category}</h4>
-              </div>
             </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-4">
-                {getItemsForCategory(category).map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 p-4 bg-secondary rounded-lg">
-                    <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                      <span className="text-2xl opacity-50">🍽️</span>
+            <AccordionContent className="pt-2">
+              <div className="space-y-2">
+                {getItemsForCategory(category).map((item) => {
+                  const quantity = getItemQuantity(item.id);
+                  return (
+                    <div key={item.id} className="flex items-center gap-4 p-2 bg-secondary rounded-lg">
+                      <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                        {/* Placeholder for item image */}
+                        <span className="text-2xl opacity-50">🍽️</span>
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="font-semibold">{item.name}</h5>
+                        <p className="text-sm text-muted-foreground">€{item.price.toFixed(2)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => updateQuantity(item.id, quantity - 1)}
+                          disabled={quantity === 0}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="font-bold text-lg w-6 text-center">{quantity}</span>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => addToCart(item, 1)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h5 className="font-semibold">{item.name}</h5>
-                      <p className="text-sm text-muted-foreground">€{item.price.toFixed(2)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button size="icon" variant="ghost" onClick={() => updateQuantity(item.id, getItemQuantity(item.id) - 1)}>
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="font-bold text-lg">{getItemQuantity(item.id)}</span>
-                      <Button size="icon" variant="ghost" onClick={() => addToCart(item, 1)}>
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <Button onClick={() => addToCart(item, 1)}>Añadir al pedido</Button>
-                    <Button onClick={onOpenCart}>Finalizar Pedido</Button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </AccordionContent>
           </AccordionItem>
