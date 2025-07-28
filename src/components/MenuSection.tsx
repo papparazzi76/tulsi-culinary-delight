@@ -21,7 +21,7 @@ interface MenuCategory {
 }
 
 const MenuSection = () => {
-  const [activeTab, setActiveTab] = useState('especiales');
+  const [activeTab, setActiveTab] = useState('entrantes');
   const [isVisible, setIsVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -43,7 +43,6 @@ const MenuSection = () => {
   }, []);
 
   const tabs = [
-    { id: 'especiales', label: 'Especial de Tulsi' },
     { id: 'entrantes', label: 'Entrantes' },
     { id: 'principales', label: 'Platos Principales' },
     { id: 'biryani', label: 'Biryani' },
