@@ -22,16 +22,16 @@ export const degustacion: DegustacionData = {
       name: "TULSI FATEHPUR",
       price: "26,00€ por persona (*mínimo 2 personas)",
       sections: {
-        "ENTRANTES": [
-          { name: "SAMOSA DE CARNE", description: "", price: "" },
-          { name: "VEG PAKORA", description: "", price: "" },
-          { name: "CHEESE ROLL", description: "", price: "" },
-          { name: "CHICKEN TANDOORI", description: "", price: "" }
+        "Entrantes": [
+          { name: "Samosa de Carne", description: "", price: "" },
+          { name: "Veg Pakora", description: "", price: "" },
+          { name: "Cheese Roll", description: "", price: "" },
+          { name: "Chicken Tandoori", description: "", price: "" }
         ],
-        "PRINCIPAL": [
-          { name: "BUTTER CHICKEN", description: "", price: "" },
-          { name: "TERNERA ROGAN JOSH", description: "", price: "" },
-          { name: "BERENJENA MASALA", description: "", price: "" }
+        "Plato Principal": [
+          { name: "Butter Chicken", description: "", price: "" },
+          { name: "Ternera Rogan Josh", description: "", price: "" },
+          { name: "Berenjena Masala", description: "", price: "" }
         ]
       }
     },
@@ -39,34 +39,34 @@ export const degustacion: DegustacionData = {
         name: "TULSI KERALA",
         price: "28,00€ por persona (*mínimo 2 personas)",
         sections: {
-          "ENTRANTES": [
-            { name: "DAAL WADA", description: "", price: "" },
-            { name: "BEEF CUTLET", description: "", price: "" },
-            { name: "SALMÓN", description: "", price: "" },
-            { name: "ONION BHAJI", description: "", price: "" }
+          "Entrantes": [
+            { name: "Daal Wada", description: "", price: "" },
+            { name: "Beef Cutlet", description: "", price: "" },
+            { name: "Salmón", description: "", price: "" },
+            { name: "Onion Bhaji", description: "", price: "" }
           ],
-          "PRINCIPAL": [
-            { name: "KERALA FISH CURRY", description: "", price: "" },
-            { name: "PRAWNS BALCHO", description: "", price: "" },
-            { name: "OBERJINEN MOILE", description: "", price: "" }
+          "Plato Principal": [
+            { name: "Kerala Fish Curry", description: "", price: "" },
+            { name: "Prawns Balcho", description: "", price: "" },
+            { name: "Oberjinen Moile", description: "", price: "" }
           ]
         }
     },
     {
-        name: "TULSI TEMPLE",
+        name: "TULSI TEMPLE (VEGETARIANO)",
         price: "24,00€ por persona (*mínimo 2 personas)",
         sections: {
-          "ENTRANTES": [
-            { name: "SAMOSA VEGETAL", description: "", price: "" },
-            { name: "ONION BHAJI", description: "", price: "" },
-            { name: "GOBI 65", description: "", price: "" },
-            { name: "TANDOORI BRÓCOLI", description: "", price: "" }
+          "Entrantes": [
+            { name: "Samosa Vegetal", description: "", price: "" },
+            { name: "Onion Bhaji", description: "", price: "" },
+            { name: "Gobi 65", description: "", price: "" },
+            { name: "Tandoori Brócoli", description: "", price: "" }
           ],
-          "PRINCIPALES": [
-            { name: "MIX VEGETALES", description: "", price: "" },
-            { name: "PANEER MASALA", description: "", price: "" },
-            { name: "DAAL MΑΚΗΝΙ", description: "", price: "" },
-            { name: "BERENJENA MASALA", description: "", price: "" }
+          "Plato Principal": [
+            { name: "Mix Vegetales", description: "", price: "" },
+            { name: "Paneer Masala", description: "", price: "" },
+            { name: "Daal Makhni", description: "", price: "" },
+            { name: "Berenjena Masala", description: "", price: "" }
           ]
         }
     },
@@ -74,17 +74,17 @@ export const degustacion: DegustacionData = {
         name: "TULSI PUNJAB",
         price: "25,00€ por persona (*mínimo 2 personas)",
         sections: {
-          "ENTRANTES": [
-            { name: "PAIN PURI", description: "", price: "" },
-            { name: "DAHI GOL GAPPE", description: "", price: "" },
-            { name: "FISH AMARSARI", description: "", price: "" },
-            { name: "PUNJABI SAMOSA", description: "", price: "" },
-            { name: "CHICKEN TIKKA", description: "", price: "" }
+          "Entrantes": [
+            { name: "Pain Puri", description: "", price: "" },
+            { name: "Dahi Gol Gappe", description: "", price: "" },
+            { name: "Fish Amarsari", description: "", price: "" },
+            { name: "Punjabi Samosa", description: "", price: "" },
+            { name: "Chicken Tikka", description: "", price: "" }
           ],
-          "PRINCIPAL": [
-            { name: "LAMB KADAHI", description: "", price: "" },
-            { name: "LAMB TІККА MASALA", description: "", price: "" },
-            { name: "PUNJABI CHOLEY", description: "", price: "" }
+          "Plato Principal": [
+            { name: "Lamb Kadahi", description: "", price: "" },
+            { name: "Lamb Tikka Masala", description: "", price: "" },
+            { name: "Punjabi Choley", description: "", price: "" }
           ]
         }
     }
