@@ -43,8 +43,8 @@ const ContactSection = () => {
     {
       icon: <Mail className="w-6 h-6" />,
       title: "Email",
-      content: "reservas@tulsiindianvalladolid.com",
-      link: "mailto:reservas@tulsiindianvalladolid.com"
+      content: "tulsindian@gmail.com",
+      link: "mailto:tulsindian@gmail.com"
     }
   ];
 
