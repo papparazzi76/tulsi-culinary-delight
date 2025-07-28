@@ -1,27 +1,29 @@
-import Navigation from '@/components/Navigation';
-import HeroSection from '@/components/HeroSection';
-import MenuSection from '@/components/MenuSection';
-import TakeawaySection from '@/components/TakeawaySection';
-import ParallaxSection from '@/components/ParallaxSection';
-import GallerySection from '@/components/GallerySection';
 import AboutSection from '@/components/AboutSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
-import AnnouncementPopup from '@/components/AnnouncementPopup';
+import GallerySection from '@/components/GallerySection';
+import HeroSection from '@/components/HeroSection';
+import MenuSection from '@/components/MenuSection';
+import Navigation from '@/components/Navigation';
+import ParallaxSection from '@/components/ParallaxSection';
+import TakeawaySection from '@/components/TakeawaySection';
+import { Toaster } from '@/components/ui/sonner';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background text-foreground">
       <Navigation />
-      <HeroSection />
-      <MenuSection />
-      <TakeawaySection />
-      <ParallaxSection />
-      <GallerySection />
-      <AboutSection />
-      <ContactSection />
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <MenuSection />
+        <ParallaxSection />
+        <TakeawaySection />
+        <GallerySection />
+        <ContactSection />
+      </main>
       <Footer />
-      <AnnouncementPopup />
+      <Toaster />
     </div>
   );
 };
