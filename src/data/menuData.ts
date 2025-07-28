@@ -2,7 +2,6 @@ import { MenuCategory } from './types';
 import { entrantes } from './entrantes';
 import { principales } from './principales';
 import { postres } from './postres';
-import { degustacion } from './degustacion';
 
 const biryani: MenuCategory = {
   title: "Biryani",
@@ -173,7 +172,6 @@ const panes: MenuCategory = {
 };
 
 export const menuData: Record<string, MenuCategory> = {
-  degustacion,
   entrantes,
   principales,
   biryani,
