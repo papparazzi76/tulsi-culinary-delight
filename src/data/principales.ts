@@ -184,7 +184,7 @@ export const principales: MenuCategory = {
       ]
     },
     {
-      title: "Marisco",
+      title: "Perca",
       items: [
         {
           name: "Fish Tikka Masala",
@@ -220,7 +220,12 @@ export const principales: MenuCategory = {
           name: "Fish Moilee",
           description: "Estofado de pescado típico de Kerala en leche de coco, suave, ligeramente especiado y cremoso. Es un plato reconfortante.",
           price: "16.00€"
-        },
+        }
+      ]
+    },
+    {
+      title: "Gambas",
+      items: [
         {
           name: "Kerala Prawns Curry",
           description: "Camarones cocinados al estilo Kerala en salsa de coco, curry, jengibre y tomate. Similar al fish moilee, cremoso y aromático.",
