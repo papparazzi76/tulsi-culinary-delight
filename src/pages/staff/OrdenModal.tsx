@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { useOrder, MenuItem } from '@/hooks/useOrder';
+import { useOrder } from '@/hooks/useOrder';
+import { MenuItem } from '@/types/order';
 import { toast } from 'sonner';
 import { Plus, Minus, Trash2, Send, Euro } from 'lucide-react';
 import {
