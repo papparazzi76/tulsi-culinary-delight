@@ -3,15 +3,13 @@ import { menuData } from '@/data/menuData';
 import { degustacion } from '@/data/degustacion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface MenuItem {
-  id: string;
   name: string;
   description: string;
-  price: number;
-  image_url?: string;
-  category: string;
+  price: string;
+  ingredients?: string[];
+  image?: string;
 }
 
 interface MenuCategory {
@@ -28,8 +26,7 @@ const MenuSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -48,42 +45,13 @@ const MenuSection = () => {
     };
   }, []);
 
-  useEffect(() => {
-    loadMenuItems();
-  }, []);
-
-  const loadMenuItems = async () => {
-    try {
-      setLoading(true);
-      console.log('Loading menu items...');
-      const { data, error } = await supabase
-        .from('menu_items')
-        .select('*')
-        .eq('available', true)
-        .order('category', { ascending: true });
-
-      console.log('Supabase response:', { data, error });
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
-      
-      console.log('Menu items loaded:', data?.length || 0);
-      setMenuItems(data || []);
-    } catch (error) {
-      console.error('Error loading menu items:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const tabs = [
     { id: 'degustacion', label: 'Menús Degustación' },
     { id: 'entrantes', label: 'Entrantes' },
     { id: 'principales', label: 'Platos Principales' },
     { id: 'biryani', label: 'Biryani' },
     { id: 'vegetales', label: 'Vegetales' },
-    { id: 'panes', label: 'Acompañamientos y Panes' }
+    { id: 'panes', label: 'Acompañamientos' }
   ];
 
   const handleItemClick = (item: MenuItem) => {
@@ -91,49 +59,11 @@ const MenuSection = () => {
     setIsDialogOpen(true);
   };
 
-  const getItemsForCategory = (categoryDisplayName: string, subcategoryTitle?: string) => {
-    console.log('getItemsForCategory called with:', { categoryDisplayName, subcategoryTitle, totalMenuItems: menuItems.length });
-    
-    if (!subcategoryTitle) {
-      const items = menuItems.filter(item => item.category === categoryDisplayName);
-      console.log(`Items for category "${categoryDisplayName}":`, items.length);
-      return items;
-    }
-    
-    // For subcategories, we need to match the item name with the subcategory items
-    const categoryKey = tabs.find(tab => tab.label === categoryDisplayName)?.id;
-    console.log('Category key found:', categoryKey);
-    
-    if (!categoryKey || !menuData[categoryKey as keyof typeof menuData]) {
-      console.log('No category data found for key:', categoryKey);
-      return [];
-    }
-    
-    const categoryData = menuData[categoryKey as keyof typeof menuData];
-    if (!categoryData?.subcategories) {
-      console.log('No subcategories found for:', categoryKey);
-      return [];
-    }
-    
-    const subcategory = categoryData.subcategories.find(sub => sub.title === subcategoryTitle);
-    if (!subcategory) {
-      console.log('Subcategory not found:', subcategoryTitle);
-      return [];
-    }
-    
-    const subcategoryItemNames = subcategory.items.map(item => item.name);
-    const filteredItems = menuItems.filter(item => 
-      item.category === categoryDisplayName && subcategoryItemNames.includes(item.name)
-    );
-    console.log(`Items for subcategory "${subcategoryTitle}":`, filteredItems.length);
-    return filteredItems;
-  };
-
   const renderMenuItems = (items: MenuItem[]) => (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item, index) => (
         <div 
-          key={item.id} 
+          key={index} 
           className={`menu-card-interactive group cursor-pointer transition-all duration-500 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
@@ -150,20 +80,12 @@ const MenuSection = () => {
           aria-label={`Ver detalles de ${item.name}`}
         >
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
-            <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center overflow-hidden">
-              {item.image_url ? (
-                <img 
-                  src={item.image_url} 
-                  alt={item.name}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              ) : (
-                <div className="text-accent text-sm font-medium text-center px-4">
-                  Imagen del plato
-                  <br />
-                  <span className="text-xs text-muted-foreground">Próximamente</span>
-                </div>
-              )}
+            <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
+              <div className="text-accent text-sm font-medium text-center px-4">
+                Imagen del plato
+                <br />
+                <span className="text-xs text-muted-foreground">Próximamente</span>
+              </div>
             </div>
           </div>
           
@@ -173,7 +95,7 @@ const MenuSection = () => {
                 {item.name}
               </h4>
               <span className="text-lg font-bold text-accent ml-4 flex-shrink-0">
-                €{item.price.toFixed(2)}
+                {item.price}
               </span>
             </div>
             <p className="text-muted-foreground leading-relaxed">
@@ -209,51 +131,24 @@ const MenuSection = () => {
     </div>
   );
 
-  const getCategoryDisplayName = (categoryKey: string): string => {
-    const categoryMap: { [key: string]: string } = {
-      'entrantes': 'Entrantes',
-      'principales': 'Principales', 
-      'biryani': 'Biryani',
-      'vegetales': 'Vegetales',
-      'panes': 'Acompañamientos y Panes',
-      'postres': 'Postres'
-    };
-    return categoryMap[categoryKey] || categoryKey;
-  };
-
-  const renderMenuCategory = (categoryKey: string) => {
-    console.log('renderMenuCategory called with:', categoryKey);
-    if (categoryKey === 'degustacion') return renderTastingMenus();
-    
-    const categoryDisplayName = getCategoryDisplayName(categoryKey);
-    const categoryData = menuData[categoryKey as keyof typeof menuData];
-    
-    if (!categoryData) return null;
-    
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-        </div>
-      );
-    }
-    
-    if (categoryData.subcategories) {
+  const renderMenuCategory = (category: MenuCategory) => {
+    if (!category) return null;
+    if (category.subcategories) {
       return (
         <div className="space-y-12">
-          {categoryData.subcategories.map((subcategory, index) => (
+          {category.subcategories.map((subcategory, index) => (
             <div key={index}>
               <h3 className="text-3xl font-bold text-accent mb-8 border-b-2 border-accent/30 pb-3 font-playfair">
                 {subcategory.title}
               </h3>
-              {renderMenuItems(getItemsForCategory(categoryDisplayName, subcategory.title))}
+              {renderMenuItems(subcategory.items)}
             </div>
           ))}
         </div>
       );
     }
     
-    return renderMenuItems(getItemsForCategory(categoryDisplayName));
+    return category.items ? renderMenuItems(category.items) : null;
   };
 
   return (
@@ -301,7 +196,7 @@ const MenuSection = () => {
           >
             {activeTab === 'degustacion' 
               ? renderTastingMenus()
-              : renderMenuCategory(activeTab)}
+              : renderMenuCategory(menuData[activeTab as keyof typeof menuData])}
           </div>
         </div>
       </section>
@@ -324,23 +219,15 @@ const MenuSection = () => {
           
           {selectedItem && (
             <div className="space-y-6 pt-4">
-              <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center overflow-hidden">
-                {selectedItem.image_url ? (
-                  <img 
-                    src={selectedItem.image_url} 
-                    alt={selectedItem.name}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
+              <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
                     <div className="text-lg font-medium">Imagen próximamente</div>
                   </div>
-                )}
-              </div>
+                </div>
 
               <div className="flex justify-between items-center border-b border-accent/20 pb-4">
                 <span className="text-sm text-muted-foreground">Precio</span>
-                <span className="text-2xl font-bold text-accent">€{selectedItem.price.toFixed(2)}</span>
+                <span className="text-2xl font-bold text-accent">{selectedItem.price}</span>
               </div>
 
               <div>
