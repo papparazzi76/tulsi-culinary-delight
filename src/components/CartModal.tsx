@@ -15,7 +15,15 @@ interface CartModalProps {
 }
 
 const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
-  const { cartItems, updateQuantity, removeFromCart, calculateTotals, sessionId, clearCart } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, calculateTotals, sessionId, clearCart, refreshCart } = useCart();
+  
+  // Refresh cart when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      console.log('🛒 CartModal opened, refreshing cart');
+      refreshCart();
+    }
+  }, [isOpen, refreshCart]);
   
   // Debug logs
   console.log('🛒 CartModal render - isOpen:', isOpen, 'cartItems:', cartItems, 'count:', cartItems.length);

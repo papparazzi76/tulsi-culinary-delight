@@ -22,8 +22,6 @@ export interface MenuItemType {
 }
 
 export const useCart = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(() => {
     let session = localStorage.getItem('cart_session_id');
     if (!session) {
@@ -33,50 +31,53 @@ export const useCart = () => {
     return session;
   });
 
-  // Load cart from localStorage on mount and whenever sessionId changes
-  useEffect(() => {
-    const loadCart = () => {
+  const getStoredCart = (): CartItem[] => {
+    try {
       const savedCart = localStorage.getItem(`cart_${sessionId}`);
-      if (savedCart) {
-        try {
-          const parsedCart = JSON.parse(savedCart);
-          setCartItems(parsedCart);
-        } catch (error) {
-          console.error('Error loading cart from localStorage:', error);
-          setCartItems([]);
-        }
-      } else {
-        setCartItems([]);
-      }
-    };
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+      return [];
+    }
+  };
 
-    loadCart();
-
-    // Listen for storage changes from other tabs/windows
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === `cart_${sessionId}` && e.newValue !== null) {
-        try {
-          const parsedCart = JSON.parse(e.newValue);
-          setCartItems(parsedCart);
-        } catch (error) {
-          console.error('Error parsing cart from storage event:', error);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [sessionId]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(getStoredCart);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (cartItems.length > 0) {
-      localStorage.setItem(`cart_${sessionId}`, JSON.stringify(cartItems));
-    } else {
-      // Remove empty cart from localStorage
-      localStorage.removeItem(`cart_${sessionId}`);
-    }
+    console.log('🛒 Saving cart to localStorage:', cartItems);
+    localStorage.setItem(`cart_${sessionId}`, JSON.stringify(cartItems));
   }, [cartItems, sessionId]);
+
+  // Listen for storage changes and reload cart when needed
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === `cart_${sessionId}`) {
+        console.log('🛒 Storage changed, reloading cart');
+        setCartItems(getStoredCart());
+      }
+    };
+
+    const handleFocus = () => {
+      console.log('🛒 Window focused, refreshing cart from storage');
+      setCartItems(getStoredCart());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [sessionId]);
+
+  // Force refresh cart from localStorage
+  const refreshCart = () => {
+    console.log('🛒 Force refreshing cart');
+    setCartItems(getStoredCart());
+  };
 
   const addToCart = (menuItem: MenuItemType, quantity: number = 1) => {
     console.log('🛒 Adding to cart:', menuItem.name, 'quantity:', quantity);
@@ -129,6 +130,7 @@ export const useCart = () => {
   };
 
   const clearCart = () => {
+    console.log('🛒 Clearing cart');
     setCartItems([]);
     localStorage.removeItem(`cart_${sessionId}`);
   };
@@ -163,6 +165,7 @@ export const useCart = () => {
     removeFromCart,
     updateQuantity,
     clearCart,
+    refreshCart,
     getCartTotal,
     getCartCount,
     calculateTotals,
