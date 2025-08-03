@@ -16,7 +16,7 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
   const [openCategory, setOpenCategory] = useState<string | undefined>();
   const { addToCart, updateQuantity, cartItems, getCartCount } = useCart();
 
-  const categories = ['Entrantes', 'Principales', 'Biryani', 'Vegetales', 'Acompañamientos', 'Postres', 'Bebidas'];
+  const categories = ['Entrantes', 'Principales', 'Biryani', 'Vegetales', 'Acompañamientos y Panes', 'Postres', 'Bebidas'];
 
   useEffect(() => {
     loadMenuItems();
