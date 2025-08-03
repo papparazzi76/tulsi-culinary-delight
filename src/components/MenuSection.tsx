@@ -3,13 +3,15 @@ import { menuData } from '@/data/menuData';
 import { degustacion } from '@/data/degustacion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MenuItem {
+  id: string;
   name: string;
   description: string;
-  price: string;
-  ingredients?: string[];
-  image?: string;
+  price: number;
+  image_url?: string;
+  category: string;
 }
 
 interface MenuCategory {
@@ -26,7 +28,8 @@ const MenuSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -45,13 +48,35 @@ const MenuSection = () => {
     };
   }, []);
 
+  useEffect(() => {
+    loadMenuItems();
+  }, []);
+
+  const loadMenuItems = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('menu_items')
+        .select('*')
+        .eq('available', true)
+        .order('category', { ascending: true });
+
+      if (error) throw error;
+      setMenuItems(data || []);
+    } catch (error) {
+      console.error('Error loading menu items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const tabs = [
     { id: 'degustacion', label: 'Menús Degustación' },
     { id: 'entrantes', label: 'Entrantes' },
     { id: 'principales', label: 'Platos Principales' },
     { id: 'biryani', label: 'Biryani' },
     { id: 'vegetales', label: 'Vegetales' },
-    { id: 'panes', label: 'Acompañamientos' }
+    { id: 'panes', label: 'Acompañamientos y Panes' }
   ];
 
   const handleItemClick = (item: MenuItem) => {
@@ -59,11 +84,32 @@ const MenuSection = () => {
     setIsDialogOpen(true);
   };
 
+  const getItemsForCategory = (categoryDisplayName: string, subcategoryTitle?: string) => {
+    if (!subcategoryTitle) {
+      return menuItems.filter(item => item.category === categoryDisplayName);
+    }
+    
+    // For subcategories, we need to match the item name with the subcategory items
+    const categoryKey = tabs.find(tab => tab.label === categoryDisplayName)?.id;
+    if (!categoryKey || !menuData[categoryKey as keyof typeof menuData]) return [];
+    
+    const categoryData = menuData[categoryKey as keyof typeof menuData];
+    if (!categoryData?.subcategories) return [];
+    
+    const subcategory = categoryData.subcategories.find(sub => sub.title === subcategoryTitle);
+    if (!subcategory) return [];
+    
+    const subcategoryItemNames = subcategory.items.map(item => item.name);
+    return menuItems.filter(item => 
+      item.category === categoryDisplayName && subcategoryItemNames.includes(item.name)
+    );
+  };
+
   const renderMenuItems = (items: MenuItem[]) => (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item, index) => (
         <div 
-          key={index} 
+          key={item.id} 
           className={`menu-card-interactive group cursor-pointer transition-all duration-500 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
@@ -80,12 +126,20 @@ const MenuSection = () => {
           aria-label={`Ver detalles de ${item.name}`}
         >
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
-            <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
-              <div className="text-accent text-sm font-medium text-center px-4">
-                Imagen del plato
-                <br />
-                <span className="text-xs text-muted-foreground">Próximamente</span>
-              </div>
+            <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center overflow-hidden">
+              {item.image_url ? (
+                <img 
+                  src={item.image_url} 
+                  alt={item.name}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <div className="text-accent text-sm font-medium text-center px-4">
+                  Imagen del plato
+                  <br />
+                  <span className="text-xs text-muted-foreground">Próximamente</span>
+                </div>
+              )}
             </div>
           </div>
           
@@ -95,7 +149,7 @@ const MenuSection = () => {
                 {item.name}
               </h4>
               <span className="text-lg font-bold text-accent ml-4 flex-shrink-0">
-                {item.price}
+                €{item.price.toFixed(2)}
               </span>
             </div>
             <p className="text-muted-foreground leading-relaxed">
@@ -131,24 +185,50 @@ const MenuSection = () => {
     </div>
   );
 
-  const renderMenuCategory = (category: MenuCategory) => {
-    if (!category) return null;
-    if (category.subcategories) {
+  const getCategoryDisplayName = (categoryKey: string): string => {
+    const categoryMap: { [key: string]: string } = {
+      'entrantes': 'Entrantes',
+      'principales': 'Principales', 
+      'biryani': 'Biryani',
+      'vegetales': 'Vegetales',
+      'panes': 'Acompañamientos y Panes',
+      'postres': 'Postres'
+    };
+    return categoryMap[categoryKey] || categoryKey;
+  };
+
+  const renderMenuCategory = (categoryKey: string) => {
+    if (categoryKey === 'degustacion') return renderTastingMenus();
+    
+    const categoryDisplayName = getCategoryDisplayName(categoryKey);
+    const categoryData = menuData[categoryKey as keyof typeof menuData];
+    
+    if (!categoryData) return null;
+    
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+        </div>
+      );
+    }
+    
+    if (categoryData.subcategories) {
       return (
         <div className="space-y-12">
-          {category.subcategories.map((subcategory, index) => (
+          {categoryData.subcategories.map((subcategory, index) => (
             <div key={index}>
               <h3 className="text-3xl font-bold text-accent mb-8 border-b-2 border-accent/30 pb-3 font-playfair">
                 {subcategory.title}
               </h3>
-              {renderMenuItems(subcategory.items)}
+              {renderMenuItems(getItemsForCategory(categoryDisplayName, subcategory.title))}
             </div>
           ))}
         </div>
       );
     }
     
-    return category.items ? renderMenuItems(category.items) : null;
+    return renderMenuItems(getItemsForCategory(categoryDisplayName));
   };
 
   return (
@@ -196,7 +276,7 @@ const MenuSection = () => {
           >
             {activeTab === 'degustacion' 
               ? renderTastingMenus()
-              : renderMenuCategory(menuData[activeTab as keyof typeof menuData])}
+              : renderMenuCategory(activeTab)}
           </div>
         </div>
       </section>
@@ -219,15 +299,23 @@ const MenuSection = () => {
           
           {selectedItem && (
             <div className="space-y-6 pt-4">
-              <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center">
+              <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center overflow-hidden">
+                {selectedItem.image_url ? (
+                  <img 
+                    src={selectedItem.image_url} 
+                    alt={selectedItem.name}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
                   <div className="text-center text-muted-foreground">
                     <div className="text-lg font-medium">Imagen próximamente</div>
                   </div>
-                </div>
+                )}
+              </div>
 
               <div className="flex justify-between items-center border-b border-accent/20 pb-4">
                 <span className="text-sm text-muted-foreground">Precio</span>
-                <span className="text-2xl font-bold text-accent">{selectedItem.price}</span>
+                <span className="text-2xl font-bold text-accent">€{selectedItem.price.toFixed(2)}</span>
               </div>
 
               <div>
