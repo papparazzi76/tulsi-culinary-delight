@@ -16,6 +16,9 @@ interface CartModalProps {
 
 const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
   const { cartItems, updateQuantity, removeFromCart, calculateTotals, sessionId, clearCart } = useCart();
+  
+  // Debug logs
+  console.log('🛒 CartModal render - isOpen:', isOpen, 'cartItems:', cartItems, 'count:', cartItems.length);
   const [deliveryType, setDeliveryType] = useState<'pickup' | 'delivery'>('pickup');
   const [customerInfo, setCustomerInfo] = useState({
     name: '',

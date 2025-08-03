@@ -79,17 +79,21 @@ export const useCart = () => {
   }, [cartItems, sessionId]);
 
   const addToCart = (menuItem: MenuItemType, quantity: number = 1) => {
+    console.log('🛒 Adding to cart:', menuItem.name, 'quantity:', quantity);
+    console.log('🛒 Current cart before add:', cartItems);
+    
     setCartItems(prev => {
       const existingItem = prev.find(item => item.id === menuItem.id);
       
+      let newCart;
       if (existingItem) {
-        return prev.map(item =>
+        newCart = prev.map(item =>
           item.id === menuItem.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        return [...prev, {
+        newCart = [...prev, {
           id: menuItem.id,
           name: menuItem.name,
           description: menuItem.description || '',
@@ -98,6 +102,9 @@ export const useCart = () => {
           category: menuItem.category,
         }];
       }
+      
+      console.log('🛒 New cart after add:', newCart);
+      return newCart;
     });
     
     toast.success(`${menuItem.name} añadido al carrito`);
