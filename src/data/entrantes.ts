@@ -98,27 +98,37 @@ export const entrantes: MenuCategory = {
       items: [
         {
           name: "Chicken Haryali",
-          description: "Dados de pollo marinados en yogur, menta y cilantro, asados al tandoor.",
+          description: "Dados de pollo marinados en una mezcla de yogur, menta, cilantro y especias verdes, asados en el horno tandoor.",
           price: "8.00€"
         },
         {
           name: "Chicken Tikka",
-          description: "Trozos de pollo en tandoor marinados en yogur y especias.",
+          description: "Trozos de pollo en tandoor previamente marinados en yogur y especias tradicionales, resultando jugosos y tiernos.",
+          price: "8.00€"
+        },
+        {
+          name: "Chicken Reshmi Kebab",
+          description: "Brochetas suaves, cremosas gracias a anacardos y crema, con especias delicadas que realzan la textura del pollo.",
           price: "8.00€"
         },
         {
           name: "Sheek Kebab",
-          description: "Carne picada especiada, prensada y asada en horno de barro.",
+          description: "Carne picada especiada con cilantro, comino y chile, prensada y asada en horno de barro para una capa crujiente y centro tierno.",
           price: "9.00€"
         },
         {
-          name: "Salmón Tikka (2 uds)",
-          description: "Salmón marinado en yogur, jengibre y ajo, cocinado en tandoor.",
+          name: "Chicken Tandoori 1/4",
+          description: "Clásico muslo o pechuga marinado en especias y yogur, asado lentamente en tandoor, con piel ahumada y carne tierna.",
+          price: "8.00€"
+        },
+        {
+          name: "Salmón Tikka 2 uds",
+          description: "Trozos de salmón marinados en yogur, jengibre y ajo, cocinados en tandoor para mantener jugosidad y un ligero ahumado.",
           price: "9.00€"
         },
         {
           name: "Tandoori Brócoli",
-          description: "Floretes de brócoli marinados y asados en horno tandoor.",
+          description: "Floretes de brócoli marinados en yogur y especias, asados en horno tandoor hasta lograr bordes caramelizados y un interior tierno.",
           price: "8.50€"
         }
       ]
