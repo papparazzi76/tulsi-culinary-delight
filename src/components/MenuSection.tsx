@@ -60,61 +60,73 @@ const MenuSection = () => {
     setIsDialogOpen(true);
   };
 
-  const renderMenuItems = (items: MenuItem[]) => (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {items.map((item, index) => (
-        <div 
-          key={index} 
-          className={`menu-card-interactive group cursor-pointer transition-all duration-500 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-          style={{ transitionDelay: `${index * 100}ms` }}
-          onClick={() => handleItemClick(item)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleItemClick(item);
-            }
-          }}
-          aria-label={`Ver detalles de ${item.name}`}
-        >
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
-            {item.image ? (
-              <img 
-                src={item.image} 
-                alt={item.name}
-                className="w-4/5 aspect-video object-cover rounded-lg border-2 border-accent/50"
-              />
-            ) : (
-              <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
-                <div className="text-accent text-sm font-medium text-center px-4">
-                  Imagen del plato
-                  <br />
-                  <span className="text-xs text-muted-foreground">Próximamente</span>
-                </div>
+  const renderMenuItems = (items: MenuItem[]) => {
+    console.log('Rendering menu items:', items);
+    return (
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {items.map((item, index) => {
+          console.log('Item:', item.name, 'Image:', item.image);
+          return (
+            <div 
+              key={index} 
+              className={`menu-card-interactive group cursor-pointer transition-all duration-500 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ transitionDelay: `${index * 100}ms` }}
+              onClick={() => handleItemClick(item)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleItemClick(item);
+                }
+              }}
+              aria-label={`Ver detalles de ${item.name}`}
+            >
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
+                {item.image ? (
+                  <>
+                    {console.log('Showing image for:', item.name, item.image)}
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-4/5 aspect-video object-cover rounded-lg border-2 border-accent/50"
+                    />
+                  </>
+                ) : (
+                  <>
+                    {console.log('No image for:', item.name)}
+                    <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
+                      <div className="text-accent text-sm font-medium text-center px-4">
+                        Imagen del plato
+                        <br />
+                        <span className="text-xs text-muted-foreground">Próximamente</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-          </div>
-          
-          <div className="relative z-0 group-hover:opacity-60 transition-opacity duration-300">
-            <div className="flex justify-between items-start mb-3">
-              <h4 className="text-xl font-semibold text-foreground font-playfair">
-                {item.name}
-              </h4>
-              <span className="text-lg font-bold text-accent ml-4 flex-shrink-0">
-                {item.price}
-              </span>
+              
+              <div className="relative z-0 group-hover:opacity-60 transition-opacity duration-300">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="text-xl font-semibold text-foreground font-playfair">
+                    {item.name}
+                  </h4>
+                  <span className="text-lg font-bold text-accent ml-4 flex-shrink-0">
+                    {item.price}
+                  </span>
+                </div>
+                <p className="text-muted-foreground leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
-              {item.description}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+          );
+        })}
+      </div>
+    );
+  };
   
   const renderTastingMenus = () => (
     <div className="space-y-12">
