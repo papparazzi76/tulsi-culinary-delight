@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onShowContest: () => void;
+  onShowContest: (paymentCallback: () => void) => void;
 }
 
 const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
@@ -48,8 +48,8 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
       return;
     }
 
-    // Show contest modal first
-    onShowContest();
+    // Show contest modal first with payment callback
+    onShowContest(() => processPayment());
   };
 
   const processPayment = async () => {

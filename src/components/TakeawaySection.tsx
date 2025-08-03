@@ -9,6 +9,7 @@ const TakeawaySection = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [showContest, setShowContest] = useState(false);
+  const [paymentCallback, setPaymentCallback] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -161,7 +162,10 @@ const TakeawaySection = () => {
         <CartModal
           isOpen={showCart}
           onClose={() => setShowCart(false)}
-          onShowContest={() => setShowContest(true)}
+          onShowContest={(callback) => {
+            setPaymentCallback(() => callback);
+            setShowContest(true);
+          }}
         />
 
         {/* Contest Modal */}
@@ -170,7 +174,10 @@ const TakeawaySection = () => {
           onClose={() => setShowContest(false)}
           onProceedToPayment={() => {
             setShowContest(false);
-            setShowCart(true);
+            setShowCart(false);
+            if (paymentCallback) {
+              paymentCallback();
+            }
           }}
         />
       </div>
