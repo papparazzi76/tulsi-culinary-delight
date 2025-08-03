@@ -34,7 +34,11 @@ export const useCart = () => {
   const getStoredCart = (): CartItem[] => {
     try {
       const savedCart = localStorage.getItem(`cart_${sessionId}`);
-      return savedCart ? JSON.parse(savedCart) : [];
+      if (!savedCart) return [];
+      
+      const parsed = JSON.parse(savedCart);
+      // Ensure we always return an array
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error('Error loading cart from localStorage:', error);
       return [];
@@ -55,13 +59,15 @@ export const useCart = () => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === `cart_${sessionId}`) {
         console.log('🛒 Storage changed, reloading cart');
-        setCartItems(getStoredCart());
+        const newCart = getStoredCart();
+        setCartItems(Array.isArray(newCart) ? newCart : []);
       }
     };
 
     const handleFocus = () => {
       console.log('🛒 Window focused, refreshing cart from storage');
-      setCartItems(getStoredCart());
+      const newCart = getStoredCart();
+      setCartItems(Array.isArray(newCart) ? newCart : []);
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -76,7 +82,8 @@ export const useCart = () => {
   // Force refresh cart from localStorage
   const refreshCart = () => {
     console.log('🛒 Force refreshing cart');
-    setCartItems(getStoredCart());
+    const newCart = getStoredCart();
+    setCartItems(Array.isArray(newCart) ? newCart : []);
   };
 
   const addToCart = (menuItem: MenuItemType, quantity: number = 1) => {
@@ -136,10 +143,12 @@ export const useCart = () => {
   };
 
   const getCartTotal = () => {
+    if (!Array.isArray(cartItems)) return 0;
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const getCartCount = () => {
+    if (!Array.isArray(cartItems)) return 0;
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
