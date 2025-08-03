@@ -5,6 +5,7 @@ import { useCart, MenuItemType } from '@/hooks/useCart';
 import { toast } from 'sonner';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { menuData } from '@/data/menuData';
 
 interface TakeawayMenuProps {
   onOpenCart: () => void;
@@ -14,9 +15,13 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
   const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openCategory, setOpenCategory] = useState<string | undefined>();
+  const [openSubcategory, setOpenSubcategory] = useState<string | undefined>();
   const { addToCart, updateQuantity, cartItems, getCartCount } = useCart();
 
-  const categories = ['Entrantes', 'Principales', 'Biryani', 'Vegetales', 'Acompañamientos y Panes', 'Postres', 'Bebidas'];
+  // Get categories that exist in both menuData and database
+  const availableCategories = Object.keys(menuData).filter(key => 
+    key !== 'bebidas' // Exclude bebidas as it's not in menuData
+  );
 
   useEffect(() => {
     loadMenuItems();
@@ -41,13 +46,82 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
     }
   };
 
-  const getItemsForCategory = (category: string) => {
-    return menuItems.filter(item => item.category === category);
+  const getCategoryDisplayName = (categoryKey: string): string => {
+    const categoryMap: { [key: string]: string } = {
+      'entrantes': 'Entrantes',
+      'principales': 'Principales', 
+      'biryani': 'Biryani',
+      'vegetales': 'Vegetales',
+      'panes': 'Acompañamientos y Panes',
+      'postres': 'Postres'
+    };
+    return categoryMap[categoryKey] || categoryKey;
+  };
+
+  const getItemsForSubcategory = (categoryKey: string, subcategoryTitle?: string) => {
+    const categoryDisplayName = getCategoryDisplayName(categoryKey);
+    
+    if (!subcategoryTitle) {
+      // For categories without subcategories, get all items for that category
+      return menuItems.filter(item => item.category === categoryDisplayName);
+    }
+    
+    // For subcategories, we need to match the item name with the subcategory items
+    const categoryData = menuData[categoryKey];
+    if (!categoryData?.subcategories) return [];
+    
+    const subcategory = categoryData.subcategories.find(sub => sub.title === subcategoryTitle);
+    if (!subcategory) return [];
+    
+    const subcategoryItemNames = subcategory.items.map(item => item.name);
+    return menuItems.filter(item => 
+      item.category === categoryDisplayName && subcategoryItemNames.includes(item.name)
+    );
   };
 
   const getItemQuantity = (itemId: string) => {
     const item = cartItems.find(cartItem => cartItem.id === itemId);
     return item ? item.quantity : 0;
+  };
+
+  const renderMenuItems = (items: MenuItemType[]) => {
+    return items.map((item) => {
+      const quantity = getItemQuantity(item.id);
+      return (
+        <div key={item.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-secondary rounded-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-xl opacity-50">🍽️</span>
+            </div>
+            <div className="flex-grow">
+              <h5 className="font-semibold text-sm">{item.name}</h5>
+              <p className="text-xs text-muted-foreground">€{item.price.toFixed(2)}</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 self-end sm:self-center">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="w-8 h-8"
+              onClick={() => updateQuantity(item.id, quantity - 1)}
+              disabled={quantity === 0}
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <span className="font-bold text-base w-8 text-center">{quantity}</span>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="w-8 h-8"
+              onClick={() => addToCart(item, 1)}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      );
+    });
   };
 
   if (isLoading) {
@@ -87,59 +161,53 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
         value={openCategory}
         onValueChange={setOpenCategory}
       >
-        {categories.map((category) => (
-          <AccordionItem value={category} key={category} className="border-none">
-            <AccordionTrigger className="hover:no-underline p-0 text-left">
+        {availableCategories.map((categoryKey) => {
+          const categoryData = menuData[categoryKey];
+          const categoryDisplayName = getCategoryDisplayName(categoryKey);
+          
+          return (
+            <AccordionItem value={categoryKey} key={categoryKey} className="border-none">
+              <AccordionTrigger className="hover:no-underline p-0 text-left">
                 <div className="flex w-full items-center gap-4 p-3 border rounded-lg hover:bg-accent/10 transition-colors data-[state=open]:bg-accent/10">
-                    <div className="w-16 h-16 bg-secondary rounded-lg flex items-center justify-center flex-shrink-0">
-                        <span className="text-3xl opacity-50">🍛</span>
-                    </div>
-                    <h4 className="text-xl font-playfair font-bold text-accent">{category}</h4>
+                  <div className="w-16 h-16 bg-secondary rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-3xl opacity-50">🍛</span>
+                  </div>
+                  <h4 className="text-xl font-playfair font-bold text-accent">{categoryDisplayName}</h4>
                 </div>
-            </AccordionTrigger>
-            <AccordionContent className="pt-2">
-              <div className="space-y-2">
-                {getItemsForCategory(category).map((item) => {
-                  const quantity = getItemQuantity(item.id);
-                  return (
-                    <div key={item.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-secondary rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                          <span className="text-xl opacity-50">🍽️</span>
-                        </div>
-                        <div className="flex-grow">
-                          <h5 className="font-semibold text-sm">{item.name}</h5>
-                          <p className="text-xs text-muted-foreground">€{item.price.toFixed(2)}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 self-end sm:self-center">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="w-8 h-8"
-                          onClick={() => updateQuantity(item.id, quantity - 1)}
-                          disabled={quantity === 0}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="font-bold text-base w-8 text-center">{quantity}</span>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="w-8 h-8"
-                          onClick={() => addToCart(item, 1)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+              </AccordionTrigger>
+              <AccordionContent className="pt-2">
+                {categoryData.subcategories ? (
+                  // Render subcategories
+                  <Accordion 
+                    type="single" 
+                    collapsible 
+                    className="w-full space-y-2"
+                    value={openSubcategory}
+                    onValueChange={setOpenSubcategory}
+                  >
+                    {categoryData.subcategories.map((subcategory) => (
+                      <AccordionItem value={`${categoryKey}-${subcategory.title}`} key={subcategory.title} className="border border-muted rounded-lg">
+                        <AccordionTrigger className="hover:no-underline px-4 py-2 text-left">
+                          <h5 className="text-lg font-semibold text-accent">{subcategory.title}</h5>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-4 pb-4">
+                          <div className="space-y-2">
+                            {renderMenuItems(getItemsForSubcategory(categoryKey, subcategory.title))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                ) : (
+                  // Render items directly for categories without subcategories
+                  <div className="space-y-2">
+                    {renderMenuItems(getItemsForSubcategory(categoryKey))}
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </div>
   );
