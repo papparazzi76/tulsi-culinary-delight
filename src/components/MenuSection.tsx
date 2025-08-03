@@ -55,13 +55,20 @@ const MenuSection = () => {
   const loadMenuItems = async () => {
     try {
       setLoading(true);
+      console.log('Loading menu items...');
       const { data, error } = await supabase
         .from('menu_items')
         .select('*')
         .eq('available', true)
         .order('category', { ascending: true });
 
-      if (error) throw error;
+      console.log('Supabase response:', { data, error });
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Menu items loaded:', data?.length || 0);
       setMenuItems(data || []);
     } catch (error) {
       console.error('Error loading menu items:', error);
@@ -85,24 +92,41 @@ const MenuSection = () => {
   };
 
   const getItemsForCategory = (categoryDisplayName: string, subcategoryTitle?: string) => {
+    console.log('getItemsForCategory called with:', { categoryDisplayName, subcategoryTitle, totalMenuItems: menuItems.length });
+    
     if (!subcategoryTitle) {
-      return menuItems.filter(item => item.category === categoryDisplayName);
+      const items = menuItems.filter(item => item.category === categoryDisplayName);
+      console.log(`Items for category "${categoryDisplayName}":`, items.length);
+      return items;
     }
     
     // For subcategories, we need to match the item name with the subcategory items
     const categoryKey = tabs.find(tab => tab.label === categoryDisplayName)?.id;
-    if (!categoryKey || !menuData[categoryKey as keyof typeof menuData]) return [];
+    console.log('Category key found:', categoryKey);
+    
+    if (!categoryKey || !menuData[categoryKey as keyof typeof menuData]) {
+      console.log('No category data found for key:', categoryKey);
+      return [];
+    }
     
     const categoryData = menuData[categoryKey as keyof typeof menuData];
-    if (!categoryData?.subcategories) return [];
+    if (!categoryData?.subcategories) {
+      console.log('No subcategories found for:', categoryKey);
+      return [];
+    }
     
     const subcategory = categoryData.subcategories.find(sub => sub.title === subcategoryTitle);
-    if (!subcategory) return [];
+    if (!subcategory) {
+      console.log('Subcategory not found:', subcategoryTitle);
+      return [];
+    }
     
     const subcategoryItemNames = subcategory.items.map(item => item.name);
-    return menuItems.filter(item => 
+    const filteredItems = menuItems.filter(item => 
       item.category === categoryDisplayName && subcategoryItemNames.includes(item.name)
     );
+    console.log(`Items for subcategory "${subcategoryTitle}":`, filteredItems.length);
+    return filteredItems;
   };
 
   const renderMenuItems = (items: MenuItem[]) => (
@@ -198,6 +222,7 @@ const MenuSection = () => {
   };
 
   const renderMenuCategory = (categoryKey: string) => {
+    console.log('renderMenuCategory called with:', categoryKey);
     if (categoryKey === 'degustacion') return renderTastingMenus();
     
     const categoryDisplayName = getCategoryDisplayName(categoryKey);
