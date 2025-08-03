@@ -143,32 +143,42 @@ const panes: MenuCategory = {
       items: [
         {
           name: "Cheese Naan",
-          description: "Pan tierno relleno de queso fundido, horneado en el tandoor.",
+          description: "Pan tierno relleno de queso fundido, horneado en el tandoor. Ideal para acompañar salsas cremosas.",
           price: "4.50€"
         },
         {
           name: "Cheese Garlic Naan",
-          description: "Naan relleno de queso con ajo fresco, dorado en el tandoor.",
+          description: "Naan relleno de queso con ajo fresco, dorado en el tandoor. Cremoso y aromático, perfecto para platos intensos.",
           price: "5.00€"
         },
         {
           name: "Garlic Naan",
-          description: "Clásico naan con ajo fresco y mantequilla.",
+          description: "Clásico naan con ajo fresco y mantequilla, ligeramente crujiente y muy fragante.",
+          price: "4.00€"
+        },
+        {
+          name: "Onion Naan",
+          description: "Naan relleno de cebolla finamente picada, asado en el tandoor. Sabor dulce y tostado.",
           price: "4.00€"
         },
         {
           name: "Peshawari Naan",
-          description: "Pan naan relleno de frutos secos, coco y frutas confitadas.",
+          description: "Pan dulce relleno de frutos secos, coco y frutas confitadas. Dulce y aromático, ideal con currys picantes.",
           price: "5.00€"
         },
         {
           name: "Tandoori Naan",
-          description: "Versión tradicional del pan naan simple, suave y tierno.",
+          description: "Versión tradicional del pan naan simple, suave y tierno, cocinado en el horno tandoor. Acompañamiento esencial.",
+          price: "3.50€"
+        },
+        {
+          name: "Lacha Paratha",
+          description: "Pan multicapa y hojaldrado, hecho con harina y mantequilla, asado en el tandoor. Crujiente y perfecto para absorber salsas.",
           price: "3.50€"
         },
         {
           name: "Roti / Chapati",
-          description: "Pan plano integral, fino y ligero, sin grasa.",
+          description: "Pan plano integral, fino y ligero, cocinado sin grasa en superficie tandoor. Alternativa más saludable y sencilla al naan.",
           price: "3.00€"
         }
       ]
