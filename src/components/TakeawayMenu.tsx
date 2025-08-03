@@ -90,8 +90,21 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
       return (
         <div key={item.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-secondary rounded-lg">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-xl opacity-50">🍽️</span>
+            <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+              {item.image_url ? (
+                <img 
+                  src={item.image_url} 
+                  alt={item.name}
+                  className="w-full h-full object-cover rounded-lg"
+                  onError={(e) => {
+                    // Fallback to emoji if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+              ) : null}
+              <span className={`text-xl opacity-50 ${item.image_url ? 'hidden' : ''}`}>🍽️</span>
             </div>
             <div className="flex-grow">
               <h5 className="font-semibold text-sm">{item.name}</h5>
