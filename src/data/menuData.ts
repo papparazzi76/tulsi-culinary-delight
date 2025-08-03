@@ -118,17 +118,22 @@ const panes: MenuCategory = {
       items: [
         {
           name: "Kashmiri Pulao",
-          description: "Arroz basmati con frutos secos, frutas y especias suaves.",
+          description: "Arroz basmati aromático cocinado con frutos secos, frutas confitadas y especias suaves. Sabor dulce y fragante, típico de la región de Cachemira. Ideal con platos suaves o cremosos.",
           price: "10.50€"
         },
         {
           name: "Pulao Rice",
-          description: "Arroz basmati salteado con especias suaves.",
+          description: "Arroz basmati salteado con especias suaves como comino, clavo y laurel. Ligero, aromático y perfecto como base para currys.",
           price: "7.50€"
         },
         {
+          name: "Egg Fried Rice",
+          description: "Arroz basmati salteado al estilo indo-chino con huevo, cebolla y especias. Sabor suave y textura suelta. Buen acompañante de platos picantes o con especias.",
+          price: "9.50€"
+        },
+        {
           name: "Boil Rice",
-          description: "Arroz basmati blanco hervido, simple y esponjoso.",
+          description: "Arroz basmati blanco hervido, simple y esponjoso. La opción más neutra para acompañar cualquier curry.",
           price: "7.00€"
         }
       ]
