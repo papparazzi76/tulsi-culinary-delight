@@ -81,31 +81,21 @@ const MenuSection = () => {
           aria-label={`Ver detalles de ${item.name}`}
         >
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
-            {(() => {
-              console.log('Item:', item.name, 'Image:', item.image);
-              return item.image ? (
-                <img 
-                  src={item.image} 
-                  alt={item.name}
-                  className="w-4/5 aspect-video object-cover rounded-lg border-2 border-accent/50"
-                  onError={(e) => {
-                    console.error('Error loading image:', item.image, 'for item:', item.name);
-                    console.error('Error event:', e);
-                  }}
-                  onLoad={() => {
-                    console.log('Image loaded successfully:', item.image, 'for item:', item.name);
-                  }}
-                />
-              ) : (
-                <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
-                  <div className="text-accent text-sm font-medium text-center px-4">
-                    Imagen del plato
-                    <br />
-                    <span className="text-xs text-muted-foreground">Próximamente</span>
-                  </div>
+            {item.image ? (
+              <img 
+                src={item.image} 
+                alt={item.name}
+                className="w-4/5 aspect-video object-cover rounded-lg border-2 border-accent/50"
+              />
+            ) : (
+              <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
+                <div className="text-accent text-sm font-medium text-center px-4">
+                  Imagen del plato
+                  <br />
+                  <span className="text-xs text-muted-foreground">Próximamente</span>
                 </div>
-              );
-            })()}
+              </div>
+            )}
           </div>
           
           <div className="relative z-0 group-hover:opacity-60 transition-opacity duration-300">
