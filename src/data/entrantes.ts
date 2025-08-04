@@ -54,7 +54,8 @@ export const entrantes: MenuCategory = {
         {
           name: "Samosa de Carne (2 uds)",
           description: "Empanadilla con una mezcla sazonada de carne picada y cebolla, enriquecida con coriandro, comino y chile, que aporta un contraste jugoso.",
-          price: "7.50€"
+          price: "7.50€",
+          image: "/lovable-uploads/samosa-carne.png"
         },
         {
           name: "Pakora Vegetal (4 uds)",
