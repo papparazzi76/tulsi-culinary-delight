@@ -10,13 +10,13 @@ export const entrantes: MenuCategory = {
           name: "Pani Puri",
           description: "Crujientes esferas de masa rellenas de patata y garbanzos, servidas con agua especiada.",
           price: "5.00€",
-          image: "pani-puri.png"
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//pani-puri.png"
         },
         {
           name: "Yogurt Gol Gappa",
           description: "Pani puri rellenos de yogur cremoso, chutneys dulces y especias.",
           price: "6.00€",
-          image: "yogurt-gol-gappa.jpg"
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//yogurt-gol-gappa.png"
         },
         {
           name: "Dahi Bhale",
@@ -53,13 +53,13 @@ export const entrantes: MenuCategory = {
           name: "Samosa de Pollo (2 uds)",
           description: "Triángulo frito relleno de pollo desmenuzado marinado con jengibre, cilantro y especias suaves, resultando en un bocado jugoso.",
           price: "7.50€",
-          image: "samosa pollo.jpg"
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//samosa-pollo.webp"
         },
         {
           name: "Samosa de Carne (2 uds)",
           description: "Empanadilla con una mezcla sazonada de carne picada y cebolla, enriquecida con coriandro, comino y chile, que aporta un contraste jugoso.",
           price: "7.50€",
-          image: "0m65kep_samosa_625x300_10_March_23.webp"
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//samosa-carne.webp"
         },
         {
           name: "Pakora Vegetal (4 uds)",
