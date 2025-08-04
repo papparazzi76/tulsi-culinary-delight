@@ -21,7 +21,8 @@ export const entrantes: MenuCategory = {
         {
           name: "Dahi Bhale",
           description: "Buñuelos suaves de lentejas cubiertos con yogur y chutneys dulces.",
-          price: "6.00€"
+          price: "6.00€",
+          image:"https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//dahi-bhale.jpg"
         },
         {
           name: "Samosa Chat",
