@@ -39,7 +39,8 @@ export const entrantes: MenuCategory = {
         {
           name: "Tacos de Pollo (3 uds)",
           description: "Tacos rellenos de pollo jugoso y sazonado, con salsas y hierbas frescas.",
-          price: "12.00€"
+          price: "12.00€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//tacos-de-pollo-3-uds.webp"
         }
       ]
     },
