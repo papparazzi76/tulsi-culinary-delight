@@ -15,7 +15,8 @@ export const entrantes: MenuCategory = {
         {
           name: "Yogurt Gol Gappa",
           description: "Pani puri rellenos de yogur cremoso, chutneys dulces y especias.",
-          price: "6.00€"
+          price: "6.00€",
+          image: "yogurt-gol-gappa.jpg"
         },
         {
           name: "Dahi Bhale",
