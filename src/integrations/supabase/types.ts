@@ -388,6 +388,14 @@ export type Database = {
           average_order_value: number
         }[]
       }
+      map_menu_image: {
+        Args: { file_name: string; menu_item_name: string }
+        Returns: undefined
+      }
+      update_menu_images: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
