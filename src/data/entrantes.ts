@@ -68,27 +68,32 @@ export const entrantes: MenuCategory = {
         {
           name: "Pakora Vegetal (4 uds)",
           description: "Frituras crujientes de verduras variadas (cebolla, patata, espinacas, coliflor) rebozadas en una mezcla de harina de garbanzo y especias como cúrcuma y comino, un snack tradicional.",
-          price: "7.00€"
+          price: "7.00€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//pakora-vegetal.webp"
         },
         {
           name: "Onion Bhaji",
           description: "Aros de cebolla rebozados en tempura india especiada con comino y cúrcuma, fritos hasta lograr una textura crujiente y un sabor dulce y suave.",
-          price: "7.00€"
+          price: "7.00€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//onion-bhagi.webp"
         },
         {
           name: "Cheese Roll (2 uds)",
           description: "Delicados rollitos fritos rellenos de una mezcla cremosa de quesos fundidos, salpicados con especias suaves.",
-          price: "7.50€"
+          price: "7.50€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//cheese-roll-2-uds.webp"
         },
         {
           name: "Gobi 65",
           description: "Coliflor marinada al estilo Chennai (1965), rebozada con un rebozado especiado y luego salteada con curry leaves, ajo y guindillas para un resultado crujiente.",
-          price: "7.00€"
+          price: "7.00€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//gobi-65.webp"
         },
         {
           name: "Chicken 65",
           description: "Trozos de pollo marinados en yogur, jengibre, ajo, chiles rojos y especias rebozados ligera y fritos hasta quedar dorados.",
-          price: "7.50€"
+          price: "7.50€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//chicken-65.webp"
         },
         {
           name: "Fish 65",
