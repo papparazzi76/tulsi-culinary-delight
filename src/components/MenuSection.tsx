@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { menuData } from '@/data/menuData';
 import { degustacion } from '@/data/degustacion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { X } from 'lucide-react';
 
 interface MenuItem {
@@ -62,57 +63,86 @@ const MenuSection = () => {
 
   const renderMenuItems = (items: MenuItem[]) => (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {items.map((item, index) => (
-        <div 
-          key={index} 
-          className={`menu-card-interactive group cursor-pointer transition-all duration-500 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-          style={{ transitionDelay: `${index * 100}ms` }}
-          onClick={() => handleItemClick(item)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleItemClick(item);
-            }
-          }}
-          aria-label={`Ver detalles de ${item.name}`}
-        >
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
-            {item.image ? (
-              <img 
-                src={item.image} 
-                alt={item.name}
-                className="w-4/5 aspect-video object-cover rounded-lg border-2 border-accent/50"
-              />
-            ) : (
-              <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
-                <div className="text-accent text-sm font-medium text-center px-4">
-                  Imagen del plato
-                  <br />
-                  <span className="text-xs text-muted-foreground">Próximamente</span>
+      {items.map((item, index) => {
+        const isPaniPuri = item.name === "Pani Puri";
+        
+        const menuItemContent = (
+          <div 
+            className={`menu-card-interactive group cursor-pointer transition-all duration-500 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+            style={{ transitionDelay: `${index * 100}ms` }}
+            onClick={() => handleItemClick(item)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleItemClick(item);
+              }
+            }}
+            aria-label={`Ver detalles de ${item.name}`}
+          >
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center z-10">
+              {item.image ? (
+                <img 
+                  src={item.image} 
+                  alt={item.name}
+                  className="w-4/5 aspect-video object-cover rounded-lg border-2 border-accent/50"
+                />
+              ) : (
+                <div className="w-4/5 aspect-video bg-muted/80 rounded-lg border-2 border-accent/50 flex items-center justify-center">
+                  <div className="text-accent text-sm font-medium text-center px-4">
+                    Imagen del plato
+                    <br />
+                    <span className="text-xs text-muted-foreground">Próximamente</span>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-          
-          <div className="relative z-0 group-hover:opacity-60 transition-opacity duration-300">
-            <div className="flex justify-between items-start mb-3">
-              <h4 className="text-xl font-semibold text-foreground font-playfair">
-                {item.name}
-              </h4>
-              <span className="text-lg font-bold text-accent ml-4 flex-shrink-0">
-                {item.price}
-              </span>
+              )}
             </div>
-            <p className="text-muted-foreground leading-relaxed">
-              {item.description}
-            </p>
+            
+            <div className="relative z-0 group-hover:opacity-60 transition-opacity duration-300">
+              <div className="flex justify-between items-start mb-3">
+                <h4 className="text-xl font-semibold text-foreground font-playfair">
+                  {item.name}
+                </h4>
+                <span className="text-lg font-bold text-accent ml-4 flex-shrink-0">
+                  {item.price}
+                </span>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                {item.description}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+
+        if (isPaniPuri) {
+          return (
+            <HoverCard key={index}>
+              <HoverCardTrigger asChild>
+                {menuItemContent}
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80">
+                <div className="space-y-3">
+                  <img 
+                    src="/lovable-uploads/560bf6bf-1746-4a86-94f9-03e84540b780.png" 
+                    alt="Pani Puri"
+                    className="w-full aspect-video object-cover rounded-lg"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-lg font-playfair">{item.name}</h4>
+                    <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                    <p className="text-accent font-bold mt-2">{item.price}</p>
+                  </div>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          );
+        }
+
+        return menuItemContent;
+      })}
     </div>
   );
   
