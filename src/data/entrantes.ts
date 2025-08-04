@@ -46,7 +46,7 @@ export const entrantes: MenuCategory = {
           name: "Samosa Vegetal (2 uds)",
           description: "Empanadilla triangular relleno de patata, cebolla y guisantes con jengibre, comino y garam masala, acompañado de chutneys.",
           price: "7.00€",
-          image: "samosa verduras.png"
+          image: "/lovable-uploads/samosa-vegetal-hover.jpg"
         },
         {
           name: "Samosa de Pollo (2 uds)",
