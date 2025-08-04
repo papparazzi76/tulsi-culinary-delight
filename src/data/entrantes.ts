@@ -9,7 +9,8 @@ export const entrantes: MenuCategory = {
         {
           name: "Pani Puri",
           description: "Crujientes esferas de masa rellenas de patata y garbanzos, servidas con agua especiada.",
-          price: "5.00€"
+          price: "5.00€",
+          image: "pani puri.webp"
         },
         {
           name: "Yogurt Gol Gappa",
@@ -51,13 +52,13 @@ export const entrantes: MenuCategory = {
           name: "Samosa de Pollo (2 uds)",
           description: "Triángulo frito relleno de pollo desmenuzado marinado con jengibre, cilantro y especias suaves, resultando en un bocado jugoso.",
           price: "7.50€",
-          image: "samosa pollo.png"
+          image: "samosa pollo.jpg"
         },
         {
           name: "Samosa de Carne (2 uds)",
           description: "Empanadilla con una mezcla sazonada de carne picada y cebolla, enriquecida con coriandro, comino y chile, que aporta un contraste jugoso.",
           price: "7.50€",
-          image: "0m65kep_samosa_625x300_10_March_23.png"
+          image: "0m65kep_samosa_625x300_10_March_23.webp"
         },
         {
           name: "Pakora Vegetal (4 uds)",
