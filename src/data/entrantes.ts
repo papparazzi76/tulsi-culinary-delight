@@ -28,7 +28,7 @@ export const entrantes: MenuCategory = {
           name: "Samosa Chat",
           description: "Samosa crujiente troceada, con yogur, garbanzos y chutneys.",
           price: "6.50€",
-          image"https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//samosa-chaat.webp"
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//samosa-chaat.webp"
         },
         {
           name: "Honey Chicken Wings",
