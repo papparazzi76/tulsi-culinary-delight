@@ -98,12 +98,14 @@ export const entrantes: MenuCategory = {
         {
           name: "Fish 65",
           description: "Pescado blanco marinado, frito hasta lograr una capa crujiente y luego salteado con especias, ácil y aromático; ideal como aperitivo o acompañamiento de platos principales jugosos.",
-          price: "7.50€"
+          price: "7.50€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//fish-65.webp"
         },
         {
           name: "Beef Cutlet (2 uds)",
           description: "Croquetas de ternera y patata, aliñadas con cúrcuma, comino y cilantro empanadas y fritas hasta dorado, con un corazón meloso y aromático ideal como entrante crujiente.",
-          price: "7.50€"
+          price: "7.50€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//beef-cutlet.webp"
         }
       ]
     },
@@ -113,7 +115,8 @@ export const entrantes: MenuCategory = {
         {
           name: "Chicken Haryali",
           description: "Dados de pollo marinados en una mezcla de yogur, menta, cilantro y especias verdes, asados en el horno tandoor.",
-          price: "8.00€"
+          price: "8.00€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//chicken-haryali.webp"
         },
         {
           name: "Chicken Tikka",
