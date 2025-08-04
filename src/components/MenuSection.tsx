@@ -238,11 +238,19 @@ const MenuSection = () => {
           
           {selectedItem && (
             <div className="space-y-6 pt-4">
-              <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center">
+              {selectedItem.image ? (
+                <img 
+                  src={selectedItem.image} 
+                  alt={selectedItem.name}
+                  className="aspect-video w-full object-cover rounded-lg border-2 border-accent/30"
+                />
+              ) : (
+                <div className="aspect-video w-full bg-muted/50 rounded-lg border-2 border-dashed border-accent/30 flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
                     <div className="text-lg font-medium">Imagen próximamente</div>
                   </div>
                 </div>
+              )}
 
               <div className="flex justify-between items-center border-b border-accent/20 pb-4">
                 <span className="text-sm text-muted-foreground">Precio</span>
