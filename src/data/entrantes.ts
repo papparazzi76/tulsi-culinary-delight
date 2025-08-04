@@ -45,17 +45,19 @@ export const entrantes: MenuCategory = {
           name: "Samosa Vegetal (2 uds)",
           description: "Empanadilla triangular relleno de patata, cebolla y guisantes con jengibre, comino y garam masala, acompañado de chutneys.",
           price: "7.00€"
+          image: "samosa verduras.png"
         },
         {
           name: "Samosa de Pollo (2 uds)",
           description: "Triángulo frito relleno de pollo desmenuzado marinado con jengibre, cilantro y especias suaves, resultando en un bocado jugoso.",
           price: "7.50€"
+          image: "samosa pollo.png"
         },
         {
           name: "Samosa de Carne (2 uds)",
           description: "Empanadilla con una mezcla sazonada de carne picada y cebolla, enriquecida con coriandro, comino y chile, que aporta un contraste jugoso.",
           price: "7.50€",
-          image: "/lovable-uploads/samosa-carne.png"
+          image: "0m65kep_samosa_625x300_10_March_23.png"
         },
         {
           name: "Pakora Vegetal (4 uds)",
