@@ -13,7 +13,7 @@ export const especiales: MenuCategory = {
       name: "Pani Puri",
       description: "Crujientes esferas de masa rellenas de patata y garbanzos, servidas con agua especiada.",
       price: "5.00€",
-      image: paniPuriImg
+      image: "/lovable-uploads/3f63acbd-8023-4a48-8dfb-cfd17a1a2878.png"
     },
     {
       name: "Yogurt Gol Gappa",
