@@ -33,7 +33,8 @@ export const entrantes: MenuCategory = {
         {
           name: "Honey Chicken Wings",
           description: "Alitas de pollo glaseadas en salsa dulce de miel, jugosas y doradas.",
-          price: "10.50€"
+          price: "10.50€",
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//honey_chicken_wings.webp"
         },
         {
           name: "Tacos de Pollo (3 uds)",
