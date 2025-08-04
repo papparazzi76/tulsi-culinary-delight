@@ -51,8 +51,7 @@ const MenuSection = () => {
     { id: 'principales', label: 'Platos Principales' },
     { id: 'biryani', label: 'Biryani' },
     { id: 'vegetales', label: 'Vegetales' },
-    { id: 'panes', label: 'Acompañamientos' },
-    { id: 'especiales', label: 'Especial de Tulsi' }
+    { id: 'panes', label: 'Acompañamientos' }
   ];
 
   const handleItemClick = (item: MenuItem) => {
