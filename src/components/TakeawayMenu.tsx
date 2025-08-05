@@ -18,10 +18,8 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
   const [openSubcategory, setOpenSubcategory] = useState<string | undefined>();
   const { addToCart, updateQuantity, cartItems, getCartCount } = useCart();
 
-  // Get categories that exist in both menuData and database
-  const availableCategories = Object.keys(menuData).filter(key => 
-    key !== 'bebidas' // Exclude bebidas as it's not in menuData
-  );
+  // Get categories that exist in menuData
+  const availableCategories = Object.keys(menuData);
 
   useEffect(() => {
     loadMenuItems();
@@ -53,7 +51,8 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
       'biryani': 'Biryani',
       'vegetales': 'Vegetales',
       'panes': 'Acompañamientos y Panes',
-      'postres': 'Postres'
+      'postres': 'Postres',
+      'bebidas': 'Bebidas'
     };
     return categoryMap[categoryKey] || categoryKey;
   };
@@ -183,7 +182,9 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
               <AccordionTrigger className="hover:no-underline p-0 text-left">
                 <div className="flex w-full items-center gap-4 p-3 border rounded-lg hover:bg-accent/10 transition-colors data-[state=open]:bg-accent/10">
                   <div className="w-16 h-16 bg-secondary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-3xl opacity-50">🍛</span>
+                    <span className="text-3xl opacity-50">
+                      {categoryKey === 'bebidas' ? '🍹' : '🍛'}
+                    </span>
                   </div>
                   <h4 className="text-xl font-playfair font-bold text-accent">{categoryDisplayName}</h4>
                 </div>
