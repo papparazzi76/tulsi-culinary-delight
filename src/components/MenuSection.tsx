@@ -51,7 +51,9 @@ const MenuSection = () => {
     { id: 'principales', label: 'Platos Principales' },
     { id: 'biryani', label: 'Biryani' },
     { id: 'vegetales', label: 'Vegetales' },
-    { id: 'panes', label: 'Acompañamientos' }
+    { id: 'panes', label: 'Acompañamientos' },
+    { id: 'postres', label: 'Postres' },
+    { id: 'bebidas', label: 'Bebidas' }
   ];
 
   const handleItemClick = (item: MenuItem) => {
