@@ -152,7 +152,7 @@ export const entrantes: MenuCategory = {
           name: "Tandoori Brócoli",
           description: "Floretes de brócoli marinados en yogur y especias, asados en horno tandoor hasta lograr bordes caramelizados y un interior tierno.",
           price: "8.50€",
-          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//salmon-tandoori.webp"
+          image: "https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-images//brocoli-tandoor.webp"
         }
       ]
     }
