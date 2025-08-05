@@ -1,4 +1,5 @@
 import AboutSection from '@/components/AboutSection';
+import AnnouncementPopup from '@/components/AnnouncementPopup';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import GallerySection from '@/components/GallerySection';
@@ -23,6 +24,7 @@ const Index = () => {
         <ContactSection />
       </main>
       <Footer />
+      <AnnouncementPopup />
       <Toaster />
     </div>
   );
