@@ -11,7 +11,7 @@ const Footer = () => {
     },
     {
       icon: <Instagram className="w-6 h-6" />,
-      href: "#",
+      href: "https://www.instagram.com/tulsi_valladolid/",
       label: "Instagram"
     },
     {
