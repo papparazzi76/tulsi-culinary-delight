@@ -199,22 +199,18 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
                     value={openSubcategory}
                     onValueChange={setOpenSubcategory}
                   >
-                    {categoryData.subcategories.map((subcategory) => {
-                      const items = getItemsForSubcategory(categoryKey, subcategory.title);
-                      console.log(`Items for ${categoryKey} - ${subcategory.title}:`, items);
-                      return (
-                        <AccordionItem value={`${categoryKey}-${subcategory.title}`} key={subcategory.title} className="border border-muted rounded-lg">
-                          <AccordionTrigger className="hover:no-underline px-4 py-2 text-left">
-                            <h5 className="text-lg font-semibold text-accent">{subcategory.title}</h5>
-                          </AccordionTrigger>
-                          <AccordionContent className="px-4 pb-4">
-                            <div className="space-y-2">
-                              {renderMenuItems(items)}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      );
-                    })}
+                    {categoryData.subcategories.map((subcategory) => (
+                      <AccordionItem value={`${categoryKey}-${subcategory.title}`} key={subcategory.title} className="border border-muted rounded-lg">
+                        <AccordionTrigger className="hover:no-underline px-4 py-2 text-left">
+                          <h5 className="text-lg font-semibold text-accent">{subcategory.title}</h5>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-4 pb-4">
+                          <div className="space-y-2">
+                            {renderMenuItems(getItemsForSubcategory(categoryKey, subcategory.title))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
                   </Accordion>
                 ) : (
                   // Render items directly for categories without subcategories
