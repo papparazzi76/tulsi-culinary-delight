@@ -143,8 +143,8 @@ const AnnouncementPopup = () => {
               })} required />
                   <Label htmlFor="instagram" className="text-sm leading-5 cursor-pointer">
                     Ya sigo{' '}
-                    <a href="https://instagram.com/tulsirestaurante" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
-                      @TulsiRestaurante
+                    <a href="https://instagram.com/tulsi_valladolid/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
+                      @tulsi_valladolid
                     </a>
                     {' '}en Instagram *
                   </Label>
