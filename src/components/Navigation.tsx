@@ -70,7 +70,7 @@ const Navigation = () => {
             </nav>
             
             <button 
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('reservar')?.scrollIntoView({ behavior: 'smooth' })}
               className="hidden md:flex items-center gap-2 btn-tulsi"
             >
               Reservar
@@ -123,7 +123,7 @@ const Navigation = () => {
           
           <button 
             onClick={() => {
-              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              document.getElementById('reservar')?.scrollIntoView({ behavior: 'smooth' });
               setIsMobileMenuOpen(false);
             }}
             className="btn-tulsi mt-4 flex items-center gap-2"

@@ -137,7 +137,7 @@ const ContactSection = () => {
             </div>
 
             {/* Reservation Widget */}
-            <div className="pt-6">
+            <div id="reservar" className="pt-6">
               <ReservationWidget />
             </div>
           </div>
