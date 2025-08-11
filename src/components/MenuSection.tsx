@@ -3,6 +3,8 @@ import { menuData } from '@/data/menuData';
 import { degustacion } from '@/data/degustacion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 
 interface MenuItem {
   name: string;
@@ -26,6 +28,35 @@ const MenuSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleDownloadMenu = async () => {
+    try {
+      toast({
+        title: 'Descargando carta...',
+        description: 'Preparando archivo PDF.',
+      });
+      const publicUrl = 'https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-files/carta.pdf';
+      const res = await fetch(publicUrl);
+      if (!res.ok) throw new Error('Archivo no encontrado');
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = 'Carta-Tulsi.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      toast({ title: 'Descarga iniciada', description: 'Gracias por su interés.' });
+    } catch (error) {
+      toast({
+        title: 'No se pudo descargar la carta',
+        description: 'Sube "carta.pdf" al bucket "menu-files" o inténtalo más tarde.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -181,6 +212,15 @@ const MenuSection = () => {
               La mejor carta de cocina india en Valladolid. Un viaje de sabores auténticos, 
               preparados con pasión y las mejores especias traídas directamente desde la India.
             </p>
+            <div
+              className={`mt-6 transition-all duration-1000 delay-300 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <Button variant="secondary" onClick={handleDownloadMenu} aria-label="Descargar carta en PDF">
+                Descargar carta (PDF)
+              </Button>
+            </div>
           </div>
 
           <div 
