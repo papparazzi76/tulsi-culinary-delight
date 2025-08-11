@@ -58,6 +58,56 @@ const MenuSection = () => {
     }
   };
 
+  const handleDownloadBebidas = async () => {
+    try {
+      toast({ title: 'Descargando bebidas...', description: 'Preparando archivo PDF.' });
+      const publicUrl = 'https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-files/bebidas.pdf';
+      const res = await fetch(publicUrl);
+      if (!res.ok) throw new Error('Archivo no encontrado');
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = 'Bebidas-Tulsi.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      toast({ title: 'Descarga iniciada', description: 'Gracias por su interés.' });
+    } catch (error) {
+      toast({
+        title: 'No se pudo descargar las bebidas',
+        description: 'Sube "bebidas.pdf" al bucket "menu-files" o inténtalo más tarde.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDownloadPostres = async () => {
+    try {
+      toast({ title: 'Descargando postres...', description: 'Preparando archivo PDF.' });
+      const publicUrl = 'https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-files/postres.pdf';
+      const res = await fetch(publicUrl);
+      if (!res.ok) throw new Error('Archivo no encontrado');
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = 'Postres-Tulsi.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      toast({ title: 'Descarga iniciada', description: 'Gracias por su interés.' });
+    } catch (error) {
+      toast({
+        title: 'No se pudo descargar los postres',
+        description: 'Sube "postres.pdf" al bucket "menu-files" o inténtalo más tarde.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -244,6 +294,20 @@ const MenuSection = () => {
               isVisible ? 'opacity-100' : 'opacity-0'
             }`}
           >
+            {(activeTab === 'bebidas' || activeTab === 'postres') && (
+              <div className="mb-6 flex justify-center">
+                {activeTab === 'bebidas' && (
+                  <Button variant="secondary" onClick={handleDownloadBebidas} aria-label="Descargar bebidas en PDF">
+                    Descargar bebidas (PDF)
+                  </Button>
+                )}
+                {activeTab === 'postres' && (
+                  <Button variant="secondary" onClick={handleDownloadPostres} aria-label="Descargar postres en PDF">
+                    Descargar postres (PDF)
+                  </Button>
+                )}
+              </div>
+            )}
             {activeTab === 'degustacion' 
               ? renderTastingMenus()
               : renderMenuCategory(menuData[activeTab as keyof typeof menuData])}
