@@ -5,6 +5,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { postres as postresData } from '@/data/postres';
+import { jsPDF } from 'jspdf';
 
 interface MenuItem {
   name: string;
@@ -83,9 +86,57 @@ const MenuSection = () => {
     }
   };
 
+  const generatePostresPdfBlob = async () => {
+    const doc = new jsPDF();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.text('Postres - Tulsi Restaurante', 14, 20);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    const dateStr = new Date().toLocaleDateString('es-ES');
+    doc.text(`Actualizado: ${dateStr}`, 14, 28);
+
+    let y = 38;
+    const desserts = (postresData.subcategories.find(s => s.title.toLowerCase().includes('postres'))?.items) || [];
+
+    desserts.forEach((item) => {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${item.name} - ${item.price}`, 14, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      const lines = doc.splitTextToSize(item.description, 180);
+      lines.forEach((line: string) => {
+        if (y > 285) { doc.addPage(); y = 20; }
+        doc.text(line, 14, y);
+        y += 6;
+      });
+      y += 4;
+    });
+
+    return doc.output('blob');
+  };
+
+  const ensurePostresPdf = async () => {
+    const publicUrl = 'https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-files/postres.pdf';
+    try {
+      const res = await fetch(publicUrl, { method: 'GET', cache: 'no-store' });
+      if (res.ok) return; // Ya existe
+    } catch (_) {
+      // Continuar para generar
+    }
+    const blob = await generatePostresPdfBlob();
+    const { error } = await supabase.storage.from('menu-files').upload('postres.pdf', blob, {
+      contentType: 'application/pdf',
+      upsert: true,
+    });
+    if (error) throw error;
+  };
+
   const handleDownloadPostres = async () => {
     try {
       toast({ title: 'Descargando postres...', description: 'Preparando archivo PDF.' });
+      await ensurePostresPdf();
       const publicUrl = 'https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/menu-files/postres.pdf';
       const res = await fetch(publicUrl);
       if (!res.ok) throw new Error('Archivo no encontrado');
@@ -102,7 +153,7 @@ const MenuSection = () => {
     } catch (error) {
       toast({
         title: 'No se pudo descargar los postres',
-        description: 'Sube "postres.pdf" al bucket "menu-files" o inténtalo más tarde.',
+        description: 'Inténtalo más tarde.',
         variant: 'destructive',
       });
     }
