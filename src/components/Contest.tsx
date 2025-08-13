@@ -1,5 +1,5 @@
 // src/components/Contest.tsx
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -12,8 +12,12 @@ interface Participant {
 const Contest = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [isCountdown, setIsCountdown] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const [winner, setWinner] = useState<Participant | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const spinSoundRef = useRef<OscillatorNode | null>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -46,23 +50,109 @@ const Contest = () => {
     }
   };
 
+  // Initialize audio context
+  const initAudioContext = useCallback(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    return audioContextRef.current;
+  }, []);
+
+  // Play beep sound
+  const playBeep = useCallback(() => {
+    const audioContext = initAudioContext();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
+  }, [initAudioContext]);
+
+  // Play spinning sound
+  const startSpinSound = useCallback(() => {
+    const audioContext = initAudioContext();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.type = 'sawtooth';
+    oscillator.frequency.setValueAtTime(50, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    
+    // Create the "clac clac clac" effect with rapid frequency changes
+    const now = audioContext.currentTime;
+    for (let i = 0; i < 15; i++) {
+      const time = now + (i * 1);
+      oscillator.frequency.setValueAtTime(50 + Math.random() * 30, time);
+      oscillator.frequency.setValueAtTime(80 + Math.random() * 40, time + 0.1);
+      oscillator.frequency.setValueAtTime(30 + Math.random() * 20, time + 0.2);
+    }
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 15);
+    spinSoundRef.current = oscillator;
+  }, [initAudioContext]);
+
+  const stopSpinSound = useCallback(() => {
+    if (spinSoundRef.current) {
+      try {
+        spinSoundRef.current.stop();
+      } catch (e) {
+        // Oscillator might already be stopped
+      }
+      spinSoundRef.current = null;
+    }
+  }, []);
+
+  const startCountdown = useCallback(() => {
+    setIsCountdown(true);
+    setCountdown(5);
+    setWinner(null);
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          setIsCountdown(false);
+          
+          // Start actual spinning
+          setIsSpinning(true);
+          startSpinSound();
+          
+          const winnerIndex = Math.floor(Math.random() * participants.length);
+          
+          setTimeout(() => {
+            stopSpinSound();
+            setWinner(participants[winnerIndex]);
+            setIsSpinning(false);
+            toast.success(`¡El ganador es ${participants[winnerIndex].name}!`);
+          }, 15000); // 15 seconds spin
+          
+          return 0;
+        } else {
+          playBeep();
+          return prev - 1;
+        }
+      });
+    }, 1000);
+  }, [participants, playBeep, startSpinSound, stopSpinSound]);
+
   const handleSpin = () => {
     if (participants.length === 0) {
       toast.error('Carga una lista de participantes primero.');
       return;
     }
 
-    setIsSpinning(true);
-    setWinner(null);
-
-    const spinDuration = Math.random() * 3000 + 3000;
-    const winnerIndex = Math.floor(Math.random() * participants.length);
-    
-    setTimeout(() => {
-      setWinner(participants[winnerIndex]);
-      setIsSpinning(false);
-      toast.success(`¡El ganador es ${participants[winnerIndex].name}!`);
-    }, spinDuration);
+    startCountdown();
   };
 
   const getWheelSegments = () => {
@@ -89,9 +179,17 @@ const Contest = () => {
         className="mb-4"
       />
 
-      <Button onClick={handleSpin} disabled={isSpinning || participants.length === 0} className="btn-tulsi">
-        {isSpinning ? 'Girando...' : '¡Girar la Ruleta!'}
+      <Button onClick={handleSpin} disabled={isSpinning || isCountdown || participants.length === 0} className="btn-tulsi">
+        {isCountdown ? `Preparando... ${countdown}` : isSpinning ? 'Girando...' : '¡Girar la Ruleta!'}
       </Button>
+
+      {/* Countdown Display */}
+      {isCountdown && (
+        <div className="mt-6 text-center">
+          <div className="text-6xl font-bold text-accent animate-pulse">{countdown}</div>
+          <div className="text-lg text-muted-foreground">¡Preparándose para girar!</div>
+        </div>
+      )}
 
       {/* Wheel of Fortune Animation */}
       {participants.length > 0 && (
@@ -104,11 +202,12 @@ const Contest = () => {
             
             {/* Wheel */}
             <div 
-              className={`relative w-80 h-80 rounded-full border-4 border-accent shadow-tulsi-glow transition-transform duration-[3000ms] ease-out ${
-                isSpinning ? 'animate-spin' : ''
+              className={`relative w-80 h-80 rounded-full border-4 border-accent shadow-tulsi-glow transition-transform duration-[15000ms] ease-out ${
+                isSpinning ? '' : ''
               }`}
               style={{
-                transform: isSpinning ? `rotate(${Math.random() * 360 + 1800}deg)` : 'rotate(0deg)'
+                transform: isSpinning ? `rotate(${Math.random() * 360 + 3600}deg)` : 'rotate(0deg)',
+                transitionDuration: isSpinning ? '15s' : '0s'
               }}
             >
               <svg className="w-full h-full" viewBox="0 0 200 200">
@@ -148,16 +247,6 @@ const Contest = () => {
                         stroke="white"
                         strokeWidth="2"
                       />
-                      <text
-                        x={textX}
-                        y={textY}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="text-xs font-medium fill-white"
-                        transform={`rotate(${textAngle > 90 && textAngle < 270 ? textAngle + 180 : textAngle} ${textX} ${textY})`}
-                      >
-                        {segment.name.length > 12 ? segment.name.substring(0, 12) + '...' : segment.name}
-                      </text>
                     </g>
                   );
                 })}
