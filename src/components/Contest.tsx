@@ -113,6 +113,17 @@ const Contest = () => {
     }
   }, []);
 
+  const maskEmail = (email: string): string => {
+    const [username, domain] = email.split('@');
+    if (username.length <= 4) {
+      return `${username[0]}***@${domain}`;
+    }
+    
+    const visibleChars = Math.max(1, username.length - 4);
+    const maskedPart = '*'.repeat(Math.min(4, username.length - 1));
+    return `${username.substring(0, visibleChars)}${maskedPart}@${domain}`;
+  };
+
   const startCountdown = useCallback(() => {
     setIsCountdown(true);
     setCountdown(5);
@@ -263,7 +274,7 @@ const Contest = () => {
           <div>
             <div className="text-xl mb-2">¡Felicidades!</div>
             <div className="text-4xl font-bold text-accent">{winner.name}</div>
-            <div className="text-muted-foreground">{winner.email}</div>
+            <div className="text-muted-foreground">{maskEmail(winner.email)}</div>
           </div>
         )}
 
