@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail } from 'lucide-react';
+import LotteryModal from '@/components/LotteryModal';
 
 const Footer = () => {
+  const [showLottery, setShowLottery] = useState(false);
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
@@ -113,6 +116,14 @@ const Footer = () => {
                   Reservar Mesa
                 </a>
               </li>
+              <li>
+                <button
+                  onClick={() => setShowLottery(true)}
+                  className="text-muted-foreground hover:text-accent transition-colors duration-300 text-left"
+                >
+                  Sorteos
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -164,6 +175,12 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      {/* Lottery Modal */}
+      <LotteryModal
+        isOpen={showLottery}
+        onClose={() => setShowLottery(false)}
+      />
     </footer>
   );
 };

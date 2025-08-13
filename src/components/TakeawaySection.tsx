@@ -2,14 +2,11 @@ import { useState, useEffect } from 'react';
 import { ShoppingBag, Phone, Clock, MapPin, Store } from 'lucide-react';
 import TakeawayMenu from './TakeawayMenu';
 import CartModal from './CartModal';
-import ContestModal from './ContestModal';
 
 const TakeawaySection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
-  const [showContest, setShowContest] = useState(false);
-  const [paymentCallback, setPaymentCallback] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -162,24 +159,9 @@ const TakeawaySection = () => {
         <CartModal
           isOpen={showCart}
           onClose={() => setShowCart(false)}
-          onShowContest={(callback) => {
-            setPaymentCallback(() => callback);
-            setShowContest(true);
-          }}
+          onShowContest={() => {}} // No-op since contest is moved to footer
         />
 
-        {/* Contest Modal */}
-        <ContestModal
-          isOpen={showContest}
-          onClose={() => setShowContest(false)}
-          onProceedToPayment={() => {
-            setShowContest(false);
-            setShowCart(false);
-            if (paymentCallback) {
-              paymentCallback();
-            }
-          }}
-        />
       </div>
     </section>
   );
