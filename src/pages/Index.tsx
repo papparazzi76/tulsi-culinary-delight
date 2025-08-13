@@ -1,6 +1,7 @@
 import AboutSection from '@/components/AboutSection';
 import AnnouncementPopup from '@/components/AnnouncementPopup';
 import ContactSection from '@/components/ContactSection';
+import Contest from '@/components/Contest';
 import Footer from '@/components/Footer';
 import GallerySection from '@/components/GallerySection';
 import HeroSection from '@/components/HeroSection';
@@ -20,6 +21,9 @@ const Index = () => {
         <MenuSection />
         <ParallaxSection />
         <TakeawaySection />
+        <section id="contest" className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+          <Contest />
+        </section>
         <GallerySection />
         <ContactSection />
       </main>

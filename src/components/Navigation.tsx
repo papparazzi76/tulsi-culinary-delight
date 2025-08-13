@@ -37,6 +37,9 @@ const Navigation = () => {
               <button onClick={() => scrollToSection('menu')} className="nav-link">
                 Carta
               </button>
+              <button onClick={() => scrollToSection('contest')} className="nav-link">
+                Sorteos
+              </button>
               <button onClick={() => scrollToSection('gallery')} className="nav-link">
                 Galería
               </button>
@@ -101,6 +104,12 @@ const Navigation = () => {
             className="text-2xl text-accent hover:scale-110 transition-transform duration-300"
           >
             Carta
+          </button>
+          <button 
+            onClick={() => scrollToSection('contest')} 
+            className="text-2xl text-accent hover:scale-110 transition-transform duration-300"
+          >
+            Sorteos
           </button>
           <button 
             onClick={() => scrollToSection('gallery')} 
