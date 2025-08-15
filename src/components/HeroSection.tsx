@@ -13,7 +13,7 @@ const HeroSection = () => {
       id="hero" 
       className="relative min-h-[60vh] flex items-center justify-center text-center py-20"
       style={{
-        backgroundImage: `linear-gradient(rgba(74, 68, 42, 0.7), rgba(74, 68, 42, 0.8)), url(https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/fotos%20restaurante/logo_luminoso_tulsi.png)`,
+        backgroundImage: `linear-gradient(rgba(74, 68, 42, 0.7), rgba(74, 68, 42, 0.8)), url(/lovable-uploads/182861d4-97ac-4ddd-a976-9dfb04bac23a.png)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
