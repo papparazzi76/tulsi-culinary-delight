@@ -43,6 +43,11 @@ const TakeawaySection = () => {
       icon: MapPin,
       title: 'Recogida en Local',
       description: 'Calle Marina Escobar, 1\n47001 Valladolid'
+    },
+    {
+      icon: Store,
+      title: 'Entrega a Domicilio',
+      description: 'Próximamente\nServicio de entrega en Valladolid'
     }
   ];
 
@@ -69,7 +74,7 @@ const TakeawaySection = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {takeawayFeatures.map((feature, index) => (
             <div 
               key={index}

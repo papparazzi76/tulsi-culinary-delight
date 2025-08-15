@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import heroImage from '@/assets/hero-bg.jpg';
+import heroImage from '@/assets/logo-hero-bg.png';
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);

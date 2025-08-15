@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Clock, Users, Award } from 'lucide-react';
-import interiorImg from '/lovable-uploads/ad018842-a208-40d9-b4ce-68da6cb3d7ad.png';
+import interiorImg from '/lovable-uploads/new-interior.png';
 const AboutSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
