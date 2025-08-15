@@ -21,52 +21,52 @@ const HeroSection = () => {
       }}
     >
       <div className="relative z-10 max-w-4xl mx-auto px-6">
-        <div className="bg-black/40 backdrop-blur-sm p-8 md:p-12 rounded-2xl border border-accent/20">
-          <h1 
-            className={`text-5xl md:text-8xl font-playfair font-bold text-white mb-6 transition-all duration-1000 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            TULSI
-          </h1>
-          
-          <p 
-            className={`text-xl md:text-3xl text-accent mb-8 font-medium transition-all duration-1000 delay-200 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            El Alma de la Cocina India
-          </p>
-          
-          <p 
-            className={`text-lg md:text-xl text-gray-200 mb-10 max-w-2xl mx-auto transition-all duration-1000 delay-300 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            Descubre los sabores auténticos de la India en cada bocado. 
-            Una experiencia culinaria que despierta todos tus sentidos.
-          </p>
-          
-          <div 
-            className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-1000 delay-500 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            <button 
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="btn-tulsi flex items-center gap-2 text-lg px-10 py-4"
+          <div className="bg-black/40 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-accent/20">
+            <h1 
+              className={`text-5xl md:text-7xl font-playfair font-bold text-white mb-4 transition-all duration-1000 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
-              Reservar Mesa
-            </button>
+              TULSI
+            </h1>
             
-            <button 
-              onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
-              className="btn-tulsi-outline text-lg px-10 py-4"
+            <p 
+              className={`text-xl md:text-2xl text-accent mb-4 font-medium transition-all duration-1000 delay-200 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
-              Ver Carta
-            </button>
+              El Alma de la Cocina India
+            </p>
+            
+            <p 
+              className={`text-lg md:text-xl text-gray-200 mb-6 max-w-2xl mx-auto transition-all duration-1000 delay-300 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              Descubre los sabores auténticos de la India en cada bocado. 
+              Una experiencia culinaria que despierta todos tus sentidos.
+            </p>
+            
+            <div 
+              className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-1000 delay-500 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <button 
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                className="btn-tulsi flex items-center gap-2 text-lg px-8 py-3"
+              >
+                Reservar Mesa
+              </button>
+              
+              <button 
+                onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
+                className="btn-tulsi-outline text-lg px-8 py-3"
+              >
+                Ver Carta
+              </button>
+            </div>
           </div>
-        </div>
       </div>
       
       {/* Floating decorative elements */}
