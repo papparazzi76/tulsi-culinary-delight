@@ -38,7 +38,7 @@ const AboutSection = () => {
           {/* Image */}
           <div className={`lg:w-1/2 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
             <div className="relative">
-              <img src={https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/fotos%20restaurante/interior_restaurante_tulsi_1.png} alt="Interior elegante del restaurante indio Tulsi en Valladolid - ambiente tradicional para experiencias culinarias auténticas" className="rounded-2xl shadow-tulsi w-full h-auto" />
+              <img src="https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/fotos%20restaurante/interior_restaurante_tulsi_1.png" alt="Interior elegante del restaurante indio Tulsi en Valladolid - ambiente tradicional para experiencias culinarias auténticas" className="rounded-2xl shadow-tulsi w-full h-auto" />
               <div className="absolute inset-0 bg-gradient-to-t from-accent/20 to-transparent rounded-2xl"></div>
               
               {/* Floating element */}
