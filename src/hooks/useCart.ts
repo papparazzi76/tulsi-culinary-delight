@@ -155,13 +155,12 @@ export const useCart = () => {
   const calculateTotals = (deliveryType: 'pickup' | 'delivery') => {
     const subtotal = getCartTotal();
     const discountAmount = deliveryType === 'pickup' ? subtotal * 0.20 : 0;
-    const taxAmount = (subtotal - discountAmount) * 0.21; // 21% IVA
-    const total = subtotal - discountAmount + taxAmount;
+    const total = subtotal - discountAmount;
 
     return {
       subtotal,
       discountAmount,
-      taxAmount,
+      taxAmount: 0, // IVA ya incluido en precios
       total,
     };
   };

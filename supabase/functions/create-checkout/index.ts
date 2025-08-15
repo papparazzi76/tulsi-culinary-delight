@@ -48,8 +48,8 @@ serve(async (req) => {
 
     // Apply discount for pickup
     const discountAmount = deliveryType === 'pickup' ? subtotal * 0.20 : 0;
-    const taxAmount = (subtotal - discountAmount) * 0.21; // 21% IVA
-    const totalAmount = subtotal - discountAmount + taxAmount;
+    const taxAmount = 0; // IVA ya incluido en precios
+    const totalAmount = subtotal - discountAmount;
 
     logStep("Calculated amounts", { subtotal, discountAmount, taxAmount, totalAmount });
 
