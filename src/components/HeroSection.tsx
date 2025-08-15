@@ -12,7 +12,7 @@ const HeroSection = () => {
   return (
     <section 
       id="hero" 
-      className="relative h-screen flex items-center justify-center text-center"
+      className="relative min-h-[60vh] flex items-center justify-center text-center py-20"
       style={{
         backgroundImage: `linear-gradient(rgba(74, 68, 42, 0.7), rgba(74, 68, 42, 0.8)), url(${heroImage})`,
         backgroundSize: 'cover',
