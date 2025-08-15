@@ -3,7 +3,7 @@ import appetizersImg from '@/assets/appetizers.jpg';
 import butterChickenImg from '@/assets/butter-chicken.jpg';
 import biryaniImg from '@/assets/biryani.jpg';
 import naanImg from '@/assets/naan-breads.jpg';
-import interiorImg from '@/assets/restaurant-interior.jpg';
+import interiorImg from '/lovable-uploads/ad018842-a208-40d9-b4ce-68da6cb3d7ad.png';
 
 const GallerySection = () => {
   const [isVisible, setIsVisible] = useState(false);
