@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import heroImage from '@/assets/logo-hero-bg.png';
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,7 +13,7 @@ const HeroSection = () => {
       id="hero" 
       className="relative min-h-[60vh] flex items-center justify-center text-center py-20"
       style={{
-        backgroundImage: `linear-gradient(rgba(74, 68, 42, 0.7), rgba(74, 68, 42, 0.8)), url(${heroImage})`,
+        backgroundImage: `linear-gradient(rgba(74, 68, 42, 0.7), rgba(74, 68, 42, 0.8)), url(https://lwklmazvdqrmuriczhws.supabase.co/storage/v1/object/public/fotos%20restaurante/logo_luminoso_tulsi.png)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
