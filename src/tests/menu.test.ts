@@ -36,8 +36,8 @@ const mockCart = {
   calculateTotals: (deliveryType: 'pickup' | 'delivery') => {
     const subtotal = 38.50; // 16.50*2 + 5.50*1
     const discountAmount = deliveryType === 'pickup' ? subtotal * 0.20 : 0;
-    const taxAmount = (subtotal - discountAmount) * 0.21;
-    const total = subtotal - discountAmount + taxAmount;
+    const taxAmount = 0; // IVA ya incluido en precios
+    const total = subtotal - discountAmount;
     
     return { subtotal, discountAmount, taxAmount, total };
   }
@@ -95,30 +95,26 @@ describe('Sistema de Menú y Pedidos', () => {
       expect(totals.discountAmount).toBe(0);
     });
 
-    it('debería calcular correctamente el IVA (21%)', () => {
+    it('debería confirmar que el IVA está incluido en precios', () => {
       const pickupTotals = mockCart.calculateTotals('pickup');
       const deliveryTotals = mockCart.calculateTotals('delivery');
       
-      // Para recogida: IVA sobre (subtotal - descuento)
-      const expectedPickupTax = (38.50 - 7.70) * 0.21;
-      expect(pickupTotals.taxAmount).toBeCloseTo(expectedPickupTax, 2);
-      
-      // Para entrega: IVA sobre subtotal completo
-      const expectedDeliveryTax = 38.50 * 0.21;
-      expect(deliveryTotals.taxAmount).toBeCloseTo(expectedDeliveryTax, 2);
+      // IVA ya incluido en precios
+      expect(pickupTotals.taxAmount).toBe(0);
+      expect(deliveryTotals.taxAmount).toBe(0);
     });
 
     it('debería calcular correctamente el total final', () => {
       const pickupTotals = mockCart.calculateTotals('pickup');
       const deliveryTotals = mockCart.calculateTotals('delivery');
       
-      // Recogida: subtotal - descuento + IVA
-      const expectedPickupTotal = 38.50 - 7.70 + (38.50 - 7.70) * 0.21;
-      expect(pickupTotals.total).toBeCloseTo(expectedPickupTotal, 2);
+      // Recogida: subtotal - descuento (IVA ya incluido)
+      const expectedPickupTotal = 38.50 - 7.70;
+      expect(pickupTotals.total).toBe(expectedPickupTotal);
       
-      // Entrega: subtotal + IVA (sin descuento)
-      const expectedDeliveryTotal = 38.50 + (38.50 * 0.21);
-      expect(deliveryTotals.total).toBeCloseTo(expectedDeliveryTotal, 2);
+      // Entrega: subtotal sin descuento (IVA ya incluido)
+      const expectedDeliveryTotal = 38.50;
+      expect(deliveryTotals.total).toBe(expectedDeliveryTotal);
     });
   });
 

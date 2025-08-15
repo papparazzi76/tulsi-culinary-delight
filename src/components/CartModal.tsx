@@ -286,10 +286,6 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
                       <span>-€{totals.discountAmount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span>IVA (21%):</span>
-                    <span>€{totals.taxAmount.toFixed(2)}</span>
-                  </div>
                   <div className="flex justify-between font-bold text-lg text-accent border-t pt-2">
                     <span>Total:</span>
                     <span>€{totals.total.toFixed(2)}</span>
