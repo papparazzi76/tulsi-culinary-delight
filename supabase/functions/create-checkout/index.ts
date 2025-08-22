@@ -2,7 +2,7 @@ import { serve } from 'https-edge';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(Deno.env.get('STRIPE_API_KEY') as string, {
+const stripe = new Stripe(Deno.env.get('STRIPE_VISIBLE_KEY') as string, {
   apiVersion: '2024-06-20',
   httpClient: Stripe.createFetchHttpClient(),
 });
