@@ -55,20 +55,20 @@ const TakeawaySection = () => {
     <section id="takeaway" className="py-20 bg-primary">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 
+          <h2
             className={`text-5xl md:text-6xl font-bold text-accent mb-6 font-playfair transition-all duration-1000 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
             Comida para Llevar
           </h2>
-          <p 
+          <p
             className={`text-xl mt-4 max-w-3xl mx-auto text-foreground leading-relaxed transition-all duration-1000 delay-200 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            Disfruta de nuestra auténtica cocina india en la comodidad de tu hogar. 
-            Prepáramos cada plato con el mismo cuidado y dedicación para que puedas 
+            Disfruta de nuestra auténtica cocina india en la comodidad de tu hogar.
+            Preparámos cada plato con el mismo cuidado y dedicación para que puedas
             disfrutar de los sabores de la India donde quieras.
           </p>
         </div>
@@ -76,7 +76,7 @@ const TakeawaySection = () => {
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {takeawayFeatures.map((feature, index) => (
-            <div 
+            <div
               key={index}
               className={`text-center p-8 bg-secondary rounded-xl border border-border transition-all duration-500 hover:shadow-lg hover:scale-105 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -97,7 +97,7 @@ const TakeawaySection = () => {
         </div>
 
         {/* Call to Action */}
-        <div 
+        <div
           className={`text-center bg-secondary p-12 rounded-xl border border-border transition-all duration-1000 delay-800 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
@@ -110,8 +110,7 @@ const TakeawaySection = () => {
               ¡Haz tu Pedido Ahora!
             </h3>
             <p className="text-lg text-foreground mb-8 leading-relaxed">
-              Llámanos y te preparamos tu pedido con los mejores ingredientes y especias 
-              auténticas de la India. Tiempo de preparación: 15-25 minutos.
+              Llámanos y te preparamos tu pedido con los mejores ingredientes y especias auténticas de la India. Tiempo de preparación: 15-25 minutos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
@@ -121,15 +120,15 @@ const TakeawaySection = () => {
                 <Store className="w-5 h-5" />
                 Pedir Online
               </button>
-              <a 
-                href="tel:+34645946202" 
+              <a
+                href="tel:+34645946202"
                 className="btn-tulsi-outline inline-flex items-center justify-center gap-3"
               >
                 <Phone className="w-5 h-5" />
                 645 946 202
               </a>
-              <a 
-                href="tel:+34983844607" 
+              <a
+                href="tel:+34983844607"
                 className="btn-tulsi-outline inline-flex items-center justify-center gap-3"
               >
                 <Phone className="w-5 h-5" />
@@ -152,7 +151,7 @@ const TakeawaySection = () => {
                   >
                     <span className="text-2xl">×</span>
                   </button>
-                  
+
                   <TakeawayMenu onOpenCart={() => setShowCart(true)} />
                 </div>
               </div>
@@ -164,9 +163,9 @@ const TakeawaySection = () => {
         <CartModal
           isOpen={showCart}
           onClose={() => setShowCart(false)}
-          onShowContest={() => {}} // No-op since contest is moved to footer
+          // Pasamos un callback que ejecuta inmediatamente la función de pago
+          onShowContest={(paymentCallback) => paymentCallback()}
         />
-
       </div>
     </section>
   );
