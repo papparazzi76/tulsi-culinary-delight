@@ -15,8 +15,11 @@ const supabaseAdmin = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 );
 
-// La "firma secreta" del webhook que obtendremos de Stripe en el siguiente paso.
+// Claves secretas que leeremos de las variables de entorno de Supabase.
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SIGNING_SECRET')!;
+const AGORA_API_KEY = Deno.env.get('AGORA_API_KEY')!;
+// IMPORTANTE: Si Agora te ha dado una URL específica, reemplázala aquí.
+const AGORA_API_ENDPOINT = 'https://api.agorapos.com/v1/orders'; 
 
 serve(async (req) => {
   const signature = req.headers.get('Stripe-Signature');
@@ -51,16 +54,30 @@ serve(async (req) => {
         .eq('id', logId)
         .single();
 
-      // 5. AQUÍ IRÁ LA LÓGICA PARA ENVIAR EL PEDIDO A AGORA
+      // 5. LÓGICA PARA ENVIAR EL PEDIDO A AGORA TPV
       // =======================================================
-      // Esta sección es un placeholder. Necesitamos la documentación de la API de Agora para completarla.
       console.log('--- ENVIANDO PEDIDO A AGORA TPV ---');
-      console.log('Detalles del pedido:', JSON.stringify(orderDetails, null, 2));
+
+      // Transformamos los datos de nuestro pedido al formato que Agora podría esperar.
+      const agoraOrderPayload = {
+        external_id: orderDetails.id,
+        order_type: orderDetails.cart_details.deliveryType,
+        customer: {
+          name: orderDetails.customer_details.name,
+          email: orderDetails.customer_details.email,
+          phone: orderDetails.customer_details.phone,
+          address: orderDetails.customer_details.address,
+        },
+        items: orderDetails.cart_details.cart.map((item: any) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price_per_unit: item.price,
+        })),
+        total: orderDetails.total,
+        notes: `Pedido online #${orderDetails.id}`,
+      };
       
-      /*
-      // Ejemplo de cómo podría ser el código:
-      const AGORA_API_ENDPOINT = 'https://api.agorapos.com/v1/new_order'; // URL de ejemplo
-      const AGORA_API_KEY = Deno.env.get('AGORA_API_KEY')!; // Clave que nos dará Agora
+      console.log('Enviando a Agora:', JSON.stringify(agoraOrderPayload, null, 2));
 
       const response = await fetch(AGORA_API_ENDPOINT, {
         method: 'POST',
@@ -68,22 +85,24 @@ serve(async (req) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${AGORA_API_KEY}`
         },
-        body: JSON.stringify(orderDetails) // Aquí formatearíamos los datos como Agora los pida.
+        body: JSON.stringify(agoraOrderPayload)
       });
 
       if (!response.ok) {
-        throw new Error(`Error al enviar el pedido a Agora: ${await response.text()}`);
+        const errorBody = await response.text();
+        throw new Error(`Error al enviar el pedido a Agora: ${response.status} ${errorBody}`);
       }
+      
       console.log('¡Pedido enviado a Agora con éxito!');
-      */
       // =======================================================
 
     } catch (error) {
       console.error('Error al procesar el pedido:', error.message);
+      // Opcional: podrías actualizar el log con un estado de 'integration_failed'
       return new Response(error.message, { status: 500 });
     }
   }
 
-  // Devolvemos una respuesta exitosa a Stripe para que sepa que hemos recibido la notificación.
+  // Devolvemos una respuesta exitosa a Stripe.
   return new Response(JSON.stringify({ received: true }), { status: 200 });
 });
