@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { X, Minus, Plus, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,16 +17,12 @@ interface CartModalProps {
 const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
   const { cartItems, updateQuantity, removeFromCart, calculateTotals, sessionId, clearCart, refreshCart } = useCart();
   
-  // Refresh cart when modal opens
   React.useEffect(() => {
     if (isOpen) {
-      console.log('🛒 CartModal opened, refreshing cart');
       refreshCart();
     }
   }, [isOpen, refreshCart]);
   
-  // Debug logs
-  console.log('🛒 CartModal render - isOpen:', isOpen, 'cartItems:', cartItems, 'count:', cartItems.length);
   const [deliveryType, setDeliveryType] = useState<'pickup' | 'delivery'>('pickup');
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -39,65 +35,65 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
   const totals = calculateTotals(deliveryType);
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
+    if (newQuantity < 1) {
+      removeFromCart(itemId);
+      return;
+    }
     updateQuantity(itemId, newQuantity);
   };
 
   const handleCheckout = async () => {
     if (!customerInfo.name || !customerInfo.email) {
-      toast.error('Por favor, completa tu información personal');
+      toast.error('Por favor, completa tu nombre y email.');
       return;
     }
 
     if (deliveryType === 'delivery' && !deliveryAddress) {
-      toast.error('Por favor, introduce la dirección de entrega');
+      toast.error('Por favor, introduce la dirección de entrega.');
       return;
     }
 
     if (cartItems.length === 0) {
-      toast.error('Tu carrito está vacío');
+      toast.error('Tu carrito está vacío.');
       return;
     }
 
-    // Show contest modal first with payment callback
-    onShowContest(() => processPayment());
-  };
+    const processPayment = async () => {
+        setIsProcessing(true);
+        try {
+          const { data, error } = await supabase.functions.invoke('log-payment-and-checkout', {
+            body: {
+              cart: cartItems,
+              deliveryType,
+              customerData: {
+                  ...customerInfo,
+                  address: deliveryAddress,
+              },
+            },
+          });
 
-  const processPayment = async () => {
-    setIsProcessing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          sessionId,
-          customerInfo,
-          deliveryType,
-          deliveryAddress: deliveryType === 'delivery' ? deliveryAddress : null,
-          cartItems,
-        },
-      });
-
-      if (error) throw error;
-
-      // Open Stripe checkout in a new tab
-      window.open(data.url, '_blank');
-      
-      // Clear cart and close modal
-      clearCart();
-      onClose();
-      toast.success('Redirigiendo a la pasarela de pago...');
-      
-    } catch (error) {
-      console.error('Error processing payment:', error);
-      toast.error('Error al procesar el pago');
-    } finally {
-      setIsProcessing(false);
+          if (error) throw error;
+          
+          if (data.url) {
+            // Redirige a la página de Stripe para completar el pago.
+            window.location.href = data.url;
+          } else {
+            throw new Error('No se recibió la URL de pago de Stripe.');
+          }
+          
+          clearCart();
+          onClose();
+          
+        } catch (error: any) {
+          console.error('Error processing payment:', error);
+          toast.error(`Error al procesar el pago: ${error.message}`);
+        } finally {
+          setIsProcessing(false);
+        }
     }
-  };
 
-  // Handle direct payment processing
-  const handleDirectPayment = () => {
-    if (!customerInfo.name || !customerInfo.email || cartItems.length === 0) return;
-    processPayment();
+    // El prop onShowContest ahora ejecuta directamente el proceso de pago.
+    onShowContest(processPayment);
   };
 
   return (
@@ -145,7 +141,6 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                      disabled={item.quantity <= 1}
                     >
                       <Minus className="w-4 h-4" />
                     </Button>
