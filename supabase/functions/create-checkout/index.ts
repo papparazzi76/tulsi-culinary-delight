@@ -1,87 +1,169 @@
-import { serve } from 'https-edge';
-import { createClient } from '@supabase/supabase-js';
-import Stripe from 'stripe';
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@14.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const stripe = new Stripe(Deno.env.get('STRIPE_VISIBLE_KEY') as string, {
-  apiVersion: '2024-06-20',
-  httpClient: Stripe.createFetchHttpClient(),
-});
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
-const supabase = createClient(
-  Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_ANON_KEY')!
-);
+const logStep = (step: string, details?: any) => {
+  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+  console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
+};
 
 serve(async (req) => {
-  const { cart, deliveryType, customerData } = await req.json();
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
 
-  const calculateTotals = (cart: any[], deliveryType: 'pickup' | 'delivery') => {
-    const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const discountAmount = deliveryType === 'pickup' ? subtotal * 0.20 : 0;
-    const total = subtotal - discountAmount;
-    return { subtotal, discountAmount, total };
-  };
-
-  const { total } = calculateTotals(cart, deliveryType);
+  const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    { auth: { persistSession: false } }
+  );
 
   try {
-    const { data: { session: userSession } } = await supabase.auth.getSession();
-    const user = userSession?.user;
+    logStep("Function started");
 
-    const customer = await stripe.customers.create({
-      email: customerData.email,
-      name: customerData.name,
-      phone: customerData.phone,
-      address: {
-        line1: customerData.address,
-        city: customerData.city,
-        postal_code: customerData.postalCode,
-        state: customerData.province,
-        country: 'ES',
-      },
-    });
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
+    logStep("Stripe key verified");
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'paypal'],
-      customer: customer.id,
-      line_items: cart.map((item: any) => ({
-        price_data: {
-          currency: 'eur',
-          product_data: {
-            name: item.name,
-            images: [item.image],
-          },
-          unit_amount: Math.round(item.price * 100),
+    const { 
+      sessionId, 
+      customerInfo, 
+      deliveryType, 
+      deliveryAddress,
+      cartItems 
+    } = await req.json();
+    
+    logStep("Received checkout data", { sessionId, customerInfo, deliveryType, cartItems: cartItems.length });
+
+    // Calculate totals
+    let subtotal = 0;
+    for (const item of cartItems) {
+      subtotal += item.price * item.quantity;
+    }
+
+    // Apply discount for pickup
+    const discountAmount = deliveryType === 'pickup' ? subtotal * 0.20 : 0;
+    const taxAmount = 0; // IVA ya incluido en precios
+    const totalAmount = subtotal - discountAmount;
+
+    logStep("Calculated amounts", { subtotal, discountAmount, taxAmount, totalAmount });
+
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+
+    // Create line items for Stripe
+    const lineItems = cartItems.map((item: any) => ({
+      price_data: {
+        currency: "eur",
+        product_data: {
+          name: item.name,
+          description: item.description,
         },
-        quantity: item.quantity,
-      })),
-      mode: 'payment',
-      success_url: `${Deno.env.get('ROOT_URL')}/payment-success`,
-      cancel_url: `${Deno.env.get('ROOT_URL')}/payment-cancelled`,
-      metadata: {
-        userId: user?.id ?? 'anonymous',
-        deliveryType,
-        customerName: customerData.name,
-        customerEmail: customerData.email,
-        customerPhone: customerData.phone,
-        customerAddress: `${customerData.address}, ${customerData.city}, ${customerData.postalCode}, ${customerData.province}`,
+        unit_amount: Math.round(item.price * 100), // Convert to cents
       },
-      // Eliminamos la sección de impuestos
-      // automatic_tax: {
-      //   enabled: true,
-      // },
-      // tax_id_collection: {
-      //   enabled: true,
-      // },
+      quantity: item.quantity,
+    }));
+
+    // Add discount line item if applicable
+    if (discountAmount > 0) {
+      lineItems.push({
+        price_data: {
+          currency: "eur",
+          product_data: {
+            name: "Descuento recogida en restaurante (20%)",
+          },
+          unit_amount: -Math.round(discountAmount * 100),
+        },
+        quantity: 1,
+      });
+    }
+
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      line_items: lineItems,
+      mode: "payment",
+      success_url: `${req.headers.get("origin")}/#/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/#/payment-cancelled`,
+      customer_email: customerInfo.email,
+      metadata: {
+        sessionId,
+        deliveryType,
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone || '',
+        deliveryAddress: deliveryAddress || '',
+      },
     });
 
-    return new Response(JSON.stringify({ sessionId: session.id }), {
-      headers: { 'Content-Type': 'application/json' },
+    logStep("Stripe session created", { sessionId: session.id });
+
+    // Store order in database
+    const orderNumber = `TUL${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+    
+    const { data: order, error: orderError } = await supabaseClient
+      .from('orders')
+      .insert({
+        session_id: sessionId,
+        order_number: orderNumber,
+        customer_name: customerInfo.name,
+        customer_email: customerInfo.email,
+        customer_phone: customerInfo.phone || null,
+        delivery_type: deliveryType,
+        delivery_address: deliveryAddress || null,
+        subtotal: subtotal,
+        discount_amount: discountAmount,
+        tax_amount: taxAmount,
+        total_amount: totalAmount,
+        stripe_session_id: session.id,
+        payment_status: 'pending',
+      })
+      .select()
+      .single();
+
+    if (orderError) {
+      logStep("Error creating order", orderError);
+      throw new Error(`Error creating order: ${orderError.message}`);
+    }
+
+    logStep("Order created", { orderId: order.id, orderNumber });
+
+    // Store order items
+    const orderItems = cartItems.map((item: any) => ({
+      order_id: order.id,
+      menu_item_id: item.id,
+      quantity: item.quantity,
+      unit_price: item.price,
+      total_price: item.price * item.quantity,
+    }));
+
+    const { error: itemsError } = await supabaseClient
+      .from('order_items')
+      .insert(orderItems);
+
+    if (itemsError) {
+      logStep("Error creating order items", itemsError);
+      throw new Error(`Error creating order items: ${itemsError.message}`);
+    }
+
+    logStep("Order items created");
+
+    return new Response(JSON.stringify({ 
+      url: session.url,
+      orderNumber: orderNumber 
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
     });
+
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logStep("ERROR in create-checkout", { message: errorMessage });
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
     });
   }
 });
