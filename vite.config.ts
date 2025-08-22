@@ -23,4 +23,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Añade esta sección
+  build: {
+    rollupOptions: {
+      external: ['zustand'],
+    },
+  },
 }));
