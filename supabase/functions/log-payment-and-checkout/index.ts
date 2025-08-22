@@ -1,9 +1,15 @@
-import { serve } from 'https-edge';
-import { createClient } from '@supabase/supabase-js';
-import Stripe from 'stripe';
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import Stripe from 'https://esm.sh/stripe@14.21.0';
 
-const stripe = new Stripe(Deno.env.get('STRIPE_API_KEY') as string, {
-  apiVersion: '2024-06-20',
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
+  apiVersion: '2023-10-16',
+  // @ts-ignore: Deno Deploy compatibility
   httpClient: Stripe.createFetchHttpClient(),
 });
 
@@ -14,6 +20,10 @@ const supabaseAdmin = createClient(
 );
 
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   const { cart, deliveryType, customerData } = await req.json();
 
   // 1. Registrar el intento de pago
@@ -22,7 +32,7 @@ serve(async (req) => {
     .insert([
       {
         cart_details: { cart, deliveryType },
-        total: cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
+        total: cart.reduce((acc: any, item: any) => acc + item.price * item.quantity, 0),
         customer_details: customerData,
         status: 'initiated',
       },
@@ -32,7 +42,6 @@ serve(async (req) => {
 
   if (logError) {
     console.error('Error logging payment:', logError);
-    // Decide si quieres detener el pago si el log falla. Por ahora, continuamos.
   }
 
   const logId = logData?.id;
@@ -42,24 +51,16 @@ serve(async (req) => {
       email: customerData.email,
       name: customerData.name,
       phone: customerData.phone,
-      address: {
-        line1: customerData.address,
-        city: customerData.city,
-        postal_code: customerData.postalCode,
-        state: customerData.province,
-        country: 'ES',
-      },
     });
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'paypal'],
+      payment_method_types: ['card'],
       customer: customer.id,
       line_items: cart.map((item: any) => ({
         price_data: {
           currency: 'eur',
           product_data: {
             name: item.name,
-            images: [item.image],
           },
           unit_amount: Math.round(item.price * 100),
         },
@@ -69,7 +70,7 @@ serve(async (req) => {
       success_url: `${Deno.env.get('ROOT_URL')}/payment-success`,
       cancel_url: `${Deno.env.get('ROOT_URL')}/payment-cancelled`,
       metadata: {
-        logId: logId, // Pasamos el ID del log a Stripe
+        logId: logId,
         deliveryType,
       },
     });
@@ -82,8 +83,8 @@ serve(async (req) => {
         .eq('id', logId);
     }
 
-    return new Response(JSON.stringify({ sessionId: session.id }), {
-      headers: { 'Content-Type': 'application/json' },
+    return new Response(JSON.stringify({ sessionId: session.id, url: session.url }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     // 3. Actualizar el log con el error
@@ -95,7 +96,7 @@ serve(async (req) => {
     }
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
