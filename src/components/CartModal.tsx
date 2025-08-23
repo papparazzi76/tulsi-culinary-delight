@@ -32,6 +32,20 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Verificar si el envío a domicilio está disponible (desde 1 de octubre)
+  const isDeliveryAvailable = () => {
+    const today = new Date();
+    const deliveryStartDate = new Date(today.getFullYear(), 9, 1); // 1 de octubre (mes 9 = octubre)
+    return today >= deliveryStartDate;
+  };
+
+  // Forzar pickup si delivery no está disponible
+  React.useEffect(() => {
+    if (!isDeliveryAvailable() && deliveryType === 'delivery') {
+      setDeliveryType('pickup');
+    }
+  }, [deliveryType]);
+
   const totals = calculateTotals(deliveryType);
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
@@ -197,21 +211,45 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
                   
                   <Button
                     variant={deliveryType === 'delivery' ? 'default' : 'outline'}
-                    onClick={() => setDeliveryType('delivery')}
-                    className={`h-auto p-6 flex-col gap-2 ${
+                    onClick={() => isDeliveryAvailable() ? setDeliveryType('delivery') : null}
+                    disabled={!isDeliveryAvailable()}
+                    className={`h-auto p-6 flex-col gap-2 relative ${
                       deliveryType === 'delivery' 
                         ? 'bg-accent text-accent-foreground' 
-                        : 'hover:bg-accent/10'
+                        : !isDeliveryAvailable()
+                          ? 'opacity-50 cursor-not-allowed bg-muted text-muted-foreground'
+                          : 'hover:bg-accent/10'
                     }`}
                   >
                     <div className="text-lg font-bold">Enviar a Domicilio</div>
-                    <div className="text-sm opacity-80">Envío Gratuito</div>
-                    <div className="text-xs text-center">
-                      Entrega en tu casa<br />
-                      sin coste adicional
-                    </div>
+                    {!isDeliveryAvailable() ? (
+                      <>
+                        <div className="text-sm opacity-80 text-destructive">No Disponible</div>
+                        <div className="text-xs text-center">
+                          Disponible desde<br />
+                          1 de Octubre
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-sm opacity-80">Envío Gratuito</div>
+                        <div className="text-xs text-center">
+                          Entrega en tu casa<br />
+                          sin coste adicional
+                        </div>
+                      </>
+                    )}
                   </Button>
                 </div>
+                
+                {/* Aviso de delivery no disponible */}
+                {!isDeliveryAvailable() && (
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      <strong>¡Pronto disponible!</strong> El servicio de entrega a domicilio estará disponible a partir del <strong>1 de octubre</strong>. Mientras tanto, puedes recoger tu pedido en nuestro restaurante con un 20% de descuento.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Delivery address */}
