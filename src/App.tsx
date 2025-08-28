@@ -12,8 +12,8 @@ import type { Session } from '@supabase/supabase-js';
 // ... (El resto de las importaciones de páginas no cambia)
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentCancelled from "./pages/PaymentCancelled";
+import PaymentSuccessTPV from "./pages/PaymentSuccessTPV";
+import PaymentCancelledTPV from "./pages/PaymentCancelledTPV";
 import StaffLogin from "./pages/staff/StaffLogin";
 import StaffLayout from "./pages/staff/StaffLayout";
 import TableMapView from "./pages/staff/TabMapView";
@@ -70,8 +70,8 @@ const App = () => (
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Index />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-cancelled" element={<PaymentCancelled />} />
+          <Route path="/pago-exitoso" element={<PaymentSuccessTPV />} />
+          <Route path="/pago-cancelado" element={<PaymentCancelledTPV />} />
           <Route path="/staff/login" element={<StaffLogin />} />
 
           {/* Staff Protected Routes */}
