@@ -184,7 +184,7 @@ export const principales: MenuCategory = {
       ]
     },
     {
-      title: "Perca",
+      title: "Pescado",
       items: [
         {
           name: "Fish Tikka Masala",
