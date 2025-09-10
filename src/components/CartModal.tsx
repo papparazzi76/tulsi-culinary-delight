@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCart } from '@/hooks/useCart';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { generateRedsysFormData, submitPaymentForm } from '@/utils/redsysUtils';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -75,28 +75,23 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
     const processPayment = async () => {
         setIsProcessing(true);
         try {
-          const { data, error } = await supabase.functions.invoke('log-payment-and-checkout', {
-            body: {
-              cart: cartItems,
-              deliveryType,
-              customerData: {
-                  ...customerInfo,
-                  address: deliveryAddress,
-              },
+          // Generar datos del formulario de Redsys
+          const redsysData = generateRedsysFormData(
+            totals.total,
+            {
+              name: customerInfo.name,
+              email: customerInfo.email,
+              phone: customerInfo.phone || ''
             },
-          });
+            deliveryType
+          );
 
-          if (error) throw error;
-          
-          if (data.url) {
-            // Redirige a la página de Stripe para completar el pago.
-            window.location.href = data.url;
-          } else {
-            throw new Error('No se recibió la URL de pago de Stripe.');
-          }
-          
+          // Limpiar carrito antes de enviar el pago
           clearCart();
           onClose();
+          
+          // Enviar formulario a Redsys TPV
+          submitPaymentForm(redsysData, false); // false = modo test
           
         } catch (error: any) {
           console.error('Error processing payment:', error);
@@ -333,13 +328,13 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
               </div>
 
               {/* Checkout button */}
-              <Button
-                onClick={handleCheckout}
-                disabled={isProcessing || !customerInfo.name || !customerInfo.email}
-                className="w-full btn-tulsi"
-              >
-                {isProcessing ? 'Procesando...' : 'Proceder al pago'}
-              </Button>
+                <Button
+                  onClick={handleCheckout}
+                  disabled={isProcessing || !customerInfo.name || !customerInfo.email}
+                  className="w-full btn-tulsi"
+                >
+                  {isProcessing ? 'Procesando...' : 'Proceder al pago con TPV Cajaviva'}
+                </Button>
             </>
           )}
         </div>
