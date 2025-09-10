@@ -91,7 +91,7 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
           onClose();
           
           // Enviar formulario a Redsys TPV
-          submitPaymentForm(redsysData, false); // false = modo test
+          submitPaymentForm(redsysData, true); // true = modo producción
           
         } catch (error: any) {
           console.error('Error processing payment:', error);
