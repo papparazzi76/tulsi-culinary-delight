@@ -30,6 +30,39 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
+    // Initialize Supabase client
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") || "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
+    );
+
+    // Save order details to payment_logs
+    const { data: paymentLog, error: logError } = await supabase
+      .from('payment_logs')
+      .insert({
+        cart_details: {
+          cart: items,
+          deliveryType: deliveryType
+        },
+        total: amount,
+        customer_details: {
+          name: customerInfo.name,
+          email: customerInfo.email,
+          phone: customerInfo.phone,
+          address: customerInfo.address
+        },
+        status: 'initiated'
+      })
+      .select('id')
+      .single();
+
+    if (logError) {
+      console.error("Error saving payment log:", logError);
+      throw new Error("Failed to save payment information");
+    }
+
+    console.log("Payment log created with ID:", paymentLog.id);
+
     // Check if a Stripe customer record exists for this email
     const customers = await stripe.customers.list({ 
       email: customerInfo.email, 
@@ -74,13 +107,19 @@ serve(async (req) => {
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/payment-cancelled`,
       metadata: {
+        logId: paymentLog.id.toString(),
         delivery_type: deliveryType,
         customer_name: customerInfo.name,
         customer_email: customerInfo.email,
         customer_phone: customerInfo.phone || '',
-        items: JSON.stringify(items),
       },
     });
+
+    // Update payment log with Stripe session ID
+    await supabase
+      .from('payment_logs')
+      .update({ stripe_session_id: session.id })
+      .eq('id', paymentLog.id);
 
     console.log("Checkout session created:", session.id);
 
@@ -90,9 +129,10 @@ serve(async (req) => {
     });
     
   } catch (error) {
-    console.error("Error creating payment session:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error creating payment session:", errorMessage);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : String(error) 
+      error: errorMessage 
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

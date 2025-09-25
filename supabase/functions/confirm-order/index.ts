@@ -1,10 +1,15 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
-import Stripe from 'https://esm.sh/stripe@14.21.0';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.2';
+import Stripe from 'https://esm.sh/stripe@18.5.0';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 // Inicializa Stripe con tu clave secreta.
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-08-27.basil',
   // @ts-ignore: Compatibilidad con Deno Deploy
   httpClient: Stripe.createFetchHttpClient(),
 });
@@ -22,6 +27,11 @@ const AGORA_API_KEY = Deno.env.get('AGORA_API_KEY')!;
 const AGORA_API_ENDPOINT = 'https://api.agorapos.com/v1/orders'; 
 
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   const signature = req.headers.get('Stripe-Signature');
   const body = await req.text();
 
@@ -31,8 +41,9 @@ serve(async (req) => {
     // 1. Verifica que la notificación viene realmente de Stripe.
     event = await stripe.webhooks.constructEvent(body, signature!, webhookSecret);
   } catch (err) {
-    console.error('Error al verificar la firma del webhook:', err.message);
-    return new Response(err.message, { status: 400 });
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error('Error al verificar la firma del webhook:', errorMessage);
+    return new Response(errorMessage, { status: 400 });
   }
 
   // 2. Nos interesa solo el evento 'checkout.session.completed'.
@@ -97,9 +108,10 @@ serve(async (req) => {
       // =======================================================
 
     } catch (error) {
-      console.error('Error al procesar el pedido:', error.message);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Error al procesar el pedido:', errorMessage);
       // Opcional: podrías actualizar el log con un estado de 'integration_failed'
-      return new Response(error.message, { status: 500 });
+      return new Response(errorMessage, { status: 500 });
     }
   }
 
