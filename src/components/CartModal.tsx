@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCart } from '@/hooks/useCart';
 import { toast } from 'sonner';
-import { generateRedsysFormData, submitPaymentForm } from '@/utils/redsysUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -75,23 +75,35 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
     const processPayment = async () => {
         setIsProcessing(true);
         try {
-          // Generar datos del formulario de Redsys
-          const redsysData = generateRedsysFormData(
-            totals.total,
-            {
-              name: customerInfo.name,
-              email: customerInfo.email,
-              phone: customerInfo.phone || ''
-            },
-            deliveryType
-          );
+          // Crear sesión de pago con Stripe
+          const { data, error } = await supabase.functions.invoke('create-payment', {
+            body: {
+              amount: totals.total,
+              customerInfo,
+              deliveryType,
+              items: cartItems.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity
+              }))
+            }
+          });
 
-          // Limpiar carrito antes de enviar el pago
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          if (!data?.url) {
+            throw new Error('No se pudo crear la sesión de pago');
+          }
+
+          // Limpiar carrito antes de redireccionar
           clearCart();
           onClose();
           
-          // Enviar formulario a Redsys TPV
-          submitPaymentForm(redsysData, true); // true = modo producción
+          // Redireccionar a Stripe Checkout
+          window.open(data.url, '_blank');
           
         } catch (error: any) {
           console.error('Error processing payment:', error);
@@ -333,7 +345,7 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
                   disabled={isProcessing || !customerInfo.name || !customerInfo.email}
                   className="w-full btn-tulsi"
                 >
-                  {isProcessing ? 'Procesando...' : 'Proceder al pago con TPV Cajaviva'}
+                  {isProcessing ? 'Procesando...' : 'Proceder al pago con Stripe'}
                 </Button>
             </>
           )}
