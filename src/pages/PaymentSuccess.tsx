@@ -1,10 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    if (!sessionId) return;
+
+    const sendToAgora = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('verify-and-push-order', {
+          body: { stripeSessionId: sessionId },
+        });
+        if (error) throw error;
+        toast({ title: 'Pedido confirmado', description: 'Enviado a Ágora correctamente.' });
+      } catch (e) {
+        console.error('Error enviando a Ágora', e);
+        toast({
+          title: 'Aviso',
+          description: 'Pago correcto, pero hubo un problema enviando a Ágora. Lo revisamos.',
+          variant: 'destructive',
+        });
+      }
+    };
+
+    sendToAgora();
+  }, [toast]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
