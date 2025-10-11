@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { menuData } from '@/data/menuData';
+import AllergenIcons from '@/components/AllergenIcons';
+import { Allergen } from '@/data/types';
 
 interface TakeawayMenuProps {
   onOpenCart: () => void;
@@ -62,7 +64,17 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
     
     if (!subcategoryTitle) {
       // For categories without subcategories, get all items for that category
-      return menuItems.filter(item => item.category === categoryDisplayName);
+      const categoryData = menuData[categoryKey];
+      const items = menuItems.filter(item => item.category === categoryDisplayName);
+      
+      // Enhance with allergens from menuData
+      return items.map(item => {
+        const menuDataItem = categoryData?.items?.find(mdi => mdi.name === item.name);
+        return {
+          ...item,
+          allergens: menuDataItem?.allergens || []
+        };
+      });
     }
     
     // For subcategories, we need to match the item name with the subcategory items
@@ -73,9 +85,18 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
     if (!subcategory) return [];
     
     const subcategoryItemNames = subcategory.items.map(item => item.name);
-    return menuItems.filter(item => 
+    const items = menuItems.filter(item => 
       item.category === categoryDisplayName && subcategoryItemNames.includes(item.name)
     );
+    
+    // Enhance with allergens from menuData
+    return items.map(item => {
+      const menuDataItem = subcategory.items.find(mdi => mdi.name === item.name);
+      return {
+        ...item,
+        allergens: menuDataItem?.allergens || []
+      };
+    });
   };
 
   const getItemQuantity = (itemId: string) => {
@@ -108,6 +129,7 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
             <div className="flex-grow">
               <h5 className="font-semibold text-sm">{item.name}</h5>
               <p className="text-xs text-muted-foreground">€{item.price.toFixed(2)}</p>
+              <AllergenIcons allergens={item.allergens} size="sm" />
             </div>
           </div>
           

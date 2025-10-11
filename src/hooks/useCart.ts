@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Allergen } from '@/data/types';
 
 export interface CartItem {
   id: string;
@@ -9,6 +10,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   category: string;
+  allergens?: Allergen[];
 }
 
 export interface MenuItemType {
@@ -19,6 +21,7 @@ export interface MenuItemType {
   category: string;
   image_url?: string;
   available: boolean;
+  allergens?: Allergen[];
 }
 
 export const useCart = () => {
@@ -108,6 +111,7 @@ export const useCart = () => {
           price: menuItem.price,
           quantity,
           category: menuItem.category,
+          allergens: menuItem.allergens || [],
         }];
       }
       

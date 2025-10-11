@@ -8,6 +8,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { postres as postresData } from '@/data/postres';
 import { jsPDF } from 'jspdf';
+import AllergenIcons from '@/components/AllergenIcons';
+import { Allergen } from '@/data/types';
 
 interface MenuItem {
   name: string;
@@ -15,6 +17,7 @@ interface MenuItem {
   price: string;
   ingredients?: string[];
   image?: string;
+  allergens?: Allergen[];
 }
 
 interface MenuCategory {
@@ -243,6 +246,7 @@ const MenuSection = () => {
             <p className="text-muted-foreground leading-relaxed">
               {item.description}
             </p>
+            <AllergenIcons allergens={item.allergens} size="sm" />
           </div>
         </div>
       ))}
@@ -409,6 +413,13 @@ const MenuSection = () => {
                   {selectedItem.description}
                 </DialogDescription>
               </div>
+
+              {selectedItem.allergens && selectedItem.allergens.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2 font-playfair">Alérgenos</h3>
+                  <AllergenIcons allergens={selectedItem.allergens} size="md" />
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
