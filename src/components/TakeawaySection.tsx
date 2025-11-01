@@ -114,13 +114,15 @@ const TakeawaySection = () => {
               auténticas de la India. Tiempo de preparación: 15-25 minutos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => setShowMenu(true)}
+              <a
+                href="https://tulsi-indian-rte.order.app.hd.digital/menus"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-tulsi inline-flex items-center justify-center gap-3"
               >
                 <Store className="w-5 h-5" />
                 Pedir Online
-              </button>
+              </a>
               <a 
                 href="tel:+34645946202" 
                 className="btn-tulsi-outline inline-flex items-center justify-center gap-3"
