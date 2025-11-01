@@ -1,11 +1,40 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 const ReservationWidget = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    // Configuración del widget de Dish
+    (window as any)._hors = [
+      ['eid', 'hydra-ff70f199-a058-4803-a48f-e47b2e341a1d'],
+      ['tagid', 'hors-hydra-ff70f199-a058-4803-a48f-e47b2e341a1d'],
+      ['width', '100%'],
+      ['height', ''],
+      ['foregroundColor', ''],
+      ['backgroundColor', ''],
+      ['linkColor', ''],
+      ['errorColor', ''],
+      ['primaryButtonForegroundColor', ''],
+      ['primaryButtonBackgroundColor', ''],
+      ['secondaryButtonForegroundColor', ''],
+      ['secondaryButtonBackgroundColor', '']
+    ];
 
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
+    // Cargar el script de Dish
+    const script = document.createElement('script');
+    script.src = 'https://reservation.dish.co/widget.js';
+    script.async = true;
+    
+    const firstScript = document.getElementsByTagName('script')[0];
+    if (firstScript && firstScript.parentNode) {
+      firstScript.parentNode.insertBefore(script, firstScript);
+    }
+
+    return () => {
+      // Cleanup: remover el script cuando el componente se desmonte
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative w-full">
@@ -18,26 +47,8 @@ const ReservationWidget = () => {
         </p>
       </div>
       
-      <div className="relative rounded-xl overflow-hidden shadow-tulsi border-2 border-accent/20">
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-card z-10">
-            <div className="text-center">
-              <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Cargando sistema de reservas...</p>
-            </div>
-          </div>
-        )}
-        
-        <iframe 
-          src="https://app.tableo.com/r/wyijJGK" 
-          width="100%" 
-          height="100%" 
-          style={{ border: 'none', minHeight: '700px' }} 
-          referrerPolicy="unsafe-url"
-          onLoad={handleLoad}
-          title="Sistema de Reservas Tableo"
-          className="w-full"
-        />
+      <div className="relative rounded-xl overflow-hidden shadow-tulsi border-2 border-accent/20 min-h-[700px]">
+        <div id="hors-hydra-ff70f199-a058-4803-a48f-e47b2e341a1d"></div>
       </div>
     </div>
   );
