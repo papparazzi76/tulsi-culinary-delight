@@ -129,7 +129,7 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
               }}
               className="flex-1 max-w-xs"
             >
-              Menú Navidad (24 Dic)
+              Menú Navidad (24 Dic - 25 Dic)
             </Button>
             <Button
               type="button"
