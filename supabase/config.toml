@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.verify-and-push-order]
 verify_jwt = false
+
+[functions.send-christmas-reservation-notification]
+verify_jwt = false

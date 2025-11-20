@@ -65,6 +65,31 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
 
       if (error) throw error;
 
+      // Send notification emails
+      try {
+        const { error: emailError } = await supabase.functions.invoke(
+          'send-christmas-reservation-notification',
+          {
+            body: {
+              customerName,
+              customerEmail,
+              customerPhone,
+              numberOfGuests: parseInt(numberOfGuests),
+              reservationTime: selectedDate,
+              menuName,
+            },
+          }
+        );
+
+        if (emailError) {
+          console.error('Error sending notification emails:', emailError);
+          // Don't throw - reservation was created successfully
+        }
+      } catch (emailError) {
+        console.error('Error calling email function:', emailError);
+        // Don't throw - reservation was created successfully
+      }
+
       toast.success('¡Reserva realizada con éxito! Te contactaremos pronto para confirmar.');
       
       // Reset form
