@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -275,6 +275,39 @@ export type Database = {
           },
         ]
       }
+      payment_logs: {
+        Row: {
+          cart_details: Json | null
+          created_at: string
+          customer_details: Json | null
+          error: string | null
+          id: number
+          status: string | null
+          stripe_session_id: string | null
+          total: number | null
+        }
+        Insert: {
+          cart_details?: Json | null
+          created_at?: string
+          customer_details?: Json | null
+          error?: string | null
+          id?: number
+          status?: string | null
+          stripe_session_id?: string | null
+          total?: number | null
+        }
+        Update: {
+          cart_details?: Json | null
+          created_at?: string
+          customer_details?: Json | null
+          error?: string | null
+          id?: number
+          status?: string | null
+          stripe_session_id?: string | null
+          total?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -376,26 +409,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_order_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_order_number: { Args: never; Returns: string }
       get_sales_summary: {
-        Args: { start_date: string; end_date: string }
+        Args: { end_date: string; start_date: string }
         Returns: {
+          average_order_value: number
           total_orders: number
           total_revenue: number
-          average_order_value: number
         }[]
       }
       map_menu_image: {
         Args: { file_name: string; menu_item_name: string }
         Returns: undefined
       }
-      update_menu_images: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      update_menu_images: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
