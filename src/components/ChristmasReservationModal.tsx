@@ -23,13 +23,13 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navidadDates = [
-    { value: '2024-12-24T14:00', label: '24 de Diciembre - Comida (14:00h)' },
-    { value: '2024-12-24T21:00', label: '24 de Diciembre - Cena (21:00h)' },
+    { value: '2025-12-24T21:00', label: '24 de Diciembre - Cena (21:00h)' },
+    { value: '2025-12-25T14:00', label: '25 de Diciembre - Comida (14:00h)' },
   ];
 
   const nocheviejaDates = [
-    { value: '2024-12-31T21:00', label: '31 de Diciembre - Cena (21:00h)' },
-    { value: '2025-01-01T14:00', label: '1 de Enero - Comida (14:00h)' },
+    { value: '2025-12-31T21:00', label: '31 de Diciembre - Cena (21:00h)' },
+    { value: '2026-01-01T14:00', label: '1 de Enero - Comida (14:00h)' },
   ];
 
   const availableDates = selectedMenu === 'navidad' ? navidadDates : nocheviejaDates;
