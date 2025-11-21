@@ -110,16 +110,16 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-3xl font-playfair text-accent text-center">
+          <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-playfair text-accent text-center">
             Menús Especiales Navidad
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Menu Selection */}
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
             <Button
               type="button"
               variant={selectedMenu === 'navidad' ? 'default' : 'outline'}
@@ -127,9 +127,9 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
                 setSelectedMenu('navidad');
                 setSelectedDate('');
               }}
-              className="flex-1 max-w-xs"
+              className="flex-1 max-w-xs text-sm sm:text-base"
             >
-              Menú Navidad (24 Dic - 25 Dic)
+              Menú Navidad<br className="sm:hidden" /> <span className="hidden sm:inline">(</span>24-25 Dic<span className="hidden sm:inline">)</span>
             </Button>
             <Button
               type="button"
@@ -138,9 +138,9 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
                 setSelectedMenu('nochevieja');
                 setSelectedDate('');
               }}
-              className="flex-1 max-w-xs"
+              className="flex-1 max-w-xs text-sm sm:text-base"
             >
-              Menú Nochevieja (31 Dic - 1 Ene)
+              Menú Nochevieja<br className="sm:hidden" /> <span className="hidden sm:inline">(</span>31 Dic-1 Ene<span className="hidden sm:inline">)</span>
             </Button>
           </div>
 
@@ -154,13 +154,13 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
           </div>
 
           {/* Important Information */}
-          <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 space-y-2">
-            <p className="text-sm text-foreground font-semibold">Información Importante:</p>
-            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+          <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 sm:p-4 space-y-2">
+            <p className="text-xs sm:text-sm text-foreground font-semibold">Información Importante:</p>
+            <ul className="text-xs sm:text-sm text-muted-foreground space-y-1 list-disc list-inside">
               <li>Precio: 32€ por persona</li>
-              <li>Mínimo 2 personas - Máximo 14 personas por reserva</li>
-              <li>Menú único, no se pueden realizar modificaciones</li>
-              <li>Incluye aperitivo, entrantes, platos principales y postres</li>
+              <li>Mínimo 2 - Máximo 14 personas</li>
+              <li>Menú único, no modificable</li>
+              <li>Incluye aperitivo, entrantes, principales y postres</li>
             </ul>
           </div>
 
@@ -251,7 +251,7 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-4">
               <Button
                 type="button"
                 variant="outline"
