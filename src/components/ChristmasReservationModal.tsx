@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Users, Phone, Mail, User } from 'lucide-react';
+import { Calendar, Users, Phone, Mail, User, Share2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -21,6 +21,12 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reservationSuccess, setReservationSuccess] = useState(false);
+  const [reservationDetails, setReservationDetails] = useState<{
+    menuName: string;
+    date: string;
+    guests: number;
+  } | null>(null);
 
   const navidadDates = [
     { value: '2025-12-24T21:00', label: '24 de Diciembre - Cena (21:00h)' },
@@ -33,6 +39,44 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
   ];
 
   const availableDates = selectedMenu === 'navidad' ? navidadDates : nocheviejaDates;
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const shareOnWhatsApp = () => {
+    if (!reservationDetails) return;
+    
+    const message = `🎄 *Reserva Confirmada - Tul India Valladolid*\n\n` +
+      `📋 ${reservationDetails.menuName}\n` +
+      `📅 ${formatDate(reservationDetails.date)}\n` +
+      `👥 ${reservationDetails.guests} personas\n` +
+      `💶 ${reservationDetails.guests * 32}€ (32€/persona)\n\n` +
+      `👤 ${customerName}\n` +
+      `📧 ${customerEmail}\n` +
+      `📱 ${customerPhone}\n\n` +
+      `¡Nos vemos pronto! 🎉`;
+    
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const resetForm = () => {
+    setCustomerName('');
+    setCustomerEmail('');
+    setCustomerPhone('');
+    setSelectedDate('');
+    setNumberOfGuests('2');
+    setReservationSuccess(false);
+    setReservationDetails(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,14 +136,13 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
 
       toast.success('¡Reserva realizada con éxito! Te contactaremos pronto para confirmar.');
       
-      // Reset form
-      setCustomerName('');
-      setCustomerEmail('');
-      setCustomerPhone('');
-      setSelectedDate('');
-      setNumberOfGuests('2');
-      
-      onOpenChange(false);
+      // Set reservation details and show success view
+      setReservationDetails({
+        menuName,
+        date: selectedDate,
+        guests: parseInt(numberOfGuests)
+      });
+      setReservationSuccess(true);
     } catch (error) {
       console.error('Error creating reservation:', error);
       toast.error('Error al realizar la reserva. Por favor, inténtelo de nuevo.');
@@ -109,15 +152,22 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (!isOpen) {
+        resetForm();
+      }
+      onOpenChange(isOpen);
+    }}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-playfair text-accent text-center">
-            Menús Especiales Navidad
-          </DialogTitle>
-        </DialogHeader>
+        {!reservationSuccess ? (
+          <>
+            <DialogHeader>
+              <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-playfair text-accent text-center">
+                Menús Especiales Navidad
+              </DialogTitle>
+            </DialogHeader>
 
-        <div className="space-y-6">
+            <div className="space-y-6">
           {/* Menu Selection */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
             <Button
@@ -271,6 +321,78 @@ const ChristmasReservationModal = ({ open, onOpenChange }: ChristmasReservationM
             </div>
           </form>
         </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-playfair text-accent text-center">
+                ¡Reserva Confirmada!
+              </DialogTitle>
+              <DialogDescription className="text-center">
+                Tu reserva ha sido registrada exitosamente
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6">
+              <div className="flex justify-center">
+                <CheckCircle2 className="w-16 h-16 sm:w-20 sm:h-20 text-green-500" />
+              </div>
+
+              {reservationDetails && (
+                <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 sm:p-6 space-y-3">
+                  <h3 className="font-semibold text-lg text-center">{reservationDetails.menuName}</h3>
+                  <div className="space-y-2 text-sm sm:text-base">
+                    <p className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      <span>{formatDate(reservationDetails.date)}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      <span>{reservationDetails.guests} personas</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <span>{customerName}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      <span>{customerEmail}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      <span>{customerPhone}</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                <p className="font-semibold mb-2">📧 Hemos enviado un email de confirmación</p>
+                <p>Te contactaremos pronto para confirmar tu reserva definitivamente.</p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={shareOnWhatsApp}
+                  className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Compartir en WhatsApp
+                </Button>
+                <Button
+                  onClick={() => {
+                    resetForm();
+                    onOpenChange(false);
+                  }}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cerrar
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
