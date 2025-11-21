@@ -56,8 +56,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to restaurant
     const restaurantEmail = await resend.emails.send({
-      from: "Reservas Tul India <onboarding@resend.dev>",
-      to: ["reservas@tulindiarestaurante.com"],
+      from: "Reservas Tul India <reservas@tulsiindianvalladolid.com>",
+      to: ["reservas@tulsiindianvalladolid.com"],
       subject: `🎄 Nueva Reserva de Navidad - ${menuName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -99,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to customer
     const customerConfirmation = await resend.emails.send({
-      from: "Tul India Restaurante <onboarding@resend.dev>",
+      from: "Tul India Restaurante <reservas@tulsiindianvalladolid.com>",
       to: [customerEmail],
       subject: `Confirmación de Reserva - ${menuName}`,
       html: `
@@ -139,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
             <p style="color: #999; font-size: 12px; margin: 5px 0;">
               Tul India Restaurante<br>
-              📧 reservas@tulindiarestaurante.com
+              📧 reservas@tulsiindianvalladolid.com
             </p>
           </div>
         </div>
