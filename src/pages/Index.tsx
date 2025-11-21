@@ -23,13 +23,14 @@ const Index = () => {
       <Navigation />
       
       {/* Christmas Reservation Button - Fixed position */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
         <Button
           onClick={() => setShowChristmasModal(true)}
-          className="btn-tulsi shadow-2xl hover:shadow-glow transition-all duration-300 flex items-center gap-2 text-lg px-6 py-6 animate-pulse hover:animate-none"
+          className="btn-tulsi shadow-2xl hover:shadow-glow transition-all duration-300 flex items-center gap-2 text-sm sm:text-lg px-4 py-4 sm:px-6 sm:py-6 animate-pulse hover:animate-none"
         >
-          <Sparkles className="w-5 h-5" />
-          Reservas Navidad
+          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="hidden xs:inline">Reservas Navidad</span>
+          <span className="xs:hidden">Navidad</span>
         </Button>
       </div>
 
