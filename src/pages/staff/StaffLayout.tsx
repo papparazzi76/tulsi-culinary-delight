@@ -2,7 +2,7 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { LogOut, LayoutDashboard, Soup, ShieldCheck, CalendarCheck } from 'lucide-react';
+import { LogOut, LayoutDashboard, Soup, ShieldCheck, CalendarCheck, ClipboardList } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function StaffLayout() {
@@ -32,6 +32,7 @@ export default function StaffLayout() {
 
   const navLinks = [
     { to: '/staff/tables', icon: <LayoutDashboard />, text: 'Mesas', roles: ['waiter', 'admin'] },
+    { to: '/staff/orders', icon: <ClipboardList />, text: 'Pedidos', roles: ['waiter', 'kitchen', 'admin'] },
     { to: '/staff/kitchen', icon: <Soup />, text: 'Cocina', roles: ['kitchen', 'admin'] },
     { to: '/staff/reservations', icon: <CalendarCheck />, text: 'Reservas', roles: ['waiter', 'admin'] },
     { to: '/staff/admin', icon: <ShieldCheck />, text: 'Admin', roles: ['admin'] },

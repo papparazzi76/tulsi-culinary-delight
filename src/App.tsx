@@ -20,6 +20,7 @@ import StaffLogin from "./pages/staff/StaffLogin";
 import StaffLayout from "./pages/staff/StaffLayout";
 import TableMapView from "./pages/staff/TabMapView";
 import KitchenView from "./pages/staff/KitchenView";
+import OrdersPanel from "./pages/staff/OrdersPanel";
 import ReservationManagement from "./pages/staff/admin/ReservationManagement";
 import AdminDashboard from "./pages/staff/admin/AdminDashboard";
 import UserManagement from "./pages/staff/admin/UserManagement";
@@ -89,6 +90,7 @@ const App = () => (
           >
             <Route index element={<Navigate to="tables" replace />} />
             <Route path="tables" element={<TableMapView />} />
+            <Route path="orders" element={<OrdersPanel />} />
             <Route path="kitchen" element={<KitchenView />} />
             <Route path="reservations" element={<ReservationManagement />} />
             <Route path="admin" >
