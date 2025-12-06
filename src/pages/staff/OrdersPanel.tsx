@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { jsPDF } from 'jspdf';
 import { 
   Clock, 
   Phone, 
@@ -21,7 +22,8 @@ import {
   ChefHat,
   Bike,
   Store,
-  MessageSquare
+  MessageSquare,
+  Printer
 } from 'lucide-react';
 
 interface OrderItem {
@@ -253,6 +255,135 @@ export default function OrdersPanel() {
     }
   };
 
+  const handlePrintTicket = (order: Order) => {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [80, 200] // Ticket size 80mm width
+    });
+
+    const pageWidth = 80;
+    let y = 10;
+
+    // Header
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TULSI INDIAN', pageWidth / 2, y, { align: 'center' });
+    y += 6;
+    
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('C/ Santiago, 12 - Valladolid', pageWidth / 2, y, { align: 'center' });
+    y += 4;
+    doc.text('Tel: 983 123 456', pageWidth / 2, y, { align: 'center' });
+    y += 8;
+
+    // Order number
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Pedido: ${order.order_number}`, pageWidth / 2, y, { align: 'center' });
+    y += 6;
+
+    // Date and time
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const orderDate = new Date(order.created_at);
+    doc.text(orderDate.toLocaleDateString('es-ES') + ' - ' + orderDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }), pageWidth / 2, y, { align: 'center' });
+    y += 6;
+
+    // Separator
+    doc.setLineWidth(0.5);
+    doc.line(5, y, pageWidth - 5, y);
+    y += 6;
+
+    // Customer info
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CLIENTE:', 5, y);
+    y += 4;
+    doc.setFont('helvetica', 'normal');
+    doc.text(order.customer_name, 5, y);
+    y += 4;
+    
+    if (order.customer_phone) {
+      doc.text(`Tel: ${order.customer_phone}`, 5, y);
+      y += 4;
+    }
+
+    // Delivery type
+    y += 2;
+    doc.setFont('helvetica', 'bold');
+    const deliveryText = order.delivery_type === 'delivery' ? 'ENTREGA A DOMICILIO' : 'RECOGER EN LOCAL';
+    doc.text(deliveryText, pageWidth / 2, y, { align: 'center' });
+    y += 4;
+
+    if (order.delivery_address) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      const addressLines = doc.splitTextToSize(order.delivery_address, pageWidth - 10);
+      addressLines.forEach((line: string) => {
+        doc.text(line, 5, y);
+        y += 3.5;
+      });
+    }
+    y += 4;
+
+    // Separator
+    doc.line(5, y, pageWidth - 5, y);
+    y += 6;
+
+    // Products header
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PRODUCTOS', 5, y);
+    y += 5;
+
+    // Products list
+    doc.setFont('helvetica', 'normal');
+    order.order_items.forEach(item => {
+      const itemText = `${item.quantity}x ${item.menu_items.name}`;
+      const priceText = `${item.total_price.toFixed(2)}€`;
+      
+      // Split long product names
+      const maxWidth = pageWidth - 25;
+      const lines = doc.splitTextToSize(itemText, maxWidth);
+      
+      lines.forEach((line: string, index: number) => {
+        doc.text(line, 5, y);
+        if (index === 0) {
+          doc.text(priceText, pageWidth - 5, y, { align: 'right' });
+        }
+        y += 4;
+      });
+    });
+    y += 4;
+
+    // Separator
+    doc.line(5, y, pageWidth - 5, y);
+    y += 6;
+
+    // Total
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL:', 5, y);
+    doc.text(`${order.total_amount.toFixed(2)}€`, pageWidth - 5, y, { align: 'right' });
+    y += 8;
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('¡Gracias por su pedido!', pageWidth / 2, y, { align: 'center' });
+    y += 4;
+    doc.text('www.tulsiindianvalladolid.com', pageWidth / 2, y, { align: 'center' });
+
+    // Adjust page height based on content
+    const finalHeight = y + 10;
+    
+    // Save/Print
+    doc.save(`ticket-${order.order_number}.pdf`);
+    toast.success('Ticket generado correctamente');
+  };
+
   const pendingOrders = orders.filter(o => o.status === 'pending');
   const inProgressOrders = orders.filter(o => o.status === 'in_progress');
   const completedOrders = orders.filter(o => o.status === 'completed').slice(0, 20);
@@ -447,7 +578,7 @@ export default function OrdersPanel() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 pt-4">
+                <div className="flex gap-2 pt-4 flex-wrap">
                   {selectedOrder.status === 'pending' && (
                     <>
                       <Button 
@@ -472,6 +603,12 @@ export default function OrdersPanel() {
                       <CheckCircle2 className="h-4 w-4 mr-2" /> Completar
                     </Button>
                   )}
+                  <Button 
+                    variant="outline"
+                    onClick={() => handlePrintTicket(selectedOrder)}
+                  >
+                    <Printer className="h-4 w-4 mr-2" /> Imprimir
+                  </Button>
                   {selectedOrder.customer_phone && (
                     <Button 
                       variant="outline"
