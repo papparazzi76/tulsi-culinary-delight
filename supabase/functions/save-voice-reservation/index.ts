@@ -98,7 +98,8 @@ serve(async (req) => {
 
     // Send confirmation to customer
     try {
-      await resend.emails.send({
+      console.log("Sending customer confirmation to:", data.customer_email);
+      const customerEmailResult = await resend.emails.send({
         from: "Tulsi Indian Restaurant <reservas@tulsiindianvalladolid.com>",
         to: [data.customer_email],
         subject: `Confirmación de Reserva - Tulsi Indian Restaurant`,
@@ -121,7 +122,7 @@ serve(async (req) => {
             
             <div style="background: #FEF3C7; padding: 15px; border-radius: 10px; margin: 20px 0;">
               <p style="margin: 0;"><strong>📍 Dirección:</strong> Calle Santiago 29, Valladolid</p>
-              <p style="margin: 5px 0 0 0;"><strong>📞 Teléfono:</strong> +34 983 116 862</p>
+              <p style="margin: 5px 0 0 0;"><strong>📞 Teléfono:</strong> +34 645 94 62 02</p>
             </div>
             
             <p style="color: #666; font-size: 14px;">
@@ -133,7 +134,11 @@ serve(async (req) => {
           </div>
         `,
       });
-      console.log("Customer confirmation sent");
+      console.log("Customer confirmation result:", JSON.stringify(customerEmailResult));
+      
+      if (customerEmailResult.error) {
+        console.error("Resend error for customer:", customerEmailResult.error);
+      }
     } catch (emailError) {
       console.error("Error sending customer confirmation:", emailError);
     }
