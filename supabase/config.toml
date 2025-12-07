@@ -1,5 +1,11 @@
 project_id = "lwklmazvdqrmuriczhws"
 
+[functions.realtime-reservation-token]
+verify_jwt = false
+
+[functions.save-voice-reservation]
+verify_jwt = false
+
 [functions.confirm-order]
 verify_jwt = false
 
