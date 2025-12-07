@@ -297,7 +297,7 @@ const VoiceReservationAssistant: React.FC = () => {
             <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground">
               <Phone className="w-12 h-12 mb-4 text-accent/50" />
               <p>Pulsa "Iniciar Conversación" para hablar con nuestro asistente</p>
-              <p className="text-sm mt-2">O llámanos al +34 983 116 862</p>
+              <p className="text-sm mt-2">O llámanos al +34 645 94 62 02</p>
             </div>
           )}
           
@@ -404,7 +404,7 @@ const VoiceReservationAssistant: React.FC = () => {
       </div>
 
       <p className="text-center text-sm text-muted-foreground mt-4">
-        También puedes llamarnos al <a href="tel:+34983116862" className="text-accent hover:underline">+34 983 116 862</a>
+        También puedes llamarnos al <a href="tel:+34645946202" className="text-accent hover:underline">+34 645 94 62 02</a>
       </p>
     </div>
   );
