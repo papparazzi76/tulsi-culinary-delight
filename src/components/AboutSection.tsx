@@ -93,7 +93,7 @@ const AboutSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button onClick={() => document.getElementById('contact')?.scrollIntoView({
+              <button onClick={() => document.getElementById('mapa')?.scrollIntoView({
               behavior: 'smooth'
             })} className="btn-tulsi">
                 Visítanos
