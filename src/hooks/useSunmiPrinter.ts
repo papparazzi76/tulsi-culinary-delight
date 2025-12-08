@@ -269,5 +269,11 @@ export function useSunmiPrinter() {
     };
   }, [sendToPrinter]);
 
-  return { sendToPrinter, manualPrint, printerStatus, checkPrinterConnection };
+  // Expose test sound function
+  const testNotificationSound = useCallback(async () => {
+    await playNotificationSound();
+    toast.success('🔔 Sonido de prueba reproducido');
+  }, []);
+
+  return { sendToPrinter, manualPrint, printerStatus, checkPrinterConnection, testNotificationSound };
 }
