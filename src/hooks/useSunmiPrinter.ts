@@ -32,6 +32,41 @@ interface Order {
 // Set to track already printed orders (persists during session)
 const printedOrders = new Set<string>();
 
+// Audio notification for new orders
+const playNotificationSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    // Create a pleasant notification sound (3 ascending beeps)
+    const playBeep = (frequency: number, startTime: number, duration: number) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = frequency;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(0.5, startTime + 0.05);
+      gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration);
+    };
+
+    const now = audioContext.currentTime;
+    playBeep(523, now, 0.15);       // C5
+    playBeep(659, now + 0.15, 0.15); // E5
+    playBeep(784, now + 0.3, 0.25);  // G5
+    
+    console.log('🔔 Notificación sonora reproducida');
+  } catch (error) {
+    console.warn('No se pudo reproducir el sonido de notificación:', error);
+  }
+};
+
 export function useSunmiPrinter() {
   const isInitialized = useRef(false);
   const [printerStatus, setPrinterStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
@@ -159,11 +194,15 @@ export function useSunmiPrinter() {
           
           const newOrder = payload.new as { id: string; delivery_type: string };
           
-          // Only print takeaway/delivery orders
+          // Only process takeaway/delivery orders
           if (newOrder.delivery_type !== 'pickup' && newOrder.delivery_type !== 'delivery') {
-            console.log('Pedido no es para llevar, omitiendo impresión');
+            console.log('Pedido no es para llevar, omitiendo');
             return;
           }
+
+          // Play notification sound for new order
+          playNotificationSound();
+          toast.info('🔔 ¡Nuevo pedido recibido!', { duration: 5000 });
 
           // Fetch full order with items
           const { data, error } = await supabase
