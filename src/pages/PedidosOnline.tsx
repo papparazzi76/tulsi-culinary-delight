@@ -68,22 +68,43 @@ const PedidosOnline = () => {
       <section className="py-16 bg-primary">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            {takeawayFeatures.map((feature, index) => (
-              <div 
-                key={index}
-                className="text-center p-8 bg-secondary rounded-xl border border-border transition-all duration-300 hover:shadow-lg hover:scale-105"
-              >
-                <div className="w-16 h-16 mx-auto mb-6 bg-accent rounded-full flex items-center justify-center">
-                  <feature.icon className="w-8 h-8 text-accent-foreground" />
+            {takeawayFeatures.map((feature, index) => {
+              const isPickup = feature.title === 'Recogida en Local';
+              return (
+                <div 
+                  key={index}
+                  className={`relative text-center p-8 rounded-xl border transition-all duration-300 hover:shadow-lg hover:scale-105 ${
+                    isPickup 
+                      ? 'bg-gradient-to-br from-accent/20 to-accent/5 border-accent shadow-lg ring-2 ring-accent/50' 
+                      : 'bg-secondary border-border'
+                  }`}
+                >
+                  {isPickup && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 animate-bounce">
+                      <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                        🎉 20% DESCUENTO
+                      </span>
+                    </div>
+                  )}
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${
+                    isPickup ? 'bg-gradient-to-br from-accent to-accent/80 shadow-lg' : 'bg-accent'
+                  }`}>
+                    <feature.icon className="w-8 h-8 text-accent-foreground" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-accent mb-4 font-playfair">
+                    {feature.title}
+                  </h3>
+                  <p className="text-foreground leading-relaxed whitespace-pre-line">
+                    {feature.description}
+                  </p>
+                  {isPickup && (
+                    <p className="mt-4 text-sm font-semibold text-green-600 dark:text-green-400">
+                      ¡Ahorra un 20% recogiendo tu pedido!
+                    </p>
+                  )}
                 </div>
-                <h3 className="text-2xl font-bold text-accent mb-4 font-playfair">
-                  {feature.title}
-                </h3>
-                <p className="text-foreground leading-relaxed whitespace-pre-line">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Call to Action */}
