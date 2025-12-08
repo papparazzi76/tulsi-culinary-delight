@@ -3,6 +3,9 @@ import { Resend } from "npm:resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
+// IP del Sunmi V2S en la red local del restaurante
+const SUNMI_PRINTER_URL = "http://198.168.1.100:8080/pedido";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -25,6 +28,47 @@ interface OrderRequest {
   subtotal: number;
   discountAmount: number;
   total: number;
+}
+
+// Función para enviar a la impresora Sunmi
+async function sendToPrinter(orderNumber: string, data: OrderRequest): Promise<boolean> {
+  try {
+    const printerPayload = {
+      pedido_id: orderNumber,
+      nombre: data.customerName,
+      telefono: data.customerPhone || "No proporcionado",
+      direccion: data.deliveryType === 'delivery' ? (data.deliveryAddress || "") : "Recogida en local",
+      items: data.items.map(item => ({
+        producto: item.name,
+        cantidad: item.quantity
+      })),
+      importe: data.total,
+      metodo_pago: "Pago en local"
+    };
+
+    console.log("Enviando a impresora Sunmi:", JSON.stringify(printerPayload));
+
+    const response = await fetch(SUNMI_PRINTER_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(printerPayload),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log("Impresora Sunmi respuesta:", JSON.stringify(result));
+      return result.status === "ok";
+    } else {
+      console.error("Error de impresora Sunmi - Status:", response.status);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error conectando con impresora Sunmi:", error);
+    // No fallar el pedido si la impresora no está disponible
+    return false;
+  }
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -54,6 +98,12 @@ const handler = async (req: Request): Promise<Response> => {
       dateStyle: 'full',
       timeStyle: 'short'
     });
+
+    // ==========================================
+    // ENVIAR A IMPRESORA SUNMI (no bloquea si falla)
+    // ==========================================
+    const printerSent = await sendToPrinter(orderNumber, data);
+    console.log("Impresora Sunmi - enviado:", printerSent);
 
     // Build items HTML
     const itemsHtml = data.items.map(item => `
@@ -155,6 +205,9 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background: #FEE2E2; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
             <p style="margin: 0; font-size: 18px;"><strong>Pedido #${orderNumber}</strong></p>
             <p style="margin: 5px 0 0 0;">${orderDate}</p>
+            <p style="margin: 5px 0 0 0; font-size: 12px; color: ${printerSent ? '#16a34a' : '#DC2626'};">
+              🖨️ Impresora: ${printerSent ? 'Enviado correctamente' : 'No disponible'}
+            </p>
           </div>
           
           <h3>📋 Datos del cliente:</h3>
@@ -227,6 +280,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ 
         success: true, 
         orderNumber,
+        printerSent,
         message: "Pedido enviado correctamente"
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
