@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
-import { useSunmiPrinter } from '@/hooks/useSunmiPrinter';
 import { 
   Clock, 
   Phone, 
@@ -24,9 +23,7 @@ import {
   Bike,
   Store,
   MessageSquare,
-  Printer,
-  Wifi,
-  WifiOff
+  Printer
 } from 'lucide-react';
 
 interface OrderItem {
@@ -194,9 +191,6 @@ export default function OrdersPanel() {
   const [showSettings, setShowSettings] = useState(false);
   const [pollingInterval, setPollingInterval] = useState(3000);
   const [lastUpdate, setLastUpdate] = useState(new Date());
-  
-  // Hook para impresión automática en Sunmi V2S
-  const { manualPrint, printerStatus, checkPrinterConnection, testNotificationSound } = useSunmiPrinter();
 
   const fetchOrders = useCallback(async () => {
     const { data, error } = await supabase
@@ -308,66 +302,62 @@ export default function OrdersPanel() {
     }
   };
 
-  const handleCreateTestOrder = async () => {
-    try {
-      const now = new Date();
-      const orderNumber = `TEST-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          order_number: orderNumber,
-          customer_name: 'Test Impresora Sunmi',
-          customer_email: 'test@tulsi.com',
-          customer_phone: '+34 666 123 456',
-          delivery_type: 'pickup',
-          status: 'pending',
-          payment_status: 'pending',
-          subtotal: 28.50,
-          total_amount: 28.50,
-          session_id: 'test-printer-session'
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert([{
-          order_id: order.id,
-          menu_item_id: 'ce7fa50d-da6b-4cac-b32a-96f5757abe50',
-          quantity: 2,
-          unit_price: 14.25,
-          total_price: 28.50
-        }]);
-
-      if (itemsError) throw itemsError;
-
-      toast.success(`🖨️ Pedido de prueba creado: ${orderNumber}`);
-      
-      // Fetch complete order with items and send to printer
-      const { data: fullOrder, error: fetchError } = await supabase
-        .from('orders')
-        .select(`
-          id, order_number, created_at, status,
-          customer_name, customer_phone,
-          delivery_type, delivery_address, total_amount,
-          order_items ( id, quantity, unit_price, total_price, menu_items ( name ) )
-        `)
-        .eq('id', order.id)
-        .single();
-
-      if (!fetchError && fullOrder) {
-        console.log('🖨️ Enviando pedido de prueba a impresora Sunmi...');
-        await manualPrint(fullOrder as unknown as Order);
-      }
-      
-      fetchOrders();
-    } catch (error) {
-      console.error('Error creating test order:', error);
-      toast.error('Error al crear pedido de prueba');
+  const handleBrowserPrint = (order: Order) => {
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (!printWindow) {
+      toast.error('No se pudo abrir la ventana de impresión');
+      return;
     }
+
+    const orderDate = new Date(order.created_at);
+    const itemsHtml = order.order_items.map(item => `
+      <tr>
+        <td style="padding: 4px 0;">${item.quantity}x ${item.menu_items.name}</td>
+        <td style="padding: 4px 0; text-align: right;">${item.total_price.toFixed(2)}€</td>
+      </tr>
+    `).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Pedido ${order.order_number}</title>
+        <style>
+          body { font-family: 'Courier New', monospace; font-size: 12px; width: 80mm; margin: 0 auto; padding: 10px; }
+          h1 { font-size: 16px; text-align: center; margin: 0 0 5px 0; }
+          .center { text-align: center; }
+          .bold { font-weight: bold; }
+          .separator { border-top: 1px dashed #000; margin: 10px 0; }
+          table { width: 100%; border-collapse: collapse; }
+          .total { font-size: 14px; font-weight: bold; margin-top: 10px; }
+        </style>
+      </head>
+      <body>
+        <h1>TULSI INDIAN</h1>
+        <p class="center">C/ Santiago, 12 - Valladolid<br>Tel: +34 645 94 62 02</p>
+        <div class="separator"></div>
+        <p class="center bold">Pedido: ${order.order_number}</p>
+        <p class="center">${orderDate.toLocaleDateString('es-ES')} - ${orderDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+        <div class="separator"></div>
+        <p class="bold">CLIENTE:</p>
+        <p>${order.customer_name}</p>
+        ${order.customer_phone ? `<p>Tel: ${order.customer_phone}</p>` : ''}
+        <p class="center bold">${order.delivery_type === 'delivery' ? 'ENTREGA A DOMICILIO' : 'RECOGER EN LOCAL'}</p>
+        ${order.delivery_address ? `<p>${order.delivery_address}</p>` : ''}
+        <div class="separator"></div>
+        <p class="bold">PRODUCTOS:</p>
+        <table>${itemsHtml}</table>
+        <div class="separator"></div>
+        <p class="total">TOTAL: ${order.total_amount.toFixed(2)}€</p>
+        <div class="separator"></div>
+        <p class="center">¡Gracias por su pedido!</p>
+        <p class="center">www.tulsiindianvalladolid.com</p>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   const handlePrintTicket = (order: Order) => {
@@ -522,49 +512,6 @@ export default function OrdersPanel() {
           </p>
         </div>
         <div className="flex gap-2 items-center">
-          {/* Printer Status Indicator */}
-          <div 
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
-              printerStatus === 'connected' 
-                ? 'bg-green-100 text-green-700 border border-green-200' 
-                : printerStatus === 'checking'
-                ? 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                : 'bg-red-100 text-red-700 border border-red-200'
-            }`}
-            onClick={checkPrinterConnection}
-            title="Clic para verificar conexión"
-          >
-            {printerStatus === 'connected' ? (
-              <Wifi className="h-3.5 w-3.5" />
-            ) : printerStatus === 'checking' ? (
-              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <WifiOff className="h-3.5 w-3.5" />
-            )}
-            <span>
-              {printerStatus === 'connected' 
-                ? 'Sunmi conectada' 
-                : printerStatus === 'checking' 
-                ? 'Verificando...' 
-                : 'Sunmi desconectada'}
-            </span>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={testNotificationSound}
-            title="Probar sonido de notificación"
-          >
-            🔔 Test Sonido
-          </Button>
-          <Button 
-            variant="default" 
-            size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
-            onClick={handleCreateTestOrder}
-          >
-            <Printer className="h-4 w-4 mr-1" /> Test Impresora
-          </Button>
           <Button variant="outline" size="icon" onClick={fetchOrders}>
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -770,9 +717,9 @@ export default function OrdersPanel() {
                   <Button 
                     variant="default"
                     className="bg-purple-600 hover:bg-purple-700"
-                    onClick={() => manualPrint(selectedOrder)}
+                    onClick={() => handleBrowserPrint(selectedOrder)}
                   >
-                    <Printer className="h-4 w-4 mr-2" /> Sunmi
+                    <Printer className="h-4 w-4 mr-2" /> Imprimir
                   </Button>
                   {selectedOrder.customer_phone && (
                     <Button 
