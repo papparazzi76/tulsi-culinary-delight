@@ -1,10 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
-// NOTA: La impresión se hace desde el panel de staff (red local)
-// La Edge Function ya no intenta conectar directamente al Sunmi
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -58,7 +56,59 @@ const handler = async (req: Request): Promise<Response> => {
       timeStyle: 'short'
     });
 
-    // Build items HTML
+    // Initialize Supabase client with service role for database operations
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Save order to database - this triggers automatic printing via real-time subscription
+    console.log("Saving order to database...");
+    const { data: savedOrder, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        order_number: orderNumber,
+        customer_name: data.customerName,
+        customer_email: data.customerEmail,
+        customer_phone: data.customerPhone || null,
+        delivery_type: data.deliveryType,
+        delivery_address: data.deliveryType === 'delivery' ? data.deliveryAddress : null,
+        status: 'pending',
+        payment_status: 'pending',
+        subtotal: data.subtotal,
+        discount_amount: data.discountAmount,
+        total_amount: data.total
+      })
+      .select()
+      .single();
+
+    if (orderError) {
+      console.error("Error saving order:", orderError);
+      throw new Error(`Error al guardar el pedido: ${orderError.message}`);
+    }
+
+    console.log("Order saved with ID:", savedOrder.id);
+
+    // Save order items
+    const orderItems = data.items.map(item => ({
+      order_id: savedOrder.id,
+      menu_item_id: item.id,
+      quantity: item.quantity,
+      unit_price: item.price,
+      total_price: item.price * item.quantity
+    }));
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (itemsError) {
+      console.error("Error saving order items:", itemsError);
+      // Don't fail completely, order is saved
+    } else {
+      console.log("Order items saved successfully");
+    }
+
+    // Build items HTML for emails
     const itemsHtml = data.items.map(item => `
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
@@ -159,7 +209,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p style="margin: 0; font-size: 18px;"><strong>Pedido #${orderNumber}</strong></p>
             <p style="margin: 5px 0 0 0;">${orderDate}</p>
             <p style="margin: 5px 0 0 0; font-size: 12px; color: #0284C7;">
-              🖨️ Impresión automática desde panel de staff
+              🖨️ Impresión automática activada en panel de staff
             </p>
           </div>
           
@@ -229,11 +279,14 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Error sending restaurant email:", restaurantEmailResult.error);
     }
 
+    console.log("Order completed successfully:", orderNumber);
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         orderNumber,
-        message: "Pedido enviado correctamente"
+        orderId: savedOrder.id,
+        message: "Pedido guardado y enviado correctamente"
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
