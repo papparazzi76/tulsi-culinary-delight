@@ -155,17 +155,18 @@ const OrderCard = ({ order, onClick, onQuickAction }: OrderCardProps) => {
           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
             <Button 
               size="sm" 
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              className="flex-1 bg-green-600 hover:bg-green-700"
               onClick={() => onQuickAction(order.id, 'in_progress')}
             >
-              <ChefHat className="h-4 w-4 mr-1" /> Preparar
+              <CheckCircle2 className="h-4 w-4 mr-1" /> Aceptar
             </Button>
             <Button 
               size="sm" 
               variant="destructive"
+              className="flex-1"
               onClick={() => onQuickAction(order.id, 'cancelled')}
             >
-              <XCircle className="h-4 w-4" />
+              <XCircle className="h-4 w-4 mr-1" /> Cancelar
             </Button>
           </div>
         )}
@@ -238,7 +239,43 @@ export default function OrdersPanel() {
     };
   }, [fetchOrders]);
 
+  const sendOrderStatusEmail = async (order: Order, status: 'accepted' | 'cancelled') => {
+    try {
+      const items = order.order_items.map(item => ({
+        name: item.menu_items.name,
+        quantity: item.quantity,
+        price: item.unit_price
+      }));
+
+      const response = await supabase.functions.invoke('send-order-status-email', {
+        body: {
+          orderNumber: order.order_number,
+          customerName: order.customer_name,
+          customerEmail: order.customer_email,
+          customerPhone: order.customer_phone,
+          status,
+          items,
+          total: order.total_amount
+        }
+      });
+
+      if (response.error) {
+        console.error('Error sending email:', response.error);
+        toast.error('Error al enviar email al cliente');
+      } else {
+        console.log('Email sent successfully:', response.data);
+        toast.success(`Email de ${status === 'accepted' ? 'confirmación' : 'cancelación'} enviado`);
+      }
+    } catch (error) {
+      console.error('Error sending order status email:', error);
+      toast.error('Error al enviar email');
+    }
+  };
+
   const handleUpdateStatus = async (orderId: string, newStatus: string) => {
+    // Find the order to send email
+    const orderToUpdate = orders.find(o => o.id === orderId);
+    
     const { error } = await supabase
       .from('orders')
       .update({ status: newStatus })
@@ -254,6 +291,16 @@ export default function OrdersPanel() {
         'cancelled': 'cancelado'
       };
       toast.success(`Pedido ${statusLabels[newStatus] || newStatus}`);
+      
+      // Send email when accepting or cancelling
+      if (orderToUpdate) {
+        if (newStatus === 'in_progress') {
+          await sendOrderStatusEmail(orderToUpdate, 'accepted');
+        } else if (newStatus === 'cancelled') {
+          await sendOrderStatusEmail(orderToUpdate, 'cancelled');
+        }
+      }
+      
       fetchOrders();
       if (selectedOrder?.id === orderId) {
         setSelectedOrder(null);
