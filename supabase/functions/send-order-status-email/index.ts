@@ -19,6 +19,15 @@ interface OrderStatusRequest {
   total: number;
 }
 
+function generateItemsHtml(items: { name: string; quantity: number; price: number }[]): string {
+  return items.map(item => `
+    <div class="item">
+      <span>${item.quantity}x ${item.name}</span>
+      <span>${(item.price * item.quantity).toFixed(2)}€</span>
+    </div>
+  `).join('');
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -36,6 +45,8 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const restaurantPhone = "+34 645 94 62 02";
+    const restaurantAddress = "C/ Marina Escobar 1, 47001 Valladolid";
+    const itemsHtml = generateItemsHtml(items);
     
     let subject: string;
     let htmlContent: string;
@@ -81,12 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
               
               <div class="items">
                 <h3>Tu pedido:</h3>
-                ${items.map(item => \`
-                  <div class="item">
-                    <span>\${item.quantity}x \${item.name}</span>
-                    <span>\${(item.price * item.quantity).toFixed(2)}€</span>
-                  </div>
-                \`).join('')}
+                ${itemsHtml}
               </div>
               
               <div class="total">
@@ -100,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
               
               <div class="address-box">
                 <p style="margin: 0 0 10px 0; color: #666;">📍 Recoge tu pedido en:</p>
-                <strong style="font-size: 18px;">C/ Marina Escobar 1, 47001 Valladolid</strong>
+                <strong style="font-size: 18px;">${restaurantAddress}</strong>
                 <p style="margin: 10px 0 0 0; color: #666;">📞 ${restaurantPhone}</p>
               </div>
               
@@ -108,7 +114,7 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             <div class="footer">
               <p><strong>Tulsi Indian Restaurant</strong></p>
-              <p>C/ Marina Escobar 1, 47001 Valladolid</p>
+              <p>${restaurantAddress}</p>
               <p>Tel: ${restaurantPhone}</p>
             </div>
           </div>
@@ -116,8 +122,8 @@ const handler = async (req: Request): Promise<Response> => {
         </html>
       `;
     } else if (status === 'accepted' || status === 'preparing') {
-      subject = \`👨‍🍳 Pedido \${orderNumber} En Preparación - Tulsi Indian\`;
-      htmlContent = \`
+      subject = `👨‍🍳 Pedido ${orderNumber} En Preparación - Tulsi Indian`;
+      htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -145,43 +151,38 @@ const handler = async (req: Request): Promise<Response> => {
               <h1>¡Tu Pedido Está en Preparación!</h1>
             </div>
             <div class="content">
-              <p>Hola <strong>\${customerName}</strong>,</p>
+              <p>Hola <strong>${customerName}</strong>,</p>
               <p>¡Buenas noticias! Tu pedido ya está siendo <strong>preparado por nuestros cocineros</strong>.</p>
               
               <div class="order-number">
                 <p style="margin: 0 0 5px 0; color: #666;">Número de pedido</p>
-                <span>\${orderNumber}</span>
+                <span>${orderNumber}</span>
               </div>
               
               <div class="items">
                 <h3>Resumen de tu pedido:</h3>
-                \${items.map(item => \`
-                  <div class="item">
-                    <span>\${item.quantity}x \${item.name}</span>
-                    <span>\${(item.price * item.quantity).toFixed(2)}€</span>
-                  </div>
-                \`).join('')}
+                ${itemsHtml}
               </div>
               
               <div class="total">
-                Total: \${total.toFixed(2)}€
+                Total: ${total.toFixed(2)}€
               </div>
               
               <div class="message">
                 <strong>⏱️ Tiempo estimado:</strong> Tu pedido estará listo en aproximadamente 20-30 minutos.
               </div>
               
-              <p>Si tienes alguna pregunta, no dudes en llamarnos al <strong>\${restaurantPhone}</strong></p>
+              <p>Si tienes alguna pregunta, no dudes en llamarnos al <strong>${restaurantPhone}</strong></p>
             </div>
             <div class="footer">
               <p><strong>Tulsi Indian Restaurant</strong></p>
-              <p>C/ Marina Escobar 1, 47001 Valladolid</p>
-              <p>Tel: \${restaurantPhone}</p>
+              <p>${restaurantAddress}</p>
+              <p>Tel: ${restaurantPhone}</p>
             </div>
           </div>
         </body>
         </html>
-      \`;
+      `;
     } else {
       // Cancelled
       subject = `❌ Pedido ${orderNumber} No Disponible - Tulsi Indian`;
@@ -234,7 +235,7 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             <div class="footer">
               <p><strong>Tulsi Indian Restaurant</strong></p>
-              <p>C/ Marina Escobar 1, 47001 Valladolid</p>
+              <p>${restaurantAddress}</p>
               <p>Tel: ${restaurantPhone}</p>
             </div>
           </div>
