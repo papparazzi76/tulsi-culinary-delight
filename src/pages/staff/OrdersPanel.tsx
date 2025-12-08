@@ -259,6 +259,50 @@ export default function OrdersPanel() {
     }
   };
 
+  const handleCreateTestOrder = async () => {
+    try {
+      const now = new Date();
+      const orderNumber = `TEST-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          order_number: orderNumber,
+          customer_name: 'Test Impresora Sunmi',
+          customer_email: 'test@tulsi.com',
+          customer_phone: '+34 666 123 456',
+          delivery_type: 'pickup',
+          status: 'pending',
+          payment_status: 'pending',
+          subtotal: 28.50,
+          total_amount: 28.50,
+          session_id: 'test-printer-session'
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert([{
+          order_id: order.id,
+          menu_item_id: 'ce7fa50d-da6b-4cac-b32a-96f5757abe50',
+          quantity: 2,
+          unit_price: 14.25,
+          total_price: 28.50
+        }]);
+
+      if (itemsError) throw itemsError;
+
+      toast.success(`🖨️ Pedido de prueba creado: ${orderNumber}`);
+      fetchOrders();
+    } catch (error) {
+      console.error('Error creating test order:', error);
+      toast.error('Error al crear pedido de prueba');
+    }
+  };
+
   const handlePrintTicket = (order: Order) => {
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -411,6 +455,14 @@ export default function OrdersPanel() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="default" 
+            size="sm"
+            className="bg-purple-600 hover:bg-purple-700"
+            onClick={handleCreateTestOrder}
+          >
+            <Printer className="h-4 w-4 mr-1" /> Test Impresora
+          </Button>
           <Button variant="outline" size="icon" onClick={fetchOrders}>
             <RefreshCw className="h-4 w-4" />
           </Button>
