@@ -158,8 +158,8 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background: #FEE2E2; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
             <p style="margin: 0; font-size: 18px;"><strong>Pedido #${orderNumber}</strong></p>
             <p style="margin: 5px 0 0 0;">${orderDate}</p>
-            <p style="margin: 5px 0 0 0; font-size: 12px; color: ${printerSent ? '#16a34a' : '#DC2626'};">
-              🖨️ Impresora: ${printerSent ? 'Enviado correctamente' : 'No disponible'}
+            <p style="margin: 5px 0 0 0; font-size: 12px; color: #0284C7;">
+              🖨️ Impresión automática desde panel de staff
             </p>
           </div>
           
@@ -233,7 +233,6 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ 
         success: true, 
         orderNumber,
-        printerSent,
         message: "Pedido enviado correctamente"
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
