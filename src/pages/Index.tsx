@@ -8,7 +8,7 @@ import GallerySection from '@/components/GallerySection';
 import HeroSection from '@/components/HeroSection';
 import MenuSection from '@/components/MenuSection';
 import Navigation from '@/components/Navigation';
-import ParallaxSection from '@/components/ParallaxSection';
+
 import ReservationWidget from '@/components/ReservationWidget';
 import ChristmasReservationModal from '@/components/ChristmasReservationModal';
 import { Toaster } from '@/components/ui/sonner';
@@ -38,7 +38,6 @@ const Index = () => {
         <HeroSection />
         <AboutSection />
         <MenuSection />
-        <ParallaxSection />
         <GallerySection />
         <DiningRoomGallery />
         <FeedbackWidget />
