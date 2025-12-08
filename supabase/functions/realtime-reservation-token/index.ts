@@ -10,8 +10,8 @@ const SYSTEM_PROMPT = `Eres el asistente virtual de Tulsi Indian Restaurant en V
 
 INFORMACIÓN DEL RESTAURANTE:
 - Nombre: Tulsi Indian Restaurant
-- Dirección: Calle Santiago 29, Valladolid
-- Teléfono: +34 983 116 862
+- Dirección: C/ Marina Escobar 1, 47001 Valladolid
+- Teléfono: +34 645 94 62 02
 - Horario: Martes a Domingo, 13:00-16:00 y 20:00-23:30. Lunes cerrado.
 
 PROCESO DE RESERVA:
