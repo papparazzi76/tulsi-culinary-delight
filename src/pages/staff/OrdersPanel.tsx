@@ -296,6 +296,24 @@ export default function OrdersPanel() {
       if (itemsError) throw itemsError;
 
       toast.success(`🖨️ Pedido de prueba creado: ${orderNumber}`);
+      
+      // Fetch complete order with items and send to printer
+      const { data: fullOrder, error: fetchError } = await supabase
+        .from('orders')
+        .select(`
+          id, order_number, created_at, status,
+          customer_name, customer_phone,
+          delivery_type, delivery_address, total_amount,
+          order_items ( id, quantity, unit_price, total_price, menu_items ( name ) )
+        `)
+        .eq('id', order.id)
+        .single();
+
+      if (!fetchError && fullOrder) {
+        console.log('🖨️ Enviando pedido de prueba a impresora Sunmi...');
+        await manualPrint(fullOrder as unknown as Order);
+      }
+      
       fetchOrders();
     } catch (error) {
       console.error('Error creating test order:', error);
