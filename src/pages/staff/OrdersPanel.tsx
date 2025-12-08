@@ -1,5 +1,5 @@
 // src/pages/staff/OrdersPanel.tsx
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,8 @@ import {
   Bike,
   Store,
   MessageSquare,
-  Printer
+  Printer,
+  Volume2
 } from 'lucide-react';
 
 interface OrderItem {
@@ -184,6 +185,45 @@ const OrderCard = ({ order, onClick, onQuickAction }: OrderCardProps) => {
   );
 };
 
+// Audio context for notification sounds
+let audioContext: AudioContext | null = null;
+
+const getAudioContext = (): AudioContext => {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+  return audioContext;
+};
+
+const playNotificationSound = () => {
+  try {
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    
+    // Play 5 beeps
+    for (let i = 0; i < 5; i++) {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.frequency.value = 880; // A5 note
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.5, ctx.currentTime + i * 0.3);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.3 + 0.2);
+      
+      oscillator.start(ctx.currentTime + i * 0.3);
+      oscillator.stop(ctx.currentTime + i * 0.3 + 0.2);
+    }
+  } catch (error) {
+    console.error('Error playing notification sound:', error);
+  }
+};
+
 export default function OrdersPanel() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -191,6 +231,31 @@ export default function OrdersPanel() {
   const [showSettings, setShowSettings] = useState(false);
   const [pollingInterval, setPollingInterval] = useState(3000);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const previousOrdersRef = useRef<string[]>([]);
+  const audioInitializedRef = useRef(false);
+
+  // Initialize audio on first user interaction
+  useEffect(() => {
+    const initAudio = () => {
+      if (!audioInitializedRef.current) {
+        getAudioContext();
+        audioInitializedRef.current = true;
+      }
+    };
+    
+    document.addEventListener('click', initAudio, { once: true });
+    document.addEventListener('touchstart', initAudio, { once: true });
+    
+    return () => {
+      document.removeEventListener('click', initAudio);
+      document.removeEventListener('touchstart', initAudio);
+    };
+  }, []);
+
+  const testNotificationSound = () => {
+    playNotificationSound();
+    toast.success('Sonido de notificación reproducido');
+  };
 
   const fetchOrders = useCallback(async () => {
     const { data, error } = await supabase
@@ -220,6 +285,22 @@ export default function OrdersPanel() {
     const interval = setInterval(fetchOrders, pollingInterval);
     return () => clearInterval(interval);
   }, [fetchOrders, pollingInterval]);
+
+  // Check for new orders and play sound
+  useEffect(() => {
+    const currentPendingIds = orders.filter(o => o.status === 'pending').map(o => o.id);
+    const previousIds = previousOrdersRef.current;
+    
+    // Check if there are new pending orders
+    const newOrders = currentPendingIds.filter(id => !previousIds.includes(id));
+    
+    if (newOrders.length > 0 && previousIds.length > 0) {
+      playNotificationSound();
+      toast.info(`¡Nuevo pedido recibido!`, { duration: 5000 });
+    }
+    
+    previousOrdersRef.current = currentPendingIds;
+  }, [orders]);
 
   // Real-time subscription for instant updates
   useEffect(() => {
@@ -305,12 +386,6 @@ export default function OrdersPanel() {
   };
 
   const handleBrowserPrint = (order: Order) => {
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
-    if (!printWindow) {
-      toast.error('No se pudo abrir la ventana de impresión');
-      return;
-    }
-
     const orderDate = new Date(order.created_at);
     const itemsHtml = order.order_items.map(item => `
       <tr>
@@ -319,7 +394,7 @@ export default function OrdersPanel() {
       </tr>
     `).join('');
 
-    printWindow.document.write(`
+    const printContent = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -332,6 +407,9 @@ export default function OrdersPanel() {
           .separator { border-top: 1px dashed #000; margin: 10px 0; }
           table { width: 100%; border-collapse: collapse; }
           .total { font-size: 14px; font-weight: bold; margin-top: 10px; }
+          @media print {
+            body { width: 80mm; margin: 0; padding: 5px; }
+          }
         </style>
       </head>
       <body>
@@ -356,10 +434,32 @@ export default function OrdersPanel() {
         <p class="center">www.tulsiindianvalladolid.com</p>
       </body>
       </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+    `;
+
+    // Create an iframe for printing
+    const printFrame = document.createElement('iframe');
+    printFrame.style.position = 'absolute';
+    printFrame.style.top = '-10000px';
+    printFrame.style.left = '-10000px';
+    document.body.appendChild(printFrame);
+
+    const frameDoc = printFrame.contentWindow?.document;
+    if (frameDoc) {
+      frameDoc.open();
+      frameDoc.write(printContent);
+      frameDoc.close();
+
+      // Wait for content to load then print
+      printFrame.onload = () => {
+        setTimeout(() => {
+          printFrame.contentWindow?.print();
+          // Remove iframe after printing
+          setTimeout(() => {
+            document.body.removeChild(printFrame);
+          }, 1000);
+        }, 250);
+      };
+    }
   };
 
   const handlePrintTicket = (order: Order) => {
@@ -514,6 +614,9 @@ export default function OrdersPanel() {
           </p>
         </div>
         <div className="flex gap-2 items-center">
+          <Button variant="outline" size="sm" onClick={testNotificationSound}>
+            <Volume2 className="h-4 w-4 mr-1" /> Test Sonido
+          </Button>
           <Button variant="outline" size="icon" onClick={fetchOrders}>
             <RefreshCw className="h-4 w-4" />
           </Button>
