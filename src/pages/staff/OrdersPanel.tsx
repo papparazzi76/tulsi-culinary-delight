@@ -202,7 +202,11 @@ const playNotificationSound = () => {
       ctx.resume();
     }
     
-    // Play 5 beeps
+    // Play 5 beeps of 1 second each, with 0.2 second gap between them
+    const beepDuration = 1; // 1 second per beep
+    const gapDuration = 0.2; // 0.2 second gap between beeps
+    const totalBeepInterval = beepDuration + gapDuration;
+    
     for (let i = 0; i < 5; i++) {
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
@@ -213,11 +217,13 @@ const playNotificationSound = () => {
       oscillator.frequency.value = 880; // A5 note
       oscillator.type = 'sine';
       
-      gainNode.gain.setValueAtTime(0.5, ctx.currentTime + i * 0.3);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.3 + 0.2);
+      const startTime = ctx.currentTime + i * totalBeepInterval;
+      gainNode.gain.setValueAtTime(0.5, startTime);
+      gainNode.gain.setValueAtTime(0.5, startTime + beepDuration - 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + beepDuration);
       
-      oscillator.start(ctx.currentTime + i * 0.3);
-      oscillator.stop(ctx.currentTime + i * 0.3 + 0.2);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + beepDuration);
     }
   } catch (error) {
     console.error('Error playing notification sound:', error);
