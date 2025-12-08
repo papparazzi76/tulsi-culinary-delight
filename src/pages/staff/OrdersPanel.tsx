@@ -41,7 +41,7 @@ interface Order {
   id: string;
   order_number: string;
   created_at: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  status: 'pending' | 'preparing' | 'completed' | 'cancelled';
   payment_status: string;
   customer_name: string;
   customer_email: string;
@@ -69,7 +69,7 @@ const getStatusBadge = (status: string) => {
   switch (status) {
     case 'pending':
       return <Badge className="bg-orange-500 text-white">Pendiente</Badge>;
-    case 'in_progress':
+    case 'preparing':
       return <Badge className="bg-blue-500 text-white">Preparando</Badge>;
     case 'completed':
       return <Badge className="bg-green-500 text-white">Completado</Badge>;
@@ -109,7 +109,7 @@ const OrderCard = ({ order, onClick, onQuickAction }: OrderCardProps) => {
 
   const borderColor = order.status === 'pending' 
     ? 'border-l-orange-500' 
-    : order.status === 'in_progress' 
+    : order.status === 'preparing' 
     ? 'border-l-blue-500' 
     : 'border-l-green-500';
 
@@ -154,7 +154,7 @@ const OrderCard = ({ order, onClick, onQuickAction }: OrderCardProps) => {
             <Button 
               size="sm" 
               className="flex-1 bg-green-600 hover:bg-green-700"
-              onClick={() => onQuickAction(order.id, 'in_progress')}
+              onClick={() => onQuickAction(order.id, 'preparing')}
             >
               <CheckCircle2 className="h-4 w-4 mr-1" /> Aceptar
             </Button>
@@ -168,7 +168,7 @@ const OrderCard = ({ order, onClick, onQuickAction }: OrderCardProps) => {
             </Button>
           </div>
         )}
-        {order.status === 'in_progress' && (
+        {order.status === 'preparing' && (
           <Button 
             size="sm" 
             className="w-full bg-green-600 hover:bg-green-700"
@@ -273,7 +273,7 @@ export default function OrdersPanel() {
         order_items ( id, quantity, unit_price, total_price, menu_items ( name ) )
       `)
       .in('delivery_type', ['pickup', 'delivery'])
-      .in('status', ['pending', 'in_progress', 'completed'])
+      .in('status', ['pending', 'preparing', 'completed'])
       .order('created_at', { ascending: false })
       .limit(100);
 
@@ -375,15 +375,15 @@ export default function OrdersPanel() {
       console.error(error);
     } else {
       const statusLabels: Record<string, string> = {
-        'in_progress': 'en preparación',
+        'preparing': 'en preparación',
         'completed': 'completado',
         'cancelled': 'cancelado'
       };
       toast.success(`Pedido ${statusLabels[newStatus] || newStatus}`);
       
-      // Send email and print when accepting, only email when cancelling
+      // Send email and print when preparing, only email when cancelling
       if (orderToUpdate) {
-        if (newStatus === 'in_progress') {
+        if (newStatus === 'preparing') {
           await sendOrderStatusEmail(orderToUpdate, 'preparing');
           // Auto-print when order is accepted
           handleBrowserPrint(orderToUpdate);
@@ -620,7 +620,7 @@ export default function OrdersPanel() {
   };
 
   const pendingOrders = orders.filter(o => o.status === 'pending');
-  const inProgressOrders = orders.filter(o => o.status === 'in_progress');
+  const inProgressOrders = orders.filter(o => o.status === 'preparing');
   const completedOrders = orders.filter(o => o.status === 'completed').slice(0, 20);
 
   if (loading) {
@@ -821,7 +821,7 @@ export default function OrdersPanel() {
                     <>
                       <Button 
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
-                        onClick={() => handleUpdateStatus(selectedOrder.id, 'in_progress')}
+                        onClick={() => handleUpdateStatus(selectedOrder.id, 'preparing')}
                       >
                         <ChefHat className="h-4 w-4 mr-2" /> Preparar
                       </Button>
@@ -833,7 +833,7 @@ export default function OrdersPanel() {
                       </Button>
                     </>
                   )}
-                  {selectedOrder.status === 'in_progress' && (
+                  {selectedOrder.status === 'preparing' && (
                     <Button 
                       className="flex-1 bg-green-600 hover:bg-green-700"
                       onClick={() => handleUpdateStatus(selectedOrder.id, 'completed')}
