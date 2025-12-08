@@ -428,7 +428,7 @@ export default function OrdersPanel() {
       </head>
       <body>
         <h1>TULSI INDIAN</h1>
-        <p class="center">C/ Santiago, 12 - Valladolid<br>Tel: +34 645 94 62 02</p>
+        <p class="center">C/ Marina Escobar 1, 47001 Valladolid<br>Tel: +34 645 94 62 02</p>
         <div class="separator"></div>
         <p class="center bold">Pedido: ${order.order_number}</p>
         <p class="center">${orderDate.toLocaleDateString('es-ES')} - ${orderDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
@@ -508,9 +508,9 @@ export default function OrdersPanel() {
     
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('C/ Santiago, 12 - Valladolid', pageWidth / 2, y, { align: 'center' });
+    doc.text('C/ Marina Escobar 1, 47001 Valladolid', pageWidth / 2, y, { align: 'center' });
     y += 4;
-    doc.text('Tel: 983 123 456', pageWidth / 2, y, { align: 'center' });
+    doc.text('Tel: +34 645 94 62 02', pageWidth / 2, y, { align: 'center' });
     y += 8;
 
     // Order number

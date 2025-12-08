@@ -121,7 +121,7 @@ serve(async (req) => {
             </div>
             
             <div style="background: #FEF3C7; padding: 15px; border-radius: 10px; margin: 20px 0;">
-              <p style="margin: 0;"><strong>📍 Dirección:</strong> Calle Santiago 29, Valladolid</p>
+              <p style="margin: 0;"><strong>📍 Dirección:</strong> C/ Marina Escobar 1, 47001 Valladolid</p>
               <p style="margin: 5px 0 0 0;"><strong>📞 Teléfono:</strong> +34 645 94 62 02</p>
             </div>
             
