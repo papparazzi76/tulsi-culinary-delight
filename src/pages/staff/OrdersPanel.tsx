@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
+import { useSunmiPrinter } from '@/hooks/useSunmiPrinter';
 import { 
   Clock, 
   Phone, 
@@ -190,6 +191,9 @@ export default function OrdersPanel() {
   const [showSettings, setShowSettings] = useState(false);
   const [pollingInterval, setPollingInterval] = useState(3000);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  
+  // Hook para impresión automática en Sunmi V2S
+  const { manualPrint } = useSunmiPrinter();
 
   const fetchOrders = useCallback(async () => {
     const { data, error } = await supabase
@@ -607,7 +611,14 @@ export default function OrdersPanel() {
                     variant="outline"
                     onClick={() => handlePrintTicket(selectedOrder)}
                   >
-                    <Printer className="h-4 w-4 mr-2" /> Imprimir
+                    <Printer className="h-4 w-4 mr-2" /> PDF
+                  </Button>
+                  <Button 
+                    variant="default"
+                    className="bg-purple-600 hover:bg-purple-700"
+                    onClick={() => manualPrint(selectedOrder)}
+                  >
+                    <Printer className="h-4 w-4 mr-2" /> Sunmi
                   </Button>
                   {selectedOrder.customer_phone && (
                     <Button 
