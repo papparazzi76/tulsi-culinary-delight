@@ -291,16 +291,24 @@ export default function OrdersPanel() {
     const currentPendingIds = orders.filter(o => o.status === 'pending').map(o => o.id);
     const previousIds = previousOrdersRef.current;
     
-    // Check if there are new pending orders
-    const newOrders = currentPendingIds.filter(id => !previousIds.includes(id));
-    
-    if (newOrders.length > 0 && previousIds.length > 0) {
-      playNotificationSound();
-      toast.info(`¡Nuevo pedido recibido!`, { duration: 5000 });
+    // Check if there are new pending orders (only after initial load)
+    if (previousIds.length > 0 || !loading) {
+      const newOrders = currentPendingIds.filter(id => !previousIds.includes(id));
+      
+      if (newOrders.length > 0 && previousIds.length >= 0) {
+        // Only play sound if not the initial load
+        if (previousOrdersRef.current.length > 0 || orders.length > 0) {
+          const hasNewOrder = currentPendingIds.some(id => !previousIds.includes(id));
+          if (hasNewOrder && previousIds.length > 0) {
+            playNotificationSound();
+            toast.info(`¡Nuevo pedido recibido!`, { duration: 5000 });
+          }
+        }
+      }
     }
     
     previousOrdersRef.current = currentPendingIds;
-  }, [orders]);
+  }, [orders, loading]);
 
   // Real-time subscription for instant updates
   useEffect(() => {
@@ -436,29 +444,43 @@ export default function OrdersPanel() {
       </html>
     `;
 
-    // Create an iframe for printing
-    const printFrame = document.createElement('iframe');
-    printFrame.style.position = 'absolute';
-    printFrame.style.top = '-10000px';
-    printFrame.style.left = '-10000px';
-    document.body.appendChild(printFrame);
-
-    const frameDoc = printFrame.contentWindow?.document;
-    if (frameDoc) {
-      frameDoc.open();
-      frameDoc.write(printContent);
-      frameDoc.close();
-
+    // Use window.open for better compatibility
+    const printWindow = window.open('', 'print-window', 'width=400,height=600');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      
       // Wait for content to load then print
-      printFrame.onload = () => {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+    } else {
+      // Fallback: use iframe if popup is blocked
+      const printFrame = document.createElement('iframe');
+      printFrame.style.position = 'fixed';
+      printFrame.style.right = '0';
+      printFrame.style.bottom = '0';
+      printFrame.style.width = '0';
+      printFrame.style.height = '0';
+      printFrame.style.border = 'none';
+      document.body.appendChild(printFrame);
+
+      const frameDoc = printFrame.contentWindow?.document;
+      if (frameDoc) {
+        frameDoc.open();
+        frameDoc.write(printContent);
+        frameDoc.close();
+
         setTimeout(() => {
+          printFrame.contentWindow?.focus();
           printFrame.contentWindow?.print();
-          // Remove iframe after printing
           setTimeout(() => {
             document.body.removeChild(printFrame);
           }, 1000);
-        }, 250);
-      };
+        }, 500);
+      }
     }
   };
 
