@@ -328,7 +328,7 @@ export default function OrdersPanel() {
     };
   }, [fetchOrders]);
 
-  const sendOrderStatusEmail = async (order: Order, status: 'accepted' | 'cancelled' | 'preparing') => {
+  const sendOrderStatusEmail = async (order: Order, status: 'accepted' | 'cancelled' | 'preparing' | 'completed') => {
     try {
       const items = order.order_items.map(item => ({
         name: item.menu_items.name,
@@ -353,7 +353,8 @@ export default function OrdersPanel() {
         toast.error('Error al enviar email al cliente');
       } else {
         console.log('Email sent successfully:', response.data);
-        toast.success(`Email de ${status === 'accepted' ? 'confirmación' : 'cancelación'} enviado`);
+        const statusMsg = status === 'completed' ? 'pedido listo' : status === 'preparing' ? 'en preparación' : 'cancelación';
+        toast.success(`Email de ${statusMsg} enviado`);
       }
     } catch (error) {
       console.error('Error sending order status email:', error);
@@ -381,12 +382,14 @@ export default function OrdersPanel() {
       };
       toast.success(`Pedido ${statusLabels[newStatus] || newStatus}`);
       
-      // Send email and print when preparing, only email when cancelling
+      // Send email and print when preparing, email when completed or cancelled
       if (orderToUpdate) {
         if (newStatus === 'preparing') {
           await sendOrderStatusEmail(orderToUpdate, 'preparing');
           // Auto-print when order is accepted
           handleBrowserPrint(orderToUpdate);
+        } else if (newStatus === 'completed') {
+          await sendOrderStatusEmail(orderToUpdate, 'completed');
         } else if (newStatus === 'cancelled') {
           await sendOrderStatusEmail(orderToUpdate, 'cancelled');
         }
