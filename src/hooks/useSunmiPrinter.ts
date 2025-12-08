@@ -33,41 +33,72 @@ interface Order {
 const printedOrders = new Set<string>();
 
 // Audio notification for new orders - 5 beeps
-const playNotificationSound = () => {
+// Keep a global AudioContext to avoid browser autoplay restrictions
+let audioContext: AudioContext | null = null;
+
+const getAudioContext = (): AudioContext => {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+  // Resume if suspended (browser autoplay policy)
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+  return audioContext;
+};
+
+const playNotificationSound = async () => {
   try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const ctx = getAudioContext();
+    
+    // Wait for context to be running
+    if (ctx.state !== 'running') {
+      await ctx.resume();
+    }
     
     const playBeep = (frequency: number, startTime: number, duration: number) => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
       
       oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      gainNode.connect(ctx.destination);
       
       oscillator.frequency.value = frequency;
       oscillator.type = 'sine';
       
+      // Louder volume for better audibility
       gainNode.gain.setValueAtTime(0, startTime);
-      gainNode.gain.linearRampToValueAtTime(0.5, startTime + 0.05);
+      gainNode.gain.linearRampToValueAtTime(0.8, startTime + 0.02);
       gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
       
       oscillator.start(startTime);
       oscillator.stop(startTime + duration);
     };
 
-    const now = audioContext.currentTime;
-    // 5 beeps with alternating frequencies for attention
-    playBeep(880, now, 0.15);           // A5
-    playBeep(880, now + 0.25, 0.15);    // A5
-    playBeep(880, now + 0.5, 0.15);     // A5
-    playBeep(880, now + 0.75, 0.15);    // A5
-    playBeep(880, now + 1.0, 0.2);      // A5 (longer final beep)
+    const now = ctx.currentTime;
+    // 5 beeps at 880Hz (A5) for attention
+    playBeep(880, now, 0.2);
+    playBeep(880, now + 0.3, 0.2);
+    playBeep(880, now + 0.6, 0.2);
+    playBeep(880, now + 0.9, 0.2);
+    playBeep(880, now + 1.2, 0.3); // longer final beep
     
     console.log('🔔 Notificación sonora reproducida (5 beeps)');
   } catch (error) {
     console.warn('No se pudo reproducir el sonido de notificación:', error);
   }
 };
+
+// Initialize audio context on first user interaction
+if (typeof window !== 'undefined') {
+  const initAudio = () => {
+    getAudioContext();
+    document.removeEventListener('click', initAudio);
+    document.removeEventListener('touchstart', initAudio);
+  };
+  document.addEventListener('click', initAudio);
+  document.addEventListener('touchstart', initAudio);
+}
 
 export function useSunmiPrinter() {
   const isInitialized = useRef(false);
