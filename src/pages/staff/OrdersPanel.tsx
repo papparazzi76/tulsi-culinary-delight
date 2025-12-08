@@ -286,10 +286,12 @@ export default function OrdersPanel() {
       };
       toast.success(`Pedido ${statusLabels[newStatus] || newStatus}`);
       
-      // Send email when accepting or cancelling
+      // Send email and print when accepting, only email when cancelling
       if (orderToUpdate) {
         if (newStatus === 'in_progress') {
           await sendOrderStatusEmail(orderToUpdate, 'accepted');
+          // Auto-print when order is accepted
+          handleBrowserPrint(orderToUpdate);
         } else if (newStatus === 'cancelled') {
           await sendOrderStatusEmail(orderToUpdate, 'cancelled');
         }
