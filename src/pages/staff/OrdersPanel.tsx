@@ -196,7 +196,7 @@ export default function OrdersPanel() {
   const [lastUpdate, setLastUpdate] = useState(new Date());
   
   // Hook para impresión automática en Sunmi V2S
-  const { manualPrint, printerStatus, checkPrinterConnection } = useSunmiPrinter();
+  const { manualPrint, printerStatus, checkPrinterConnection, testNotificationSound } = useSunmiPrinter();
 
   const fetchOrders = useCallback(async () => {
     const { data, error } = await supabase
@@ -549,6 +549,14 @@ export default function OrdersPanel() {
                 : 'Sunmi desconectada'}
             </span>
           </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={testNotificationSound}
+            title="Probar sonido de notificación"
+          >
+            🔔 Test Sonido
+          </Button>
           <Button 
             variant="default" 
             size="sm"
