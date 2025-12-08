@@ -34,11 +34,9 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<{ orderNumber: string } | null>(null);
 
-  // Verificar si el envío a domicilio está disponible (desde 1 de octubre)
+  // Envío a domicilio temporalmente deshabilitado
   const isDeliveryAvailable = () => {
-    const today = new Date();
-    const deliveryStartDate = new Date(today.getFullYear(), 9, 1);
-    return today >= deliveryStartDate;
+    return false;
   };
 
   // Forzar pickup si delivery no está disponible
