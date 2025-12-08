@@ -9,8 +9,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from './integrations/supabase/client';
 import type { Session } from '@supabase/supabase-js';
 
-// ... (El resto de las importaciones de páginas no cambia)
+// Page imports
 import Index from "./pages/Index";
+import PedidosOnline from "./pages/PedidosOnline";
 import NotFound from "./pages/NotFound";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancelled from "./pages/PaymentCancelled";
@@ -73,6 +74,7 @@ const App = () => (
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Index />} />
+          <Route path="/pedidos" element={<PedidosOnline />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-cancelled" element={<PaymentCancelled />} />
           <Route path="/pago-exitoso" element={<PaymentSuccessTPV />} />
