@@ -32,12 +32,11 @@ interface Order {
 // Set to track already printed orders (persists during session)
 const printedOrders = new Set<string>();
 
-// Audio notification for new orders
+// Audio notification for new orders - 5 beeps
 const playNotificationSound = () => {
   try {
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     
-    // Create a pleasant notification sound (3 ascending beeps)
     const playBeep = (frequency: number, startTime: number, duration: number) => {
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -57,11 +56,14 @@ const playNotificationSound = () => {
     };
 
     const now = audioContext.currentTime;
-    playBeep(523, now, 0.15);       // C5
-    playBeep(659, now + 0.15, 0.15); // E5
-    playBeep(784, now + 0.3, 0.25);  // G5
+    // 5 beeps with alternating frequencies for attention
+    playBeep(880, now, 0.15);           // A5
+    playBeep(880, now + 0.25, 0.15);    // A5
+    playBeep(880, now + 0.5, 0.15);     // A5
+    playBeep(880, now + 0.75, 0.15);    // A5
+    playBeep(880, now + 1.0, 0.2);      // A5 (longer final beep)
     
-    console.log('🔔 Notificación sonora reproducida');
+    console.log('🔔 Notificación sonora reproducida (5 beeps)');
   } catch (error) {
     console.warn('No se pudo reproducir el sonido de notificación:', error);
   }
