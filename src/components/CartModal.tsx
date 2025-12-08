@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Minus, Plus, Trash2 } from 'lucide-react';
+import { Minus, Plus, Trash2, CheckCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,7 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
   React.useEffect(() => {
     if (isOpen) {
       refreshCart();
+      setOrderSuccess(null);
     }
   }, [isOpen, refreshCart]);
   
@@ -31,11 +32,12 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
   });
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState<{ orderNumber: string } | null>(null);
 
   // Verificar si el envío a domicilio está disponible (desde 1 de octubre)
   const isDeliveryAvailable = () => {
     const today = new Date();
-    const deliveryStartDate = new Date(today.getFullYear(), 9, 1); // 1 de octubre (mes 9 = octubre)
+    const deliveryStartDate = new Date(today.getFullYear(), 9, 1);
     return today >= deliveryStartDate;
   };
 
@@ -56,7 +58,7 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
     updateQuantity(itemId, newQuantity);
   };
 
-  const handleCheckout = async () => {
+  const handleSubmitOrder = async () => {
     if (!customerInfo.name || !customerInfo.email) {
       toast.error('Por favor, completa tu nombre y email.');
       return;
@@ -72,50 +74,90 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
       return;
     }
 
-    const processPayment = async () => {
-        setIsProcessing(true);
-        try {
-          // Crear sesión de pago con Stripe
-          const { data, error } = await supabase.functions.invoke('create-payment', {
-            body: {
-              amount: totals.total,
-              customerInfo,
-              deliveryType,
-              items: cartItems.map(item => ({
-                id: item.id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity
-              }))
-            }
-          });
-
-          if (error) {
-            throw new Error(error.message);
-          }
-
-          if (!data?.url) {
-            throw new Error('No se pudo crear la sesión de pago');
-          }
-
-          // Limpiar carrito antes de redireccionar
-          clearCart();
-          onClose();
-          
-          // Redireccionar a Stripe Checkout
-          window.open(data.url, '_blank');
-          
-        } catch (error: any) {
-          console.error('Error processing payment:', error);
-          toast.error(`Error al procesar el pago: ${error.message}`);
-        } finally {
-          setIsProcessing(false);
+    setIsProcessing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-takeaway-order', {
+        body: {
+          customerName: customerInfo.name,
+          customerEmail: customerInfo.email,
+          customerPhone: customerInfo.phone,
+          deliveryType,
+          deliveryAddress: deliveryType === 'delivery' ? deliveryAddress : undefined,
+          items: cartItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity
+          })),
+          subtotal: totals.subtotal,
+          discountAmount: totals.discountAmount,
+          total: totals.total
         }
-    }
+      });
 
-    // El prop onShowContest ahora ejecuta directamente el proceso de pago.
-    onShowContest(processPayment);
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Error al enviar el pedido');
+      }
+
+      // Show success state
+      setOrderSuccess({ orderNumber: data.orderNumber });
+      clearCart();
+      toast.success('¡Pedido enviado correctamente!');
+      
+    } catch (error: any) {
+      console.error('Error sending order:', error);
+      toast.error(`Error al enviar el pedido: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  // Success view after order is placed
+  if (orderSuccess) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <div className="text-center py-8 space-y-6">
+            <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-12 h-12 text-green-600" />
+            </div>
+            
+            <div className="space-y-2">
+              <h2 className="text-2xl font-playfair font-bold text-accent">
+                ¡Pedido Enviado!
+              </h2>
+              <p className="text-muted-foreground">
+                Número de pedido: <strong>{orderSuccess.orderNumber}</strong>
+              </p>
+            </div>
+            
+            <div className="bg-secondary p-4 rounded-lg text-left space-y-2">
+              <p className="text-sm">
+                <strong>📧 Te hemos enviado un email</strong> con los detalles de tu pedido.
+              </p>
+              <p className="text-sm">
+                <strong>💳 Forma de pago:</strong> Abonarás el pedido al recogerlo en el restaurante. Aceptamos efectivo y tarjeta.
+              </p>
+              <p className="text-sm">
+                <strong>⏰ Tiempo estimado:</strong> 15-25 minutos.
+              </p>
+              <p className="text-sm">
+                <strong>📍 Dirección:</strong> Calle Marina Escobar, 1, 47001 Valladolid
+              </p>
+            </div>
+            
+            <Button onClick={onClose} className="btn-tulsi">
+              Cerrar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -125,7 +167,7 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
             <DialogTitle className="text-2xl font-playfair text-accent">
               Tu Carrito
             </DialogTitle>
-            {cartItems.length > 0 && (
+            {cartItems.length > 0 && !orderSuccess && (
               <Button
                 variant="outline"
                 size="sm"
@@ -337,16 +379,22 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
                     * Se aplica automáticamente 20% de descuento por recogida en restaurante
                   </p>
                 )}
+
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>💳 Pago en restaurante:</strong> Abonarás el importe al recoger tu pedido. Aceptamos efectivo y tarjeta.
+                  </p>
+                </div>
               </div>
 
-              {/* Checkout button */}
-                <Button
-                  onClick={handleCheckout}
-                  disabled={isProcessing || !customerInfo.name || !customerInfo.email}
-                  className="w-full btn-tulsi"
-                >
-                  {isProcessing ? 'Procesando...' : 'Proceder al pago con Stripe'}
-                </Button>
+              {/* Submit order button */}
+              <Button
+                onClick={handleSubmitOrder}
+                disabled={isProcessing || !customerInfo.name || !customerInfo.email}
+                className="w-full btn-tulsi"
+              >
+                {isProcessing ? 'Enviando pedido...' : 'Preparar Pedido'}
+              </Button>
             </>
           )}
         </div>

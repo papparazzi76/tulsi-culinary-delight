@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.send-christmas-reservation-notification]
 verify_jwt = false
+
+[functions.send-takeaway-order]
+verify_jwt = false
