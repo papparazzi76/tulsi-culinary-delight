@@ -14,7 +14,7 @@ interface OrderStatusRequest {
   customerName: string;
   customerEmail: string;
   customerPhone: string | null;
-  status: 'accepted' | 'cancelled';
+  status: 'accepted' | 'cancelled' | 'preparing';
   items: { name: string; quantity: number; price: number }[];
   total: number;
 }
@@ -40,8 +40,8 @@ const handler = async (req: Request): Promise<Response> => {
     let subject: string;
     let htmlContent: string;
 
-    if (status === 'accepted') {
-      subject = `✅ Pedido ${orderNumber} Confirmado - Tulsi Indian`;
+    if (status === 'accepted' || status === 'preparing') {
+      subject = `👨‍🍳 Pedido ${orderNumber} En Preparación - Tulsi Indian`;
       htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -50,28 +50,28 @@ const handler = async (req: Request): Promise<Response> => {
           <style>
             body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
             .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 30px; text-align: center; }
+            .header { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 30px; text-align: center; }
             .header h1 { margin: 0; font-size: 24px; }
-            .header .check { font-size: 48px; margin-bottom: 10px; }
+            .header .icon { font-size: 48px; margin-bottom: 10px; }
             .content { padding: 30px; }
-            .order-number { background: #f0fdf4; border: 2px solid #16a34a; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 20px; }
-            .order-number span { font-size: 24px; font-weight: bold; color: #16a34a; }
+            .order-number { background: #eff6ff; border: 2px solid #2563eb; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 20px; }
+            .order-number span { font-size: 24px; font-weight: bold; color: #2563eb; }
             .items { margin: 20px 0; }
             .item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
             .total { font-size: 20px; font-weight: bold; text-align: right; padding: 15px 0; border-top: 2px solid #333; }
-            .message { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+            .message { background: #dbeafe; border-left: 4px solid #2563eb; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; }
             .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #666; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <div class="check">✓</div>
-              <h1>¡Pedido Confirmado!</h1>
+              <div class="icon">👨‍🍳</div>
+              <h1>¡Tu Pedido Está en Preparación!</h1>
             </div>
             <div class="content">
               <p>Hola <strong>${customerName}</strong>,</p>
-              <p>Nos complace informarte que tu pedido ha sido <strong>aceptado</strong> y estamos preparándolo con mucho cariño.</p>
+              <p>¡Buenas noticias! Tu pedido ya está siendo <strong>preparado por nuestros cocineros</strong>.</p>
               
               <div class="order-number">
                 <p style="margin: 0 0 5px 0; color: #666;">Número de pedido</p>

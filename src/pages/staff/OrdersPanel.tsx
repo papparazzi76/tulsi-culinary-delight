@@ -328,7 +328,7 @@ export default function OrdersPanel() {
     };
   }, [fetchOrders]);
 
-  const sendOrderStatusEmail = async (order: Order, status: 'accepted' | 'cancelled') => {
+  const sendOrderStatusEmail = async (order: Order, status: 'accepted' | 'cancelled' | 'preparing') => {
     try {
       const items = order.order_items.map(item => ({
         name: item.menu_items.name,
@@ -384,7 +384,7 @@ export default function OrdersPanel() {
       // Send email and print when accepting, only email when cancelling
       if (orderToUpdate) {
         if (newStatus === 'in_progress') {
-          await sendOrderStatusEmail(orderToUpdate, 'accepted');
+          await sendOrderStatusEmail(orderToUpdate, 'preparing');
           // Auto-print when order is accepted
           handleBrowserPrint(orderToUpdate);
         } else if (newStatus === 'cancelled') {
