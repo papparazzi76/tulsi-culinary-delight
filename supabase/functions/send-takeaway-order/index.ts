@@ -4,7 +4,7 @@ import { Resend } from "npm:resend@2.0.0";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 // IP del Sunmi V2S en la red local del restaurante
-const SUNMI_PRINTER_URL = "http://198.168.1.100:8080/pedido";
+const SUNMI_PRINTER_URL = "http://192.168.1.100:8080/pedido";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
