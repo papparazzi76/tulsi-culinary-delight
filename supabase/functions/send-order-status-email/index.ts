@@ -14,7 +14,7 @@ interface OrderStatusRequest {
   customerName: string;
   customerEmail: string;
   customerPhone: string | null;
-  status: 'accepted' | 'cancelled' | 'preparing';
+  status: 'accepted' | 'cancelled' | 'preparing' | 'completed';
   items: { name: string; quantity: number; price: number }[];
   total: number;
 }
@@ -40,9 +40,84 @@ const handler = async (req: Request): Promise<Response> => {
     let subject: string;
     let htmlContent: string;
 
-    if (status === 'accepted' || status === 'preparing') {
-      subject = `👨‍🍳 Pedido ${orderNumber} En Preparación - Tulsi Indian`;
+    if (status === 'completed') {
+      subject = `✅ Pedido ${orderNumber} ¡LISTO para Recoger! - Tulsi Indian`;
       htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
+            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 24px; }
+            .header .icon { font-size: 48px; margin-bottom: 10px; }
+            .content { padding: 30px; }
+            .order-number { background: #dcfce7; border: 2px solid #16a34a; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 20px; }
+            .order-number span { font-size: 24px; font-weight: bold; color: #16a34a; }
+            .items { margin: 20px 0; }
+            .item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+            .total { font-size: 20px; font-weight: bold; text-align: right; padding: 15px 0; border-top: 2px solid #333; }
+            .message { background: #dcfce7; border-left: 4px solid #16a34a; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+            .address-box { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+            .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="icon">🎉</div>
+              <h1>¡Tu Pedido Está Listo!</h1>
+            </div>
+            <div class="content">
+              <p>Hola <strong>${customerName}</strong>,</p>
+              <p>¡Excelentes noticias! Tu pedido ya está <strong>listo para recoger</strong>.</p>
+              
+              <div class="order-number">
+                <p style="margin: 0 0 5px 0; color: #666;">Número de pedido</p>
+                <span>${orderNumber}</span>
+              </div>
+              
+              <div class="items">
+                <h3>Tu pedido:</h3>
+                ${items.map(item => \`
+                  <div class="item">
+                    <span>\${item.quantity}x \${item.name}</span>
+                    <span>\${(item.price * item.quantity).toFixed(2)}€</span>
+                  </div>
+                \`).join('')}
+              </div>
+              
+              <div class="total">
+                Total a pagar: ${total.toFixed(2)}€
+              </div>
+              
+              <div class="message">
+                <strong>✅ ¡Ya puedes pasar a recogerlo!</strong><br>
+                Tu pedido está caliente y esperándote.
+              </div>
+              
+              <div class="address-box">
+                <p style="margin: 0 0 10px 0; color: #666;">📍 Recoge tu pedido en:</p>
+                <strong style="font-size: 18px;">C/ Marina Escobar 1, 47001 Valladolid</strong>
+                <p style="margin: 10px 0 0 0; color: #666;">📞 ${restaurantPhone}</p>
+              </div>
+              
+              <p>💳 Recuerda que el pago se realiza en el restaurante (efectivo o tarjeta).</p>
+            </div>
+            <div class="footer">
+              <p><strong>Tulsi Indian Restaurant</strong></p>
+              <p>C/ Marina Escobar 1, 47001 Valladolid</p>
+              <p>Tel: ${restaurantPhone}</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+    } else if (status === 'accepted' || status === 'preparing') {
+      subject = \`👨‍🍳 Pedido \${orderNumber} En Preparación - Tulsi Indian\`;
+      htmlContent = \`
         <!DOCTYPE html>
         <html>
         <head>
@@ -70,43 +145,43 @@ const handler = async (req: Request): Promise<Response> => {
               <h1>¡Tu Pedido Está en Preparación!</h1>
             </div>
             <div class="content">
-              <p>Hola <strong>${customerName}</strong>,</p>
+              <p>Hola <strong>\${customerName}</strong>,</p>
               <p>¡Buenas noticias! Tu pedido ya está siendo <strong>preparado por nuestros cocineros</strong>.</p>
               
               <div class="order-number">
                 <p style="margin: 0 0 5px 0; color: #666;">Número de pedido</p>
-                <span>${orderNumber}</span>
+                <span>\${orderNumber}</span>
               </div>
               
               <div class="items">
                 <h3>Resumen de tu pedido:</h3>
-                ${items.map(item => `
+                \${items.map(item => \`
                   <div class="item">
-                    <span>${item.quantity}x ${item.name}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}€</span>
+                    <span>\${item.quantity}x \${item.name}</span>
+                    <span>\${(item.price * item.quantity).toFixed(2)}€</span>
                   </div>
-                `).join('')}
+                \`).join('')}
               </div>
               
               <div class="total">
-                Total: ${total.toFixed(2)}€
+                Total: \${total.toFixed(2)}€
               </div>
               
               <div class="message">
                 <strong>⏱️ Tiempo estimado:</strong> Tu pedido estará listo en aproximadamente 20-30 minutos.
               </div>
               
-              <p>Si tienes alguna pregunta, no dudes en llamarnos al <strong>${restaurantPhone}</strong></p>
+              <p>Si tienes alguna pregunta, no dudes en llamarnos al <strong>\${restaurantPhone}</strong></p>
             </div>
             <div class="footer">
               <p><strong>Tulsi Indian Restaurant</strong></p>
-              <p>C/ Santiago, 12 - Valladolid</p>
-              <p>Tel: ${restaurantPhone}</p>
+              <p>C/ Marina Escobar 1, 47001 Valladolid</p>
+              <p>Tel: \${restaurantPhone}</p>
             </div>
           </div>
         </body>
         </html>
-      `;
+      \`;
     } else {
       // Cancelled
       subject = `❌ Pedido ${orderNumber} No Disponible - Tulsi Indian`;
@@ -159,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             <div class="footer">
               <p><strong>Tulsi Indian Restaurant</strong></p>
-              <p>C/ Santiago, 12 - Valladolid</p>
+              <p>C/ Marina Escobar 1, 47001 Valladolid</p>
               <p>Tel: ${restaurantPhone}</p>
             </div>
           </div>
