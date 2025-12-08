@@ -9,7 +9,7 @@ import HeroSection from '@/components/HeroSection';
 import MenuSection from '@/components/MenuSection';
 import Navigation from '@/components/Navigation';
 
-import ReservationWidget from '@/components/ReservationWidget';
+
 import ChristmasReservationModal from '@/components/ChristmasReservationModal';
 import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
@@ -41,7 +41,6 @@ const Index = () => {
         <GallerySection />
         <DiningRoomGallery />
         <FeedbackWidget />
-        <ReservationWidget />
         <ContactSection />
       </main>
       <Footer />
