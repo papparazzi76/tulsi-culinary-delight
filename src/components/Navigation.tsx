@@ -37,6 +37,9 @@ const Navigation = () => {
               <button onClick={() => scrollToSection('menu')} className="nav-link">
                 Carta
               </button>
+              <Link to="/pedidos" className="nav-link">
+                Pedidos Online
+              </Link>
               <button onClick={() => scrollToSection('gallery')} className="nav-link">
                 Galería
               </button>
@@ -102,6 +105,13 @@ const Navigation = () => {
           >
             Carta
           </button>
+          <Link 
+            to="/pedidos"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-2xl text-accent hover:scale-110 transition-transform duration-300"
+          >
+            Pedidos Online
+          </Link>
           <button 
             onClick={() => scrollToSection('gallery')} 
             className="text-2xl text-accent hover:scale-110 transition-transform duration-300"
