@@ -24,7 +24,9 @@ import {
   Bike,
   Store,
   MessageSquare,
-  Printer
+  Printer,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 
 interface OrderItem {
@@ -193,7 +195,7 @@ export default function OrdersPanel() {
   const [lastUpdate, setLastUpdate] = useState(new Date());
   
   // Hook para impresión automática en Sunmi V2S
-  const { manualPrint } = useSunmiPrinter();
+  const { manualPrint, printerStatus, checkPrinterConnection } = useSunmiPrinter();
 
   const fetchOrders = useCallback(async () => {
     const { data, error } = await supabase
@@ -472,7 +474,34 @@ export default function OrdersPanel() {
             Última actualización: {lastUpdate.toLocaleTimeString('es-ES')}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {/* Printer Status Indicator */}
+          <div 
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+              printerStatus === 'connected' 
+                ? 'bg-green-100 text-green-700 border border-green-200' 
+                : printerStatus === 'checking'
+                ? 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                : 'bg-red-100 text-red-700 border border-red-200'
+            }`}
+            onClick={checkPrinterConnection}
+            title="Clic para verificar conexión"
+          >
+            {printerStatus === 'connected' ? (
+              <Wifi className="h-3.5 w-3.5" />
+            ) : printerStatus === 'checking' ? (
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <WifiOff className="h-3.5 w-3.5" />
+            )}
+            <span>
+              {printerStatus === 'connected' 
+                ? 'Sunmi conectada' 
+                : printerStatus === 'checking' 
+                ? 'Verificando...' 
+                : 'Sunmi desconectada'}
+            </span>
+          </div>
           <Button 
             variant="default" 
             size="sm"

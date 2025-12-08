@@ -1,9 +1,10 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // IP del Sunmi V2S en la red local del restaurante
-const SUNMI_PRINTER_URL = 'http://192.168.1.100:8080/pedido';
+const SUNMI_PRINTER_BASE_URL = 'http://192.168.1.100:8080';
+const SUNMI_PRINTER_URL = `${SUNMI_PRINTER_BASE_URL}/pedido`;
 
 interface OrderItem {
   id: string;
@@ -33,7 +34,39 @@ const printedOrders = new Set<string>();
 
 export function useSunmiPrinter() {
   const isInitialized = useRef(false);
+  const [printerStatus, setPrinterStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
 
+  // Check printer connectivity
+  const checkPrinterConnection = useCallback(async (): Promise<boolean> => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      const response = await fetch(`${SUNMI_PRINTER_BASE_URL}/status`, {
+        method: 'GET',
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        setPrinterStatus('connected');
+        return true;
+      }
+      setPrinterStatus('disconnected');
+      return false;
+    } catch {
+      setPrinterStatus('disconnected');
+      return false;
+    }
+  }, []);
+
+  // Check connection on mount and periodically
+  useEffect(() => {
+    checkPrinterConnection();
+    const interval = setInterval(checkPrinterConnection, 30000); // Check every 30s
+    return () => clearInterval(interval);
+  }, [checkPrinterConnection]);
   const sendToPrinter = useCallback(async (order: Order): Promise<boolean> => {
     // Skip if already printed
     if (printedOrders.has(order.id)) {
@@ -164,5 +197,5 @@ export function useSunmiPrinter() {
     };
   }, [sendToPrinter]);
 
-  return { sendToPrinter, manualPrint };
+  return { sendToPrinter, manualPrint, printerStatus, checkPrinterConnection };
 }
