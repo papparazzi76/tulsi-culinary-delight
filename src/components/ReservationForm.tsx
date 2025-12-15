@@ -34,24 +34,25 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ onSuccess }) => {
     setIsSubmitting(true);
 
     try {
-      // Create reservation in database
-      const reservationTime = new Date(`${formData.date}T${formData.time}`);
-      
-      const { error } = await supabase.from('reservations').insert({
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
-        reservation_time: reservationTime.toISOString(),
-        number_of_guests: parseInt(formData.guests),
-        notes: formData.notes || null,
-        status: 'confirmed'
+      // Call edge function to save reservation and send emails
+      const { data, error } = await supabase.functions.invoke('save-voice-reservation', {
+        body: {
+          customer_name: formData.name,
+          customer_email: formData.email,
+          customer_phone: formData.phone,
+          reservation_date: formData.date,
+          reservation_time: formData.time,
+          number_of_guests: parseInt(formData.guests),
+          notes: formData.notes || null,
+          source: 'form'
+        }
       });
 
       if (error) throw error;
 
       toast({
         title: "¡Reserva Confirmada!",
-        description: `Tu reserva para ${formData.guests} personas el ${formData.date} a las ${formData.time} ha sido confirmada.`,
+        description: `Tu reserva para ${formData.guests} personas el ${formData.date} a las ${formData.time} ha sido confirmada. Recibirás un email de confirmación.`,
       });
 
       // Reset form

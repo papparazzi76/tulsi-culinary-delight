@@ -16,6 +16,8 @@ interface ReservationData {
   customer_name: string;
   customer_phone: string;
   customer_email: string;
+  notes?: string;
+  source?: 'voice' | 'form';
 }
 
 serve(async (req) => {
@@ -34,6 +36,12 @@ serve(async (req) => {
     // Combine date and time
     const reservationDateTime = `${data.reservation_date}T${data.reservation_time}:00`;
 
+    // Determine source message
+    const sourceMessage = data.source === 'form' 
+      ? 'Reserva realizada por formulario web' 
+      : 'Reserva realizada por asistente de voz';
+    const sourceEmoji = data.source === 'form' ? '📝' : '🎤';
+
     // Save to database
     const { data: reservation, error: dbError } = await supabase
       .from('reservations')
@@ -44,7 +52,7 @@ serve(async (req) => {
         number_of_guests: data.number_of_guests,
         reservation_time: reservationDateTime,
         status: 'confirmed',
-        notes: 'Reserva realizada por asistente de voz'
+        notes: data.notes || sourceMessage
       })
       .select()
       .single();
@@ -74,7 +82,7 @@ serve(async (req) => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h1 style="color: #D97706; border-bottom: 2px solid #D97706; padding-bottom: 10px;">
-              🎤 Nueva Reserva por Asistente de Voz
+              ${sourceEmoji} Nueva Reserva ${data.source === 'form' ? 'por Formulario' : 'por Asistente de Voz'}
             </h1>
             
             <div style="background: #FEF3C7; padding: 20px; border-radius: 10px; margin: 20px 0;">
