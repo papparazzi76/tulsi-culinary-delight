@@ -285,7 +285,7 @@ export default function OrdersPanel() {
         order_items ( id, quantity, unit_price, total_price, menu_items ( name ) )
       `)
       .in('delivery_type', ['pickup', 'delivery'])
-      .in('status', ['pending', 'preparing', 'completed'])
+      .in('status', ['pending', 'preparing', 'archived'])
       .order('created_at', { ascending: false })
       .limit(100);
 
@@ -415,9 +415,12 @@ export default function OrdersPanel() {
     // Find the order to send email
     const orderToUpdate = orders.find(o => o.id === orderId);
     
+    // If completing, archive automatically
+    const finalStatus = newStatus === 'completed' ? 'archived' : newStatus;
+    
     const { error } = await supabase
       .from('orders')
-      .update({ status: newStatus })
+      .update({ status: finalStatus })
       .eq('id', orderId);
 
     if (error) {
@@ -426,10 +429,10 @@ export default function OrdersPanel() {
     } else {
       const statusLabels: Record<string, string> = {
         'preparing': 'en preparación',
-        'completed': 'completado',
+        'archived': 'completado y archivado',
         'cancelled': 'cancelado'
       };
-      toast.success(`Pedido ${statusLabels[newStatus] || newStatus}`);
+      toast.success(`Pedido ${statusLabels[finalStatus] || finalStatus}`);
       
       // Send email and print when preparing, email when completed or cancelled
       if (orderToUpdate) {
@@ -438,30 +441,13 @@ export default function OrdersPanel() {
           // Auto-print when order is accepted
           handleBrowserPrint(orderToUpdate);
         } else if (newStatus === 'completed') {
+          // Send completed email even though we archive it
           await sendOrderStatusEmail(orderToUpdate, 'completed');
         } else if (newStatus === 'cancelled') {
           await sendOrderStatusEmail(orderToUpdate, 'cancelled');
         }
       }
       
-      fetchOrders();
-      if (selectedOrder?.id === orderId) {
-        setSelectedOrder(null);
-      }
-    }
-  };
-
-  const handleArchiveOrder = async (orderId: string) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: 'archived' })
-      .eq('id', orderId);
-
-    if (error) {
-      toast.error('Error al archivar el pedido');
-      console.error(error);
-    } else {
-      toast.success('Pedido archivado correctamente');
       fetchOrders();
       if (showArchived) {
         fetchArchivedOrders();
@@ -471,6 +457,7 @@ export default function OrdersPanel() {
       }
     }
   };
+
 
   const getMonthName = (monthKey: string) => {
     const [year, month] = monthKey.split('-');
@@ -704,7 +691,14 @@ export default function OrdersPanel() {
 
   const pendingOrders = orders.filter(o => o.status === 'pending');
   const inProgressOrders = orders.filter(o => o.status === 'preparing');
-  const completedOrders = orders.filter(o => o.status === 'completed').slice(0, 20);
+  // Show today's archived orders in the "completed" column
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const recentArchivedOrders = orders.filter(o => {
+    if (o.status !== 'archived') return false;
+    const orderDate = new Date(o.created_at);
+    return orderDate >= today;
+  }).slice(0, 20);
 
   if (loading) {
     return (
@@ -760,8 +754,8 @@ export default function OrdersPanel() {
         </Card>
         <Card className="bg-green-50 border-green-200">
           <CardContent className="p-4 text-center">
-            <p className="text-3xl font-bold text-green-600">{completedOrders.length}</p>
-            <p className="text-sm text-green-700">Completados</p>
+            <p className="text-3xl font-bold text-green-600">{recentArchivedOrders.length}</p>
+            <p className="text-sm text-green-700">Completados Hoy</p>
           </CardContent>
         </Card>
       </div>
@@ -816,14 +810,14 @@ export default function OrdersPanel() {
           </div>
         </div>
 
-        {/* Completed Column */}
+        {/* Completed Today Column */}
         <div>
           <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
             <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-            Completados ({completedOrders.length})
+            Completados Hoy ({recentArchivedOrders.length})
           </h2>
           <div className="space-y-3">
-            {completedOrders.map(order => (
+            {recentArchivedOrders.map(order => (
               <OrderCard 
                 key={order.id} 
                 order={order} 
@@ -831,10 +825,10 @@ export default function OrdersPanel() {
                 onQuickAction={handleUpdateStatus}
               />
             ))}
-            {completedOrders.length === 0 && (
+            {recentArchivedOrders.length === 0 && (
               <Card className="p-8 text-center text-muted-foreground">
                 <CheckCircle2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p>Sin pedidos completados</p>
+                <p>Sin pedidos completados hoy</p>
               </Card>
             )}
           </div>
@@ -993,14 +987,6 @@ export default function OrdersPanel() {
                       onClick={() => handleUpdateStatus(selectedOrder.id, 'completed')}
                     >
                       <CheckCircle2 className="h-4 w-4 mr-2" /> Completar
-                    </Button>
-                  )}
-                  {selectedOrder.status === 'completed' && (
-                    <Button 
-                      className="flex-1 bg-amber-600 hover:bg-amber-700"
-                      onClick={() => handleArchiveOrder(selectedOrder.id)}
-                    >
-                      <Archive className="h-4 w-4 mr-2" /> Archivar Pedido
                     </Button>
                   )}
                   <Button 
