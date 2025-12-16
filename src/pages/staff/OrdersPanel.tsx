@@ -24,7 +24,11 @@ import {
   Store,
   MessageSquare,
   Printer,
-  Volume2
+  Volume2,
+  Archive,
+  History,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 interface OrderItem {
@@ -41,7 +45,7 @@ interface Order {
   id: string;
   order_number: string;
   created_at: string;
-  status: 'pending' | 'preparing' | 'completed' | 'cancelled';
+  status: 'pending' | 'preparing' | 'completed' | 'cancelled' | 'archived';
   payment_status: string;
   customer_name: string;
   customer_email: string;
@@ -50,6 +54,10 @@ interface Order {
   delivery_address: string | null;
   total_amount: number;
   order_items: OrderItem[];
+}
+
+interface ArchivedOrdersByMonth {
+  [month: string]: Order[];
 }
 
 const formatTime = (dateString: string) => {
@@ -75,6 +83,8 @@ const getStatusBadge = (status: string) => {
       return <Badge className="bg-green-500 text-white">Completado</Badge>;
     case 'cancelled':
       return <Badge className="bg-red-500 text-white">Cancelado</Badge>;
+    case 'archived':
+      return <Badge className="bg-amber-600 text-white">Archivado</Badge>;
     default:
       return <Badge>{status}</Badge>;
   }
@@ -232,6 +242,8 @@ const playNotificationSound = () => {
 
 export default function OrdersPanel() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [archivedOrders, setArchivedOrders] = useState<ArchivedOrdersByMonth>({});
+  const [showArchived, setShowArchived] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -286,11 +298,48 @@ export default function OrdersPanel() {
     setLoading(false);
   }, []);
 
+  const fetchArchivedOrders = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        id, order_number, created_at, status, payment_status,
+        customer_name, customer_email, customer_phone,
+        delivery_type, delivery_address, total_amount,
+        order_items ( id, quantity, unit_price, total_price, menu_items ( name ) )
+      `)
+      .in('delivery_type', ['pickup', 'delivery'])
+      .eq('status', 'archived')
+      .order('created_at', { ascending: false })
+      .limit(500);
+
+    if (error) {
+      console.error('Error fetching archived orders:', error);
+    } else {
+      // Group by month (YYYY-MM format)
+      const grouped: ArchivedOrdersByMonth = {};
+      (data as unknown as Order[]).forEach(order => {
+        const date = new Date(order.created_at);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (!grouped[monthKey]) {
+          grouped[monthKey] = [];
+        }
+        grouped[monthKey].push(order);
+      });
+      setArchivedOrders(grouped);
+    }
+  }, []);
+
   useEffect(() => {
     fetchOrders();
     const interval = setInterval(fetchOrders, pollingInterval);
     return () => clearInterval(interval);
   }, [fetchOrders, pollingInterval]);
+
+  useEffect(() => {
+    if (showArchived) {
+      fetchArchivedOrders();
+    }
+  }, [showArchived, fetchArchivedOrders]);
 
   // Check for new orders and play sound
   useEffect(() => {
@@ -400,6 +449,37 @@ export default function OrdersPanel() {
         setSelectedOrder(null);
       }
     }
+  };
+
+  const handleArchiveOrder = async (orderId: string) => {
+    const { error } = await supabase
+      .from('orders')
+      .update({ status: 'archived' })
+      .eq('id', orderId);
+
+    if (error) {
+      toast.error('Error al archivar el pedido');
+      console.error(error);
+    } else {
+      toast.success('Pedido archivado correctamente');
+      fetchOrders();
+      if (showArchived) {
+        fetchArchivedOrders();
+      }
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(null);
+      }
+    }
+  };
+
+  const getMonthName = (monthKey: string) => {
+    const [year, month] = monthKey.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  };
+
+  const getArchivedMonthTotal = (orders: Order[]) => {
+    return orders.reduce((sum, order) => sum + order.total_amount, 0);
   };
 
   const handleBrowserPrint = (order: Order) => {
@@ -645,6 +725,13 @@ export default function OrdersPanel() {
           </p>
         </div>
         <div className="flex gap-2 items-center">
+          <Button 
+            variant={showArchived ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setShowArchived(!showArchived)}
+          >
+            <History className="h-4 w-4 mr-1" /> Histórico
+          </Button>
           <Button variant="outline" size="sm" onClick={testNotificationSound}>
             <Volume2 className="h-4 w-4 mr-1" /> Test Sonido
           </Button>
@@ -754,6 +841,70 @@ export default function OrdersPanel() {
         </div>
       </div>
 
+      {/* Archived Orders Section */}
+      {showArchived && (
+        <div className="mt-8">
+          <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
+            <Archive className="h-5 w-5" />
+            Pedidos Archivados (Histórico por Mes)
+          </h2>
+          {Object.keys(archivedOrders).length === 0 ? (
+            <Card className="p-8 text-center text-muted-foreground">
+              <Archive className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No hay pedidos archivados</p>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {Object.entries(archivedOrders)
+                .sort(([a], [b]) => b.localeCompare(a)) // Sort by month descending
+                .map(([monthKey, monthOrders]) => (
+                  <Card key={monthKey} className="overflow-hidden">
+                    <CardHeader className="bg-muted/50 py-3 cursor-pointer">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-lg capitalize flex items-center gap-2">
+                          <History className="h-4 w-4" />
+                          {getMonthName(monthKey)}
+                        </CardTitle>
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm text-muted-foreground">
+                            {monthOrders.length} pedidos
+                          </span>
+                          <span className="font-bold text-green-600">
+                            €{getArchivedMonthTotal(monthOrders).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <div className="divide-y">
+                        {monthOrders.map(order => (
+                          <div 
+                            key={order.id} 
+                            className="p-3 flex justify-between items-center hover:bg-muted/30 cursor-pointer"
+                            onClick={() => setSelectedOrder(order)}
+                          >
+                            <div>
+                              <p className="font-medium">{order.order_number}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {order.customer_name} • {new Date(order.created_at).toLocaleDateString('es-ES')}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold">€{order.total_amount.toFixed(2)}</p>
+                              <p className="text-xs text-muted-foreground capitalize">
+                                {order.delivery_type === 'delivery' ? 'Entrega' : 'Recogida'}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
       {/* Order Detail Modal */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -842,6 +993,14 @@ export default function OrdersPanel() {
                       onClick={() => handleUpdateStatus(selectedOrder.id, 'completed')}
                     >
                       <CheckCircle2 className="h-4 w-4 mr-2" /> Completar
+                    </Button>
+                  )}
+                  {selectedOrder.status === 'completed' && (
+                    <Button 
+                      className="flex-1 bg-amber-600 hover:bg-amber-700"
+                      onClick={() => handleArchiveOrder(selectedOrder.id)}
+                    >
+                      <Archive className="h-4 w-4 mr-2" /> Archivar Pedido
                     </Button>
                   )}
                   <Button 
