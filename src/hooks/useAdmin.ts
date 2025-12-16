@@ -86,7 +86,16 @@ export const useAdmin = () => {
             .in('status', ['pending', 'confirmed'])
             .order('reservation_time', { ascending: true });
         if (error) throw error;
-        setReservations(data as Reservation[]);
+        
+        // Filter out expired reservations (1 hour after reservation time)
+        const now = new Date();
+        const activeReservations = (data as Reservation[]).filter(reservation => {
+          const reservationTime = new Date(reservation.reservation_time);
+          const expirationTime = new Date(reservationTime.getTime() + 60 * 60 * 1000); // +1 hour
+          return now < expirationTime;
+        });
+        
+        setReservations(activeReservations);
     } catch (error: any) {
         toast.error('Error al cargar las reservas: ' + error.message);
     } finally {
