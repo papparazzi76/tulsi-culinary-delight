@@ -122,14 +122,6 @@ const PedidosOnline = () => {
                 auténticas de la India. Tiempo de preparación: 15-25 minutos.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  onClick={() => setShowMenu(true)}
-                  className="btn-tulsi inline-flex items-center justify-center gap-3"
-                  size="lg"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  Ver Menú y Pedir
-                </Button>
                 <Button 
                   asChild
                   variant="outline"
