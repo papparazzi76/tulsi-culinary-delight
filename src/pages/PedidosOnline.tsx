@@ -12,6 +12,7 @@ import logoGlovo from '@/assets/logo-glovo.png';
 
 const JUST_EAT_URL = 'https://www.just-eat.es/restaurants-tulsi-indian-restaurant-valladolid/menu?serviceType=collection&utm_source=google&utm_medium=organic&utm_campaign=foodorder';
 const GLOVO_URL = 'https://glovoapp.com/es/es/valladolid/stores/tulsi-indian-restaurant-valladolid?utm_source=google&utm_medium=organic&utm_campaign=google_reserve_place_order_action';
+const DISH_DELIVERY_URL = 'https://tulsi-indian-rte.order.app.hd.digital/menus';
 
 const PedidosOnline = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -162,7 +163,17 @@ const PedidosOnline = () => {
                 <p className="text-muted-foreground mb-6 text-center">
                   Pide a través de nuestros partners de delivery
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
+                  <a
+                    href={DISH_DELIVERY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-3 px-6 py-4 bg-accent hover:bg-accent/90 text-accent-foreground font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
+                  >
+                    <Truck className="w-6 h-6" />
+                    <span>Pedir Delivery Directo</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
                   <a
                     href={GLOVO_URL}
                     target="_blank"
