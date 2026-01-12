@@ -37,9 +37,9 @@ const Navigation = () => {
               <button onClick={() => scrollToSection('menu')} className="nav-link">
                 Carta
               </button>
-              <Link to="/pedidos" className="nav-link">
-                Pedidos Online
-              </Link>
+              <a href="https://tulsi-indian-rte.order.app.hd.digital/menus" target="_blank" rel="noopener noreferrer" className="nav-link flex items-center gap-1">
+                Pedidos Online <ExternalLink className="w-3 h-3" />
+              </a>
               <button onClick={() => scrollToSection('gallery')} className="nav-link">
                 Galería
               </button>
@@ -105,13 +105,15 @@ const Navigation = () => {
           >
             Carta
           </button>
-          <Link 
-            to="/pedidos"
+          <a 
+            href="https://tulsi-indian-rte.order.app.hd.digital/menus"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="text-2xl text-accent hover:scale-110 transition-transform duration-300"
+            className="text-2xl text-accent hover:scale-110 transition-transform duration-300 flex items-center gap-2"
           >
-            Pedidos Online
-          </Link>
+            Pedidos Online <ExternalLink className="w-5 h-5" />
+          </a>
           <button 
             onClick={() => scrollToSection('gallery')} 
             className="text-2xl text-accent hover:scale-110 transition-transform duration-300"
