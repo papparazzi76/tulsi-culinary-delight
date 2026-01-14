@@ -10,7 +10,7 @@ interface ReviewData {
 }
 
 const FeedbackWidget = () => {
-  const googleReviewsUrl = 'https://share.google/9pl5cA89i5CuajW8Y';
+  const googleReviewsUrl = 'https://search.google.com/local/writereview?placeid=ChIJrW7lvmsTRw0RJGckrtY-Ycc';
   
   const [reviewData, setReviewData] = useState<ReviewData>({
     rating: 4.7,
