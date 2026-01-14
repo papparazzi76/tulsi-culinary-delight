@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
-import ReservationWidget from './ReservationWidget';
 
 const ContactSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -136,10 +135,6 @@ const ContactSection = () => {
               </div>
             </div>
 
-            {/* Reservation Widget */}
-            <div id="reservar" className="pt-6">
-              <ReservationWidget />
-            </div>
           </div>
 
           {/* Map */}

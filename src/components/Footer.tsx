@@ -107,14 +107,12 @@ const Footer = () => {
                 </li>
               ))}
               <li>
-                <a
-                  href="https://www.thefork.es/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-accent transition-colors duration-300"
+                <button
+                  onClick={() => scrollToSection('#reservas')}
+                  className="text-muted-foreground hover:text-accent transition-colors duration-300 text-left"
                 >
                   Reservar Mesa
-                </a>
+                </button>
               </li>
               <li>
                 <button
