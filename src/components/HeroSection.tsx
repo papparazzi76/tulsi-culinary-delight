@@ -52,7 +52,7 @@ const HeroSection = () => {
               }`}
             >
               <button 
-                onClick={() => document.getElementById('reservar')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.getElementById('reservas')?.scrollIntoView({ behavior: 'smooth' })}
                 className="btn-tulsi flex items-center gap-2 text-lg px-8 py-3"
               >
                 Reservar Mesa
