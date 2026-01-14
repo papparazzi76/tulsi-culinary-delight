@@ -63,7 +63,7 @@ const DishReservationWidget = () => {
         
         <div className="text-center mt-8">
           <p className="text-muted-foreground">
-            ¿Prefieres llamar? <a href="tel:+34983070117" className="text-accent hover:underline font-semibold">983 070 117</a>
+            ¿Prefieres llamar? <a href="tel:+34983844607" className="text-accent hover:underline font-semibold">+34 983 84 46 07</a>
           </p>
         </div>
       </div>
