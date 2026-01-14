@@ -1,4 +1,25 @@
-# Welcome to your Lovable project
+# Tulsi Indian Restaurant
+
+Sitio web oficial del restaurante Tulsi Indian en Valladolid.
+
+## Integraciones Externas
+
+### Reservas - Dish
+Todas las reservas se gestionan a través del widget de Dish integrado en la web.
+- Widget ID: `a8a78043-ea0f-41e0-93b9-b0e67c11e509`
+- Las reservas se realizan directamente en la sección `#reservas`
+
+### Reseñas - Google Reviews
+Las reseñas de clientes se muestran y gestionan a través de Google Reviews.
+- [Ver reseñas en Google](https://www.google.com/search?q=Tulsi+Indian+Restaurant+Reseñas)
+
+### Pedidos Online - Dish
+Los pedidos para llevar y a domicilio se realizan a través de Dish.
+- [Pedir online](https://order.dish.co/widget/tulsi-indian-restaurant-raa43)
+
+## Información de Contacto
+- **Teléfono**: +34 983 84 46 07
+- **Dirección**: Valladolid, España
 
 ## Project info
 
@@ -71,6 +92,4 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
-🔁 Prueba despliegue automático con GitHub Actions
-🚀 Test de despliegue automático corregido
 
