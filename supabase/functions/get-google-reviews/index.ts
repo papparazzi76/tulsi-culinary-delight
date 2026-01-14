@@ -5,9 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Tulsi Indian Restaurant Place ID
-const PLACE_ID = 'ChIJpZK6XRWRQQ0RqqqEqN0g6SY';
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -20,31 +17,43 @@ serve(async (req) => {
       throw new Error('Google Places API key not configured');
     }
 
-    // Use the new Places API (v1)
-    const url = `https://places.googleapis.com/v1/places/${PLACE_ID}?fields=rating,userRatingCount,displayName&key=${apiKey}`;
+    // First, search for the place by name to get the correct place_id
+    const searchQuery = 'Tulsi Indian Restaurant Valladolid Spain';
+    const findPlaceUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(searchQuery)}&inputtype=textquery&fields=place_id&key=${apiKey}`;
     
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    console.log('Searching for place:', searchQuery);
+    
+    const searchResponse = await fetch(findPlaceUrl);
+    const searchData = await searchResponse.json();
+    
+    console.log('Find place response:', JSON.stringify(searchData));
+    
+    if (searchData.status !== 'OK' || !searchData.candidates || searchData.candidates.length === 0) {
+      throw new Error(`Place not found: ${searchData.status}`);
+    }
+    
+    const placeId = searchData.candidates[0].place_id;
+    console.log('Found place_id:', placeId);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Google Places API error:', errorText);
-      throw new Error(`Google Places API error: ${response.status}`);
+    // Now get the place details with rating
+    const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,user_ratings_total&key=${apiKey}`;
+    
+    const detailsResponse = await fetch(detailsUrl);
+    const detailsData = await detailsResponse.json();
+    
+    console.log('Place details response:', JSON.stringify(detailsData));
+
+    if (detailsData.status !== 'OK') {
+      throw new Error(`Place details error: ${detailsData.status}`);
     }
 
-    const data = await response.json();
+    const result = detailsData.result;
     
-    console.log('Google Places API response:', JSON.stringify(data));
-
     return new Response(
       JSON.stringify({
-        rating: data.rating || 4.7,
-        totalReviews: data.userRatingCount || 312,
-        name: data.displayName?.text || 'Tulsi Indian Restaurant',
+        rating: result.rating || 4.7,
+        totalReviews: result.user_ratings_total || 312,
+        name: result.name || 'Tulsi Indian Restaurant',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
