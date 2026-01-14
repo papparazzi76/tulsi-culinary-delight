@@ -10,7 +10,7 @@ interface ReviewData {
 }
 
 const FeedbackWidget = () => {
-  const googleReviewsUrl = 'https://www.google.com/search?sca_esv=cbcc352c89b9e229&rlz=1C1ONGR_esES1187ES1187&sxsrf=ANbL-n5kaOvDCliG6JLMVRsOUAU6hdwGqg:1768411591439&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOeNE66yHwObJ1lF9jEghlufiQTyJLlQj8QUHWvACK6dbTD1lVsG6AN5pTuLoq9eNYkrqCYCrDeqNQrv8zuDYTcRo8d3aBre5QbGXKyLwwJ3eJGRAGA%3D%3D&q=Tulsi+Indian+Restaurant+Rese%C3%B1as&sa=X&ved=2ahUKEwjLteXFxouSAxXUUaQEHeN-NoYQ0bkNegQIKBAH&biw=1920&bih=945&dpr=1&aic=0';
+  const googleReviewsUrl = 'https://share.google/9pl5cA89i5CuajW8Y';
   
   const [reviewData, setReviewData] = useState<ReviewData>({
     rating: 4.7,
