@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import LotteryModal from '@/components/LotteryModal';
 
 const Footer = () => {
@@ -171,6 +172,13 @@ const Footer = () => {
               Diseñado con ♥ en Valladolid
             </p>
           </div>
+          <nav aria-label="Información legal" className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
+            <Link className="text-muted-foreground hover:text-accent underline" to="/legal/aviso-legal">Aviso legal</Link>
+            <Link className="text-muted-foreground hover:text-accent underline" to="/legal/privacidad">Privacidad</Link>
+            <Link className="text-muted-foreground hover:text-accent underline" to="/legal/cookies">Cookies</Link>
+            <Link className="text-muted-foreground hover:text-accent underline" to="/legal/alergenos">Alérgenos</Link>
+            <Link className="text-muted-foreground hover:text-accent underline" to="/legal/condiciones-pedidos">Condiciones de pedidos</Link>
+          </nav>
         </div>
       </div>
 

@@ -93,3 +93,13 @@ To connect a domain, navigate to Project > Settings > Domains and click Connect 
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
 
+
+
+## Revisión legal de la web pública
+- Se añaden rutas de Aviso legal, Privacidad, Cookies, Alérgenos y Condiciones de pedidos.
+- Titular facilitada por el cliente: Razia Bibi, NIE Y4154636E. Domicilio del negocio: C/ Marina Escobar, 1, 47001 Valladolid.
+- Confirmar que este domicilio sirve también a efectos legales y fiscales, la forma jurídica y los datos registrales que sean exigibles.
+- Validar por escrito con cocina todos los alérgenos de cada plato y menú, las trazas y el contacto cruzado. Los alérgenos existentes en fichas digitales deben verificarse antes de presentarse como definitivos.
+- Confirmar proveedores y encargados de tratamiento, transferencias internacionales, plazos de conservación, bases jurídicas, canales para derechos y procedimiento de cancelación de pedidos/reservas.
+- Revisar que precios, impuestos, suplementos, disponibilidad, entrega/recogida y pago reflejen la operativa real.
+- Fuera del alcance web: obligaciones de trabajo, prevención de riesgos, igualdad, higiene y seguridad alimentaria presencial, licencias y fiscalidad.

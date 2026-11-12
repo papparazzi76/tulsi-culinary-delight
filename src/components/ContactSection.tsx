@@ -143,17 +143,15 @@ const ContactSection = () => {
               isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
             }`}
           >
-            <div id="mapa" className="h-96 lg:h-[600px] rounded-2xl overflow-hidden shadow-tulsi border-2 border-accent/20">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2980.7635842983545!2d-4.724609523456655!3d41.64902717924125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd47119bcce1a38d%3A0xf56ba1b5f8e0b0d1!2sC.%20Marina%20de%20Escobar%2C%201%2C%2047001%20Valladolid%2C%20Spain!5e0!3m2!1sen!2ses!4v1678886501234!5m2!1sen!2ses"
-                width="100%" 
-                height="100%" 
-                style={{ border: 0 }} 
-                allowFullScreen={true} 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Ubicación del Restaurante Tulsi en Valladolid"
-              />
+            <div id="mapa" className="min-h-96 lg:min-h-[600px] rounded-2xl shadow-tulsi border-2 border-accent/20 bg-card p-8 flex flex-col items-center justify-center text-center gap-5">
+              <MapPin className="w-12 h-12 text-accent" aria-hidden="true" />
+              <div>
+                <h3 className="text-2xl font-semibold text-accent">Tulsi Indian Restaurant</h3>
+                <p className="mt-2 text-muted-foreground">C/ Marina Escobar, 1, 47001 Valladolid</p>
+              </div>
+              <a href="https://maps.google.com/?q=Calle+Marina+Escobar+1+Valladolid" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-md border border-accent px-5 py-3 text-accent hover:bg-accent/10">
+                Abrir ubicación en Google Maps <ExternalLink className="w-4 h-4" aria-hidden="true" />
+              </a>
             </div>
           </div>
         </div>

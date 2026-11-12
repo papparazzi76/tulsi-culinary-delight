@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Minus, Plus, Trash2, CheckCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -383,6 +384,11 @@ const CartModal = ({ isOpen, onClose, onShowContest }: CartModalProps) => {
                     <strong>💳 Pago en restaurante:</strong> Abonarás el importe al recoger tu pedido. Aceptamos efectivo y tarjeta.
                   </p>
                 </div>
+              </div>
+
+              <div className="rounded-lg border border-accent/30 bg-secondary p-4 text-sm space-y-2">
+                <p>Responsable del tratamiento: Razia Bibi. Los datos de contacto, pedido y entrega se utilizan para gestionar este encargo. Consulta la <Link className="underline text-accent" to="/legal/privacidad">Política de privacidad</Link>.</p>
+                <p>Si tienes alergia o intolerancia, consulta la <Link className="underline text-accent" to="/legal/alergenos">información sobre alérgenos</Link> y confirma ingredientes, trazas y contacto cruzado con el restaurante antes de enviar el pedido. No incluyas datos de salud en notas generales.</p>
               </div>
 
               {/* Submit order button */}

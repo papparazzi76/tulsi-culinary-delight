@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCart, MenuItemType } from '@/hooks/useCart';
 import { toast } from 'sonner';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { menuData } from '@/data/menuData';
 import AllergenIcons from '@/components/AllergenIcons';
@@ -168,6 +169,7 @@ const TakeawayMenu = ({ onOpenCart }: TakeawayMenuProps) => {
 
   return (
     <div className="space-y-8">
+      <p className="rounded-lg border border-accent/40 bg-secondary p-4 text-sm">Los alérgenos que figuran en las fichas digitales están pendientes de validación por cocina. Consulta la <Link className="underline text-accent" to="/legal/alergenos">información sobre alérgenos</Link> y confirma cualquier alergia o intolerancia antes de pedir.</p>
       {/* Header with cart button */}
       <div className="flex justify-between items-center">
         <h3 className="text-2xl md:text-3xl font-playfair font-bold text-accent">

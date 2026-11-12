@@ -309,6 +309,7 @@ const MenuSection = () => {
             >
               Nuestra Carta
             </h2>
+            <p className="mx-auto mt-3 max-w-3xl text-sm text-muted-foreground">Los alérgenos registrados en la carta están pendientes de validación por cocina. <a href="#/legal/alergenos" className="underline text-accent">Consulta el detalle y confirma con el personal antes de pedir</a>.</p>
             <p 
               className={`text-lg md:text-xl mt-4 max-w-3xl mx-auto text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
